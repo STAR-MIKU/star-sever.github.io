@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHOOTING STAR | 服务丢失</title>
+    <style>
+        body {
+          background-image: url('/images/background-404.jpg');
+          background-size: contain; /* 等比拉伸 */
+          background-repeat: no-repeat; /* 防止图片重复 */
+          background-position: top center; /* 图片居中，并且顶部对齐 */
+          margin: 0; /* 确保页面没有多余的外边距 */
+          padding: 0;
+          height: 100vh; /* 保证背景图片占据整个视口高度 */
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+        /* 针对宽屏设备的优化 */
+        @media (min-width: 1024px) {
+            body {
+                background-size: contain; /* 宽屏设备使用等比拉伸 */
+                background-position: center center; /* 水平和垂直居中 */
+            }
+        }
+
+        /* 引入指定字体文件，需将字体文件放在正确路径下 */
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('/fonts/Chillax-Semibold.otf');
+        }
+        body {
+            font-family: 'CustomFont', Arial, Helvetica, sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            background-color: #121212;
+            color: #FFFFFF;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 50px;
+            position: sticky;
+            top: 0;
+            background-color: rgba(224, 224, 224, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 100;
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark-mode nav {
+            background-color: rgba(30, 30, 30, 0.8);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left; /* 确保内容左对齐 */
+            margin-left: -34px; /* 设置左边的外边距 */
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333333;
+            transition: color 0.3s ease;
+        }
+
+        body.dark-mode .nav-links a {
+            color: #FFFFFF;
+        }
+
+        .nav-links button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-login {
+            background-color: #F5F5F5;
+            color: #000;
+        }
+
+        body.dark-mode .btn-login {
+            background-color: #333333;
+            color: #FFFFFF;
+        }
+
+        .btn-login:hover {
+            background-color: #d4d4d4;
+        }
+
+        body.dark-mode .btn-login:hover {
+            background-color: #444444;
+        }
+
+        .btn-get-started {
+            background-color: #000;
+            color: #FFFFFF;
+        }
+
+        body.dark-mode .btn-get-started {
+            background-color: #FFFFFF;
+            color: #000;
+        }
+
+        .btn-get-started:hover {
+            background-color: #333;
+        }
+
+        body.dark-mode .btn-get-started:hover {
+            background-color: #EEEEEE;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            text-align: center;
+            position: absolute;
+            bottom: 114px; /* 距离页面底部的距离 */
+            left: 50%;
+            transform: translate(-50%, 0); /* 水平居中 */
+            width: 100%; /* 保证内容宽度 */
+        }
+
+        .main-content h1 {
+            font-size: 60px;
+            margin-bottom: 0px;
+        }
+
+        .main-content p {
+            font-size: 12px;
+            margin-bottom: 26px;
+        }
+
+        .main-content button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #000;
+            color: #FFFFFF;
+            transition: background-color 0.3s ease;
+            font-size: 11px;
+        }
+
+        body.dark-mode .main-content button {
+            background-color: #FFFFFF;
+            color: #000;
+        }
+
+        .main-content button:hover {
+            background-color: #333;
+        }
+
+        body.dark-mode .main-content button:hover {
+            background-color: #EEEEEE;
+        }
+    </style>
+</head>
+
+<body>
+    <img id="wallpaper" src="" alt="背景" style="
+        position: fixed;
+        left: 0; top: 0;
+        width: 100vw; height: 100vh;
+        object-fit: cover;
+        z-index: -1;
+        pointer-events: none;
+        user-select: none;
+    ">
+    <!-- 顶部导航栏 -->
+    <nav>
+        <div class="nav-logo">
+            SHOOTING STAR
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <h1>404</h1>
+        <p>很抱歉，您访问的页面不存在。</p>
+        <button onclick="window.location.href='index.html'">返回首页</button>
+    </div>
+    
+    <script>
+        fetch('/1999/wallpaper/images.json')
+          .then(res => res.json())
+          .then(list => {
+            const img = list[Math.floor(Math.random() * list.length)];
+            document.getElementById('wallpaper').src = '/1999/wallpaper/' + img;
+          });
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            const moonIcon = document.getElementById('dark-mode-icon');
+            moonIcon.classList.toggle('fa-moon');
+            moonIcon.classList.toggle('fa-sun');
+        }
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        window.addEventListener('scroll', function () {
+            const combinedButton = document.getElementById('combined-button');
+            const darkModeIcon = document.getElementById('dark-mode-icon');
+            const scrollToTopIcon = document.getElementById('scroll-to-top-icon');
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+                darkModeIcon.style.opacity = 0;
+                darkModeIcon.style.transform = 'translate(-50%, -50%) scale(0.5)';
+                scrollToTopIcon.style.opacity = 1;
+                scrollToTopIcon.style.transform = 'translate(-50%, -50%) scale(1)';
+                combinedButton.onclick = scrollToTop;
+            } else {
+                darkModeIcon.style.opacity = 1;
+                darkModeIcon.style.transform = 'translate(-50%, -50%) scale(1)';
+                scrollToTopIcon.style.opacity = 0;
+                scrollToTopIcon.style.transform = 'translate(-50%, -50%) scale(0.5)';
+                combinedButton.onclick = toggleDarkMode;
+            }
+        });
+
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</body>
+
+</html>

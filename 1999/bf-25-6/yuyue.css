@@ -1,0 +1,255 @@
+.loading-yuyue{
+    position: absolute;
+    z-index: 100;
+    background: rgba(0, 0, 0, .5);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.loginLoading-bg{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    padding: 1rem 3rem;
+    width: 35.625rem;
+    height: 29.6875rem;
+    background: url("../img/login/loginBg.png") no-repeat center;
+    background-size: 100%;
+    box-sizing: border-box;
+}
+.login-title{
+    height: 3.75rem;
+    /* background: darkcyan; */
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    font-size:1.875rem ;
+    color: rgb(246,232,217);
+    font-weight: 400;
+    margin-bottom: 2rem;
+}
+.login-title>div{
+    width:4.75rem;
+    text-align: center;
+    /* cursor: pointer; */
+}
+.login-title-device{
+    background: url("../img/login/q.png") no-repeat center;
+    background-size: 100%;
+}
+.login-input{
+    display: block;
+    width: 27rem;
+    height: 3rem;
+    /* margin-top: 2rem; */
+    background: rgb(30, 32, 32);
+    border: 1px solid #A99B8C;
+    border-radius: 10px;
+    outline: none; 
+    padding-left: 2rem;
+    font-size: 1.4rem;
+    color: #A99B8C;
+}
+
+    /* 默认信息placeholder的颜色和字体 */
+::-webkit-input-placeholder {   
+    color: #A99B8C;
+    font-size: 1.4rem;
+    font-weight: 400;
+}
+.login-code{
+    position: relative;
+}
+.login-code-left{
+    position: absolute;
+    right: 1rem;
+    top:50%;
+    transform: translateY(-50%);
+    font-weight: 400;
+    color: #B55829;
+    font-size: 1.5rem;
+    border: none;
+    background: none;
+    /* cursor: pointer; */
+}
+.login-code-time{
+    cursor: not-allowed;
+}
+.loginAgree{
+    height: 3.2rem;
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    color: #A99B8C;
+}
+.loginAgree a{
+    text-decoration: none;
+    color: #B55829;
+}
+.loginAgree-icon{
+    position: relative;
+    margin-right: 1.2rem;
+}
+.loginAgree-icon-g{
+    position: absolute;
+    top: -.3rem;
+    left: 0;
+    pointer-events: none;
+}
+.login-submit{
+    width: 100%;
+    margin-top: 1rem;
+}
+.login-submit>img{
+    width: 100%;
+}
+.login-statement{
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1.125rem;
+}
+.login-close{
+    position: absolute;
+    top: -1rem;
+    right: -4rem;
+    width: 3.125rem;
+    /* cursor: pointer; */
+}
+.login-close>img{
+    width: 100%;
+}
+.inCode{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .5);
+    z-index: 100; 
+}
+.inCode-bg{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    width: 35.625rem;
+    height: 21.625rem;
+    background: url("../img/lottery/bgno.png") no-repeat center;
+    background-size: 100%;
+    box-sizing: border-box;
+    font-size: 1.375rem;
+}
+.inCode-bg-str{
+    width: 32rem;
+    font-weight: 400;
+    color: #010101; 
+    font-size: 1.375rem;
+    margin: auto;
+    margin-top: 8rem;
+    text-align: center;
+}
+.inCode-bg-button{
+    display: flex;
+    height: 3.75rem;
+    width: 30rem;
+    /* background: darkcyan; */
+    margin: auto;
+    margin-top: 5rem;
+    justify-content: space-between;
+}
+#loginSelf{
+    color: rgb(233,220,205);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    margin-right: 2rem;
+}
+#loginButton{
+    /* cursor: pointer; */
+}
+.loadingSelf{
+    position: fixed;
+    z-index: 2000;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .5);
+    width: 100%;
+    height: 100%;
+}
+.loadingSelf>div{
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+.loadingSelf img{
+    width: 7.5rem;
+}
+#to_top{
+    position: fixed;
+    z-index: 10;
+    bottom:1rem;
+    right: 3rem;
+    width: 2.8125rem;
+    height: 4.3125rem;
+    display: none;
+    /* background: red; */
+}
+#to_top>img{
+    width: 100%;
+}
+.link{
+    color: #B55829;
+    text-decoration: none;
+}
+.allAlert{
+    position: fixed;
+    width: 50%;
+    height: 50%;
+    top: 40%;
+    left: 50%;
+    z-index: 1000;
+    font-size: 1.1rem;
+    color: rgb(233,220,205);
+    transform: translate(-50%,-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.allAlert-str{
+    background: rgba(0, 0, 0, .7);
+    border-radius: 90px;
+    padding: .5rem;
+}
+.waring{
+    font-size: .9rem;
+    color: red;
+    display: block;
+    height: 2rem;
+}
+.loading-yus{
+    position: absolute;
+    z-index: 200;
+    background: rgba(0, 0, 0, .5);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+}
+.loading-yus-img{
+    position: absolute;
+    width: 35.875rem;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+.loading-yus-img img{
+    width: 35.875rem;
+}
+.loading-yus-close{
+    position: absolute;
+    width: 3rem!important;
+    top: 0;
+    right: -5rem;
+}

@@ -1,0 +1,269 @@
+.loading-yuyue{
+    position: absolute;
+    z-index: 200;
+    background: rgba(0, 0, 0, .5);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.loginLoading-bg{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    padding: 1rem 3rem;
+    width: 23.375rem;
+    height: 18.8125rem;
+    background: url("../img/login/loginBg.png") no-repeat center;
+    background-size: 100%;
+    box-sizing: border-box;
+    padding-top: 1rem;
+}
+.login-title{
+    height: 3.75rem;
+    /* background: darkcyan; */
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    font-size:1.875rem ;
+    color: rgb(246,232,217);
+    font-weight: 400;
+    transform: scale(0.7);
+}
+.login-title>div{
+    width:4.75rem;
+    text-align: center;
+    /* cursor: pointer; */
+}
+.login-title-device{
+    background: url("../img/login/q.png") no-repeat center;
+    background-size: 100%;
+}
+.login-input{
+    display: block;
+    width: 17rem;
+    height: 2rem;
+    /* margin-top: 2rem; */
+    background: rgb(30, 32, 32);
+    border: 1px solid #A99B8C;
+    border-radius: 10px;
+    outline: none; 
+    padding-left: .5rem;
+    font-size: 1rem;
+    color: #A99B8C;
+}
+
+    /* 默认信息placeholder的颜色和字体 */
+::-webkit-input-placeholder {   
+    color: #A99B8C;
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+.login-code{
+    position: relative;
+}
+.login-code-left{
+    position: absolute;
+    right: 0;
+    top:50%;
+    transform: translateY(-50%);
+    font-weight: 400;
+    color: #B55829;
+    font-size: .8rem;
+    border: none;
+    background: none;
+    /* cursor: pointer; */
+}
+.login-code-time{
+    cursor: not-allowed;
+}
+.loginAgree{
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    /* font-size: 1.1rem; */
+    font-size: .5rem;
+    color: #A99B8C;
+}
+.loginAgree a{
+    text-decoration: none;
+    color: #B55829;
+}
+.loginAgree-icon{
+    position: relative;
+    margin-right: .2rem;
+    transform: scale(0.7);
+}
+.loginAgree-icon-g{
+    position: absolute;
+    top: -.3rem;
+    left: 0;
+    pointer-events: none;
+}
+.login-submit{
+    width: 100%;
+    
+}
+.login-submit>img{
+    width: 100%;
+}
+.login-statement{
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1.125rem;
+}
+.login-close{
+    position: absolute;
+    bottom: -3rem;
+    left: 50%;
+    width: 2.125rem;
+    transform: translateX(-50%);
+    /* cursor: pointer; */
+}
+.login-close>img{
+    width: 100%;
+}
+.inCode{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .5);
+    z-index: 100; 
+}
+.inCode-bg{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    width: 35.625rem;
+    height: 21.625rem;
+    background: url("../img/lottery/bgno.png") no-repeat center;
+    background-size: 100%;
+    box-sizing: border-box;
+    font-size: 1.375rem;
+}
+.inCode-bg-str{
+    width: 32rem;
+    font-weight: 400;
+    color: #010101; 
+    font-size: 1.375rem;
+    margin: auto;
+    margin-top: 8rem;
+    text-align: center;
+}
+.inCode-bg-button{
+    display: flex;
+    height: 3.75rem;
+    width: 30rem;
+    /* background: darkcyan; */
+    margin: auto;
+    margin-top: 5rem;
+    justify-content: space-between;
+}
+#loginSelf{
+    color: rgb(233,220,205);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    margin-right: 2rem;
+}
+#loginButton{
+    /* cursor: pointer; */
+}
+.loadingSelf{
+    position: fixed;
+    z-index: 2000;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .5);
+    width: 100%;
+    height: 100%;
+}
+.loadingSelf>div{
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+.loadingSelf img{
+    width: 7.5rem;
+}
+#to_top{
+    position: fixed;
+    z-index: 10;
+    bottom:1rem;
+    right: 3rem;
+    width: 2.8125rem;
+    height: 4.3125rem;
+    display: none;
+    /* background: red; */
+}
+#to_top>img{
+    width: 100%;
+}
+.link{
+    color: #B55829;
+    text-decoration: none;
+}
+.allAlert{
+    position: fixed;
+    width: 50%;
+    height: 50%;
+    top: 40%;
+    left: 50%;
+    z-index: 1000;
+    font-size: 1.1rem;
+    color: rgb(233,220,205);
+    transform: translate(-50%,-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.allAlert-str{
+    background: rgba(0, 0, 0, .7);
+    border-radius: 90px;
+    padding: .5rem;
+}
+.waring{
+    font-size: .5rem;
+    color: red;
+    display: block;
+    height: 1.1rem;
+}
+.yuyue-button{
+    position: absolute;
+    width: 10.5rem;
+   
+    z-index: 10;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.loading-yus{
+    position: absolute;
+    z-index: 200;
+    background: rgba(0, 0, 0, .5);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+.loading-yus-img{
+    position: absolute;
+    width: 80%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+.loading-yus-img img{
+    width: 100%;
+}
+.loading-yus-close{
+    position: absolute;
+    width: 2.5rem!important;
+    bottom: -5rem;
+    left: 50%;
+    transform: translateX(-50%);
+}

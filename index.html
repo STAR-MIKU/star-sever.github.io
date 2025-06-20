@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>SHOOTING STAR | 工作台</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @font-face {
+      font-family: 'Chillax';
+      src: url('/fonts/Chillax-Bold.otf') format('opentype');
+      font-weight: 800;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    html,
+    body,
+    * {
+      font-family: 'Chillax', Arial, sans-serif !important;
+      font-weight: 800;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+    }
+
+    #video-wallpaper {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      object-position: left top;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .taskbar {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 56px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      padding: 0 12px 0 22px;
+      box-sizing: border-box;
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+      backdrop-filter: blur(12px) saturate(140%);
+      color: #fff;
+      font-size: 18px;
+      letter-spacing: 2px;
+      transition: transform 0.4s cubic-bezier(.4, 0, .2, 1), opacity 0.4s;
+      will-change: transform, opacity;
+    }
+
+    .taskbar-hidden {
+      transform: translateY(100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .gradient-text {
+      font-size: 24px;
+      background: linear-gradient(90deg,
+          #88B1F1,
+          #9AF0FD,
+          #F0C4E5,
+          #C3C2EC,
+          #88B1F1);
+      background-size: 1000%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-move 2.5s linear infinite;
+      flex-shrink: 0;
+      margin-right: 28px;
+    }
+
+    @keyframes gradient-move {
+      0% {
+        background-position: 0% 50%, 0% 50%;
+      }
+
+      100% {
+        background-position: 100% 50%, 100% 50%;
+      }
+    }
+
+    .taskbar-center {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .taskbar-window {
+      height: 36px;
+      width: 36px;
+      padding: 0;
+      justify-content: center;
+      background: #fff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      cursor: pointer;
+      font-size: 14px;
+      color: #333;
+      border: 1px solid #ddd;
+      transition: background 0.15s;
+      z-index: 1200;
+      margin: 0 8px; /* 两侧间距8px，可根据需要调整 */
+    }
+
+    .taskbar-window:hover {
+      background: #f5f5f7;
+    }
+
+    .date-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      line-height: 1.2;
+      font-size: 16px;
+      white-space: pre-line;
+      min-width: 110px;
+      flex-shrink: 0;
+      margin-left: 28px;
+    }
+
+    #date-main {
+      font-weight: 700;
+    }
+
+    #date-sub {
+      font-size: 13px;
+      color: #bbb;
+    }
+
+    .window {
+      width: 400px;
+      height: 340px;
+      background: rgba(30, 32, 38, 0.92);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+      border-radius: 12px;
+      position: absolute;
+      top: 120px;
+      left: 100px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.2s, height 0.2s, top 0.2s, left 0.2s;
+      z-index: 1000;
+      min-width: 240px;
+      min-height: 120px;
+      border: none;
+    }
+
+    .window.maximized {
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      border-radius: 0 !important;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .title-bar {
+      height: 48px;
+      background: rgba(24, 26, 32, 0.92);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px 0 16px;
+      border-bottom: 1px solid #23242a;
+      font-weight: 800;
+      font-size: 20px;
+      color: #fff;
+      border-radius: 12px 12px 0 0;
+      user-select: none;
+      position: relative;
+      letter-spacing: 1px;
+    }
+
+    .window.maximized .title-bar {
+      border-radius: 0 !important;
+    }
+
+    .mac-btns {
+      display: flex;
+      gap: 10px;
+      margin-right: 16px;
+      align-items: center;
+      background: none;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+    }
+
+    .mac-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      margin: 0;
+      transition: background 0.15s;
+      font-size: 18px;
+      background: none;
+      box-shadow: none;
+    }
+
+    .mac-btn.red {
+      color: #ff5f57;
+    }
+
+    .mac-btn.yellow {
+      color: #ffbd2e;
+    }
+
+    .mac-btn.green {
+      color: #28c940;
+    }
+
+    .mac-btn::before {
+      content: '';
+      display: block;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.95;
+    }
+
+    .mac-btn:hover::before {
+      opacity: 1;
+      filter: brightness(1.2);
+    }
+
+    .window-content {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex: 1;
+      color: #fff;
+      font-size: 16px;
+      background: none;
+    }
+
+    .btn {
+      padding: 8px 18px;
+      border: none;
+      background: #3a7afe;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 800;
+      transition: background 0.2s;
+      margin-right: 10px;
+      box-shadow: 0 2px 8px rgba(58, 122, 254, 0.08);
+    }
+
+    .btn:hover {
+      background: #2556b8;
+    }
+
+    .counter-value {
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      margin-right: 8px;
+    }
+
+    .snap-hint {
+      position: fixed;
+      pointer-events: none;
+      z-index: 3000;
+      border: 2px dashed #89f;
+      background: rgba(136, 177, 241, 0.12);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .snap-hint.left {
+      left: 0;
+      top: 0;
+      width: 50vw;
+      height: 100vh;
+    }
+
+    .snap-hint.right {
+      left: 50vw;
+      top: 0;
+      width: 50vw;
+      height: 100vh;
+    }
+
+    .snap-hint.top {
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .snap-hint.topleft {
+      left: 0;
+      top: 0;
+      width: 50vw;
+      height: 50vh;
+    }
+
+    .snap-hint.topright {
+      left: 50vw;
+      top: 0;
+      width: 50vw;
+      height: 50vh;
+    }
+
+    .snap-hint.bottomleft {
+      left: 0;
+      top: 50vh;
+      width: 50vw;
+      height: 50vh;
+    }
+
+    .snap-hint.bottomright {
+      left: 50vw;
+      top: 50vh;
+      width: 50vw;
+      height: 50vh;
+    }
+
+    #intro-video {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 9999;
+      background: #000;
+      display: block;
+      transition: opacity 0.8s;
+    }
+
+    #skip-btn {
+      position: fixed;
+      right: 40px;
+      top: 40px;
+      z-index: 10000;
+      padding: 8px 18px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background .2s, opacity 0.8s;
+      display: block;
+    }
+
+    #skip-btn:hover {
+      background: #ffd369;
+      color: #222;
+    }
+
+    @keyframes minimize-to-taskbar {
+      0% {
+        opacity: 1;
+        transform: scale(1) rotate(0) skew(0, 0) translate(0, 0);
+        filter: blur(0);
+      }
+
+      60% {
+        transform: scale(0.4, 0.6) rotate(-8deg) skew(0, 12deg) translate(0, 0);
+        filter: blur(1px);
+        opacity: 0.8;
+      }
+
+      80% {
+        transform: scale(0.2, 0.6) rotate(10deg) skew(0, 30deg) translate(0, 0);
+        filter: blur(2px);
+        opacity: 0.5;
+      }
+
+      /* 100% 由js动态生成 */
+    }
+
+    .window.minimizing {
+      pointer-events: none;
+      will-change: transform, opacity, filter;
+      animation: minimize-to-taskbar 0.48s cubic-bezier(.6, -0.2, .9, 1.4) forwards;
+      z-index: 3000 !important;
+    }
+
+    /* 新增：桌面快捷方式样式 */
+    .desktop-area {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .desktop-shortcut {
+      position: absolute;
+      top: 80px;
+      left: 32px;
+      width: 64px;
+      text-align: center;
+      pointer-events: auto;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .desktop-shortcut img {
+      width: 48px;
+      height: 48px;
+    }
+
+    .desktop-shortcut span {
+      display: block;
+      color: #fff;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    /* 启动台样式 */
+    .launchpad-btn {
+      background: none;
+      border: none;
+      margin-right: 18px;
+      cursor: pointer;
+      outline: none;
+      padding: 0;
+      transition: filter 0.2s;
+      z-index: 2100;
+    }
+
+    .launchpad-btn:hover {
+      filter: brightness(1.4);
+    }
+
+    .launchpad-overlay {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(32, 32, 32, 0.88);
+      z-index: 4000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(18px) saturate(140%);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.08);
+      transition: opacity 0.38s cubic-bezier(.4, 0, .2, 1), transform 0.38s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .launchpad-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    .launchpad-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 48px;
+      justify-content: center;
+      align-items: center;
+      width: 700px;
+      max-width: 90vw;
+      min-height: 340px;
+      transition: transform 0.3s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .launchpad-app {
+      width: 90px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.18s cubic-bezier(.4, 0, .2, 1);
+      will-change: transform;
+      animation: app-bounce-in 0.5s;
+    }
+
+    @keyframes app-bounce-in {
+      0% {
+        transform: scale(0.7) translateY(40px);
+        opacity: 0;
+      }
+
+      60% {
+        transform: scale(1.12) translateY(-10px);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .launchpad-app img {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+    }
+
+    .launchpad-app span {
+      color: #fff;
+      display: block;
+      margin-top: 10px;
+      font-size: 17px;
+    }
+
+    .launchpad-app:hover {
+      transform: scale(1.08);
+    }
+
+    .launchpad-pagination {
+      position: absolute;
+      bottom: 60px;
+      left: 0;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      z-index: 4100;
+    }
+
+    .launchpad-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff5;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .launchpad-dot.active {
+      background: #fff;
+    }
+
+    @media (max-width: 800px) {
+      .launchpad-content {
+        width: 98vw;
+        gap: 24px;
+      }
+    }
+
+    /* ==== 窗口拉伸手柄样式 ==== */
+    .resize-handle {
+      position: absolute;
+      z-index: 10;
+      background: transparent;
+    }
+    .resize-handle-n, .resize-handle-s {
+      left: 0; right: 0; height: 8px; cursor: ns-resize;
+    }
+    .resize-handle-n { top: -4px; }
+    .resize-handle-s { bottom: -4px; }
+    .resize-handle-e, .resize-handle-w {
+      top: 0; bottom: 0; width: 8px; cursor: ew-resize;
+    }
+    .resize-handle-e { right: -4px; }
+    .resize-handle-w { left: -4px; }
+    .resize-handle-nw, .resize-handle-ne, .resize-handle-sw, .resize-handle-se {
+      width: 12px; height: 12px; z-index: 11;
+    }
+    .resize-handle-nw { left: -6px; top: -6px; cursor: nwse-resize; }
+    .resize-handle-ne { right: -6px; top: -6px; cursor: nesw-resize; }
+    .resize-handle-sw { left: -6px; bottom: -6px; cursor: nesw-resize; }
+    .resize-handle-se { right: -6px; bottom: -6px; cursor: nwse-resize; }
+
+    .show-desktop-btn {
+      margin-left: 18px;
+      width: 10px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(200, 210, 255, 0.22);
+      border: none;
+      cursor: pointer;
+      transition: background 0.18s, box-shadow 0.18s;
+      box-shadow: 0 2px 8px rgba(136, 177, 241, 0.08);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .show-desktop-btn::before {
+      content: "";
+      display: block;
+      width: 10px;
+      height: 30px;
+      border-radius: 2px;
+      background: #88b1f1;
+      margin: 0 auto;
+      box-shadow: 0 2px 8px #88b1f122;
+    }
+    .show-desktop-btn:hover {
+      background: #e6f0ff;
+      box-shadow: 0 4px 16px #88b1f133;
+    }
+
+    /* 新增：启动台搜索框样式 */
+    .launchpad-search-bar {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 420px;
+      max-width: 90vw;
+      display: flex;
+      align-items: center;
+      z-index: 4200;
+      background: rgba(30, 32, 38, 0.92);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(136, 177, 241, 0.10);
+      padding: 0 10px 0 18px;
+      height: 48px;
+      border: 2.5px solid transparent;
+      background-clip: padding-box, border-box;
+      background-origin: padding-box, border-box;
+      /* 与STAR+一致的流动渐变色 */
+      background-image:
+        linear-gradient(rgba(30,32,38,0.92), rgba(30,32,38,0.92)),
+        linear-gradient(90deg, #88B1F1, #9AF0FD, #F0C4E5, #F9F871, #F0C4E5, #88B1F1);
+      animation: gradient-move 2.5s linear infinite;
+      background-size: 1000% 1000%;
+      background-position: 0% 50%, 0% 50%;
+    }
+    .launchpad-search-bar:focus-within {
+      box-shadow: 0 6px 32px #88b1f144;
+      border-color: #9AF0FD;
+    }
+    #launchpad-search-input {
+      flex: 1;
+      height: 38px;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #fff;
+      font-size: 18px;
+      font-family: 'Chillax', Arial, sans-serif;
+      font-weight: 800;
+      letter-spacing: 1px;
+      padding: 0 8px;
+    }
+    #launchpad-search-input::placeholder {
+      color: #bcd;
+      opacity: 0.85;
+      font-weight: 400;
+    }
+    #launchpad-search-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0 6px;
+      display: flex;
+      align-items: center;
+      transition: filter 0.18s;
+    }
+    #launchpad-search-btn:hover svg {
+      filter: brightness(1.3) drop-shadow(0 2px 8px #88b1f133);
+    }
+    @media (max-width: 600px) {
+      .launchpad-search-bar {
+        width: 98vw;
+        min-width: 0;
+        padding: 0 6px 0 10px;
+      }
+      #launchpad-search-input {
+        font-size: 16px;
+      }
+    }
+
+    #bilibiliWindow .window-content {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+    }
+    #bilibiliWindow .window-content iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      box-sizing: border-box;
+      background: #fff;
+      border-radius: 0;
+      min-width: 0;
+      min-height: 0;
+      max-width: 100%;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    /* snap分屏按钮样式 */
+    .snap-top-options {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 80px;
+      z-index: 5000;
+      pointer-events: none;
+    }
+    .snap-top-btn {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      pointer-events: auto;
+    }
+    .snap-top-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .snap-top-btn:active {
+      transform: scale(0.95);
+    }
+    .snap-full { top: 10px; left: calc(50% - 30px); }
+    .snap-left { top: 10px; left: calc(10px); }
+    .snap-right { top: 10px; right: calc(10px); }
+    .snap-topleft { top: 10px; left: calc(10px); }
+    .snap-topright { top: 10px; right: calc(10px); }
+    .snap-bottomleft { bottom: 10px; left: calc(10px); }
+    .snap-bottomright { bottom: 10px; right: calc(10px); }
+  </style>
+</head>
+
+<body>
+  <!-- 启动引导视频及跳过按钮 -->
+  <video id="intro-video" src="./VF/kjgm.mp4" autoplay muted playsinline></video>
+  <button id="skip-btn">跳过</button>
+
+  <div id="main-content" style="display:none;">
+    <video id="video-wallpaper" autoplay loop muted playsinline></video>
+    <!-- 桌面快捷方式 -->
+    <div id="desktop" class="desktop-area">
+      <div class="desktop-shortcut" data-app="macWindow">
+        <img src="./PIC/yhmb.svg" alt="窗口" />
+        <span>Mac窗口</span>
+      </div>
+      <div class="desktop-shortcut" data-app="bilibiliWindow" style="top: 180px; left: 32px;">
+        <img src="./PIC/bilibili.svg" alt="哔哩哔哩" />
+        <span>哔哩哔哩</span>
+      </div>
+    </div>
+    <!-- 任务栏 -->
+    <div class="taskbar" id="taskbar">
+      <span class="gradient-text" id="starPlus">STAR+</span>
+      <div class="taskbar-center"></div>
+      <div class="date-info">
+        <div id="date-main"></div>
+        <div id="date-sub"></div>
+      </div>
+      <button id="show-desktop-btn" class="show-desktop-btn" title="显示桌面"></button>
+    </div>
+    <!-- 启动台界面 -->
+    <div id="launchpad" class="launchpad-overlay hidden">
+      <!-- 新增：启动台搜索框 -->
+      <div class="launchpad-search-bar">
+        <input id="launchpad-search-input" type="text" placeholder="搜索应用或网页..." autocomplete="off" />
+        <button id="launchpad-search-btn" title="Bing搜索">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="10" cy="10" r="8" stroke="#88B1F1" stroke-width="2"/>
+            <line x1="16.071" y1="16.485" x2="20" y2="20" stroke="#88B1F1" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="launchpad-content"></div>
+    </div>
+    <!-- Mac风格窗口 -->
+    <div class="window hidden" id="macWindow">
+      <div class="title-bar">
+        <span class="title">Mac风格窗口</span>
+        <span class="mac-btns">
+          <span class="mac-btn red" title="关闭"></span>
+          <span class="mac-btn yellow" title="最大化/还原"></span>
+          <span class="mac-btn green" title="最小化到任务栏"></span>
+        </span>
+      </div>
+      <div class="window-content">
+        <button class="btn" id="helloBtn">你好</button>
+        <div>
+          <span class="counter-value" id="counter">0</span>
+          <button class="btn" id="incBtn">计数器+1</button>
+        </div>
+        <button class="btn" id="alertBtn">弹窗</button>
+      </div>
+      <!-- ==== 拉伸手柄 ==== -->
+      <div class="resize-handle resize-handle-n"></div>
+      <div class="resize-handle resize-handle-e"></div>
+      <div class="resize-handle resize-handle-s"></div>
+      <div class="resize-handle resize-handle-w"></div>
+      <div class="resize-handle resize-handle-nw"></div>
+      <div class="resize-handle resize-handle-ne"></div>
+      <div class="resize-handle resize-handle-sw"></div>
+      <div class="resize-handle resize-handle-se"></div>
+    </div>
+    <!-- 哔哩哔哩窗口 -->
+    <div class="window hidden" id="bilibiliWindow">
+      <div class="title-bar">
+        <span class="title">哔哩哔哩</span>
+        <span class="mac-btns">
+          <span class="mac-btn red" title="关闭"></span>
+          <span class="mac-btn yellow" title="最大化/还原"></span>
+          <span class="mac-btn green" title="最小化到任务栏"></span>
+        </span>
+      </div>
+      <div class="window-content">
+        <iframe src="https://www.bilibili.com/" style="width:100%;height:100%;border:none;"></iframe>
+      </div>
+      <!-- ==== 拉伸手柄 ==== -->
+      <div class="resize-handle resize-handle-n"></div>
+      <div class="resize-handle resize-handle-e"></div>
+      <div class="resize-handle resize-handle-s"></div>
+      <div class="resize-handle resize-handle-w"></div>
+      <div class="resize-handle resize-handle-nw"></div>
+      <div class="resize-handle resize-handle-ne"></div>
+      <div class="resize-handle resize-handle-sw"></div>
+      <div class="resize-handle resize-handle-se"></div>
+    </div>
+  </div>
+
+  <div id="snap-top-options" style="display:none;position:fixed;top:0;left:0;width:100vw;height:80px;z-index:5000;pointer-events:none;">
+    <div class="snap-top-btn snap-full" data-snap="top" title="全屏"></div>
+    <div class="snap-top-btn snap-left" data-snap="left" title="左半屏"></div>
+    <div class="snap-top-btn snap-right" data-snap="right" title="右半屏"></div>
+    <div class="snap-top-btn snap-topleft" data-snap="topleft" title="左上"></div>
+    <div class="snap-top-btn snap-topright" data-snap="topright" title="右上"></div>
+    <div class="snap-top-btn snap-bottomleft" data-snap="bottomleft" title="左下"></div>
+    <div class="snap-top-btn snap-bottomright" data-snap="bottomright" title="右下"></div>
+  </div>
+
+  <script>
+    // 启动引导视频逻辑
+    const introVideo = document.getElementById('intro-video');
+    const mainContent = document.getElementById('main-content');
+    const skipBtn = document.getElementById('skip-btn');
+    if (introVideo && mainContent && skipBtn) {
+      function showMain() {
+        introVideo.style.opacity = 0;
+        skipBtn.style.opacity = 0;
+        setTimeout(() => {
+          introVideo.style.display = 'none';
+          skipBtn.style.display = 'none';
+          mainContent.style.display = '';
+          // 任务栏先隐藏再显示，触发动画
+          const taskbar = document.getElementById('taskbar');
+          if (taskbar) {
+            taskbar.classList.add('taskbar-hidden');
+            setTimeout(() => {
+              taskbar.classList.remove('taskbar-hidden');
+            }, 480);
+          }
+        }, 800);
+      }
+      introVideo.onended = showMain;
+      skipBtn.onclick = showMain;
+      introVideo.onerror = showMain;
+      introVideo.addEventListener('click', showMain);
+      mainContent.style.display = 'none';
+    }
+
+    // 动态壁纸
+    const videoList = [
+      'vf/kvvideo.mp4',
+      'vf/qvniang.mp4',
+      'vf/vertin_reverse_1999.mp4',
+      'vf/xn-qvniang.mp4',
+      'vf/37.mp4',
+      'vf/ATL-01.mp4',
+      'vf/chill.mp4',
+      'vf/furina.mp4',
+      'vf/miku-x.mp4'
+    ];
+    document.getElementById('video-wallpaper').src = videoList[Math.floor(Math.random() * videoList.length)];
+
+    // 日期
+    function getDayOfWeekStr(date) {
+      const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+      return days[date.getDay()];
+    }
+    function getAmPmStr(date) {
+      const h = date.getHours();
+      return h < 12 ? '上午' : '下午';
+    }
+    function updateDateInfo() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      const weekStr = getDayOfWeekStr(now);
+      const ampmStr = getAmPmStr(now);
+      document.getElementById('date-main').textContent = `${y}-${m}-${d}`;
+      document.getElementById('date-sub').textContent = `（${weekStr}）${ampmStr}`;
+    }
+    updateDateInfo();
+    setInterval(updateDateInfo, 600000);
+
+    // snap分屏提示
+    let snapHint = null;
+    function showSnapHint(type) {
+      if (!snapHint) {
+        snapHint = document.createElement('div');
+        snapHint.className = 'snap-hint';
+        document.body.appendChild(snapHint);
+      }
+      snapHint.className = 'snap-hint ' + type;
+    }
+    function hideSnapHint() {
+      if (snapHint) {
+        snapHint.remove();
+        snapHint = null;
+      }
+    }
+    function getSnapType(e) {
+      const margin = 20, w = window.innerWidth, h = window.innerHeight;
+      const nearLeft = e.clientX < margin;
+      const nearRight = e.clientX > w - margin;
+      const nearTop = e.clientY < margin;
+      const nearBottom = e.clientY > h - margin;
+
+      if (nearLeft && nearTop) return "topleft";
+      if (nearRight && nearTop) return "topright";
+      if (nearLeft && nearBottom) return "bottomleft";
+      if (nearRight && nearBottom) return "bottomright";
+      if (nearLeft) return "left";
+      if (nearRight) return "right";
+      if (nearTop) return "top";
+      return "";
+    }
+
+    // 多窗口统一管理
+    const windows = [
+      {
+        id: 'macWindow',
+        title: 'Mac窗口',
+        icon: './PIC/yhmb.svg',
+        el: document.getElementById('macWindow'),
+        taskbarBtn: null,
+        isOpen: false,
+        isMinimized: false,
+        isMaximized: false,
+        lastPosition: null
+      },
+      {
+        id: 'bilibiliWindow',
+        title: '哔哩哔哩',
+        icon: './PIC/bilibili.svg',
+        el: document.getElementById('bilibiliWindow'),
+        taskbarBtn: null,
+        isOpen: false,
+        isMinimized: false,
+        isMaximized: false,
+        lastPosition: null
+      }
+    ];
+
+    let topZIndex = 3000;
+
+    function activateWindow(win) {
+      topZIndex++;
+      win.style.zIndex = topZIndex;
+    }
+
+    // 任务栏窗口区
+    const taskbarCenter = document.querySelector('.taskbar-center');
+    function updateTaskbarWindows() {
+      const taskbar = document.getElementById('taskbar');
+      if (!taskbar) return;
+      // 清空原有窗口按钮
+      let center = taskbar.querySelector('.taskbar-center');
+      if (!center) {
+        center = document.createElement('div');
+        center.className = 'taskbar-center';
+        taskbar.insertBefore(center, taskbar.children[1]);
+      }
+      center.innerHTML = '';
+      windows.forEach(win => {
+        if (win.isOpen) {
+          const btn = document.createElement('div');
+          btn.className = 'taskbar-window';
+          // 仅显示图标
+          const img = document.createElement('img');
+          img.src = win.icon;
+          img.alt = win.title;
+          img.style.width = '24px';
+          img.style.height = '24px';
+          btn.appendChild(img);
+          // 修复：点击任务栏图标，最小化/还原窗口
+          btn.onclick = () => {
+            if (!win.isMinimized && !win.el.classList.contains('hidden')) {
+              // 已激活则最小化
+              win.el.classList.add('hidden');
+              win.isMinimized = true;
+            } else {
+              // 已最小化则还原并置顶
+              win.el.classList.remove('hidden');
+              win.isMinimized = false;
+              activateWindow(win.el);
+            }
+            updateTaskbarWindows();
+            updateTaskbarVisibility();
+          };
+          center.appendChild(btn);
+          win.taskbarBtn = btn;
+        } else {
+          win.taskbarBtn = null;
+        }
+      });
+    }
+
+    // 打开窗口
+    function openWindow(id) {
+      const win = windows.find(w => w.id === id);
+      if (!win) return;
+      win.el.classList.remove('hidden');
+      win.isOpen = true;
+      win.isMinimized = false;
+      activateWindow(win.el);
+      updateTaskbarWindows();
+      updateTaskbarVisibility();
+    }
+
+    // 最小化窗口
+    function minimizeWindow(id) {
+      const win = windows.find(w => w.id === id);
+      if (!win) return;
+      win.el.classList.add('hidden');
+      win.isMinimized = true;
+      updateTaskbarWindows();
+      updateTaskbarVisibility();
+    }
+
+    // 关闭窗口
+    function closeWindow(id) {
+      const win = windows.find(w => w.id === id);
+      if (!win) return;
+      win.el.classList.add('hidden');
+      win.isOpen = false;
+      win.isMinimized = false;
+      updateTaskbarWindows();
+      updateTaskbarVisibility();
+    }
+
+    // 判断任意活动窗口是否接触任务栏
+    function anyWindowTouchTaskbar() {
+      const taskbarHeight = 56;
+      return windows.some(win => {
+        if (!win.isOpen || win.isMinimized || win.el.classList.contains('hidden')) return false;
+        if (win.el.classList.contains('maximized')) return true;
+        const rect = win.el.getBoundingClientRect();
+        return (rect.bottom >= window.innerHeight - taskbarHeight - 1);
+      });
+    }
+
+    // 统一任务栏避让
+    function setTaskbarHidden(hidden) {
+      const taskbar = document.getElementById('taskbar');
+      if (hidden) taskbar.classList.add('taskbar-hidden');
+      else taskbar.classList.remove('taskbar-hidden');
+    }
+    function updateTaskbarVisibility() {
+      if (anyWindowTouchTaskbar()) {
+        setTaskbarHidden(true);
+      } else {
+        setTaskbarHidden(false);
+      }
+    }
+
+    // 桌面快捷方式/启动台点击
+    document.querySelectorAll('.desktop-shortcut').forEach(el => {
+      el.onclick = function () {
+        openWindow(el.getAttribute('data-app'));
+      };
+    });
+
+    // 启动台应用点击
+    function renderLaunchpad(page = 0) {
+      const APPS = [
+        { icon: './PIC/yhmb.svg', name: 'Mac窗口', app: 'macWindow' },
+        { icon: './PIC/bilibili.svg', name: '哔哩哔哩', app: 'bilibiliWindow' }
+      ];
+      const APPS_PER_PAGE = 9;
+      const launchpad = document.getElementById('launchpad');
+      const content = launchpad.querySelector('.launchpad-content');
+      content.innerHTML = '';
+      const start = page * APPS_PER_PAGE;
+      const apps = APPS.slice(start, start + APPS_PER_PAGE);
+      apps.forEach(app => {
+        const el = document.createElement('div');
+        el.className = 'launchpad-app';
+        el.dataset.app = app.app;
+        el.innerHTML = `<img src="${app.icon}" alt="${app.name}" /><span>${app.name}</span>`;
+        el.onclick = function () {
+          openWindow(app.app);
+          closeLaunchpad();
+        };
+        content.appendChild(el);
+      });
+      // 分页圆点
+      let dots = launchpad.querySelector('.launchpad-pagination');
+      if (!dots) {
+        dots = document.createElement('div');
+        dots.className = 'launchpad-pagination';
+        launchpad.appendChild(dots);
+      }
+      dots.innerHTML = '';
+      const pageCount = Math.ceil(APPS.length / APPS_PER_PAGE);
+      for (let i = 0; i < pageCount; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'launchpad-dot' + (i === page ? ' active' : '');
+        dot.onclick = () => { renderLaunchpad(i); };
+        dots.appendChild(dot);
+      }
+    }
+    function openLaunchpad() {
+      renderLaunchpad(0);
+      const launchpad = document.getElementById('launchpad');
+      launchpad.classList.add('active');
+      launchpad.classList.remove('hidden');
+      setTimeout(() => {
+        launchpad.querySelectorAll('.launchpad-app').forEach((el, i) => {
+          el.style.animationDelay = (i * 0.04) + 's';
+          el.style.animationName = 'app-bounce-in';
+        });
+      }, 10);
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLaunchpad() {
+      const launchpad = document.getElementById('launchpad');
+      launchpad.classList.remove('active');
+      setTimeout(() => {
+        launchpad.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 380);
+    }
+    const starPlus = document.getElementById('starPlus');
+    if (starPlus) {
+      starPlus.onclick = openLaunchpad;
+      const launchpad = document.getElementById('launchpad');
+      launchpad.onclick = e => {
+        if (e.target === launchpad) closeLaunchpad();
+      };
+      document.addEventListener('keydown', e => {
+        if (launchpad.classList.contains('active') && e.key === 'Escape') closeLaunchpad();
+      });
+    }
+
+    // 窗口按钮事件绑定
+    windows.forEach(win => {
+      win.el.querySelector('.mac-btn.red').onclick = () => closeWindow(win.id);
+      win.el.querySelector('.mac-btn.green').onclick = () => minimizeWindow(win.id);
+      win.el.querySelector('.mac-btn.yellow').onclick = function () {
+        const isBili = win.id === 'bilibiliWindow';
+        let biliIframe = null;
+        if (isBili) {
+          biliIframe = win.el.querySelector('iframe');
+          if (biliIframe) biliIframe.style.display = 'none';
+        }
+        if (!win.el.classList.contains('maximized')) {
+          win.lastPosition = {
+            left: win.el.offsetLeft,
+            top: win.el.offsetTop,
+            width: win.el.offsetWidth,
+            height: win.el.offsetHeight
+          };
+          win.el.classList.add('maximized');
+          win.el.style.left = "0";
+          win.el.style.top = "0";
+          win.el.style.width = "100vw";
+          win.el.style.height = "100vh";
+          win.isMaximized = true;
+        } else {
+          win.el.classList.remove('maximized');
+          if (win.lastPosition) {
+            win.el.style.left = win.lastPosition.left + 'px';
+            win.el.style.top = win.lastPosition.top + 'px';
+            win.el.style.width = win.lastPosition.width + 'px';
+            win.el.style.height = win.lastPosition.height + 'px';
+          }
+          win.isMaximized = false;
+        }
+        // 延迟恢复iframe显示，等待窗口动画结束
+        if (isBili && biliIframe) {
+          setTimeout(() => {
+            biliIframe.style.display = 'block';
+          }, 220); // 动画时间略小于CSS的0.2s
+        }
+        updateTaskbarVisibility();
+      };
+    });
+
+    // 拖拽、分屏、拉伸、最大化等行为
+    function initWindowBehavior(winObj) {
+      const win = winObj.el;
+      const titleBar = win.querySelector('.title-bar');
+      let isDragging = false, offsetX = 0, offsetY = 0;
+      let prevTransition = '';
+
+      // 拖拽
+      titleBar.addEventListener('mousedown', function (e) {
+        if (e.target.classList.contains('mac-btn')) return;
+        let wasMaximized = false;
+        let offsetX = 0, offsetY = 0;
+        if (win.classList.contains('maximized')) {
+          // 记录鼠标在窗口中的相对位置（按比例）
+          const percentX = e.clientX / window.innerWidth;
+          const percentY = e.clientY / window.innerHeight;
+          // 还原窗口
+          win.classList.remove('maximized');
+          // 还原到上次最大化前的位置和尺寸
+          let last = winObj.lastPosition;
+          if (!last) {
+            last = {
+              left: window.innerWidth / 2 - win.offsetWidth / 2,
+              top: window.innerHeight / 2 - win.offsetHeight / 2,
+              width: 400,
+              height: 340
+            };
+          }
+          win.style.width = last.width + 'px';
+          win.style.height = last.height + 'px';
+          // 让窗口左上角跟随鼠标
+          win.style.left = (e.clientX - percentX * last.width) + 'px';
+          win.style.top = (e.clientY - percentY * last.height) + 'px';
+          winObj.isMaximized = false;
+          wasMaximized = true;
+          offsetX = percentX * last.width;
+          offsetY = percentY * last.height;
+        } else {
+          offsetX = e.clientX - win.offsetLeft;
+          offsetY = e.clientY - win.offsetTop;
+        }
+        isDragging = true;
+        titleBar.style.cursor = "grabbing";
+        activateWindow(win);
+
+        prevTransition = win.style.transition;
+        win.style.transition = 'none';
+
+        function onMouseMove(e) {
+          if (!isDragging) return;
+          win.style.left = (e.clientX - offsetX) + 'px';
+          win.style.top = (e.clientY - offsetY) + 'px';
+          // 分屏吸附提示
+          const snapType = getSnapType(e);
+          if (snapType) showSnapHint(snapType);
+          else hideSnapHint();
+          updateTaskbarVisibility();
+        }
+        function onMouseUp(e) {
+          if (!isDragging) return;
+          const snapType = getSnapType(e);
+          win.classList.remove('maximized');
+          switch (snapType) {
+            case "top":
+              win.classList.add('maximized');
+              win.style.left = '0';
+              win.style.top = '0';
+              win.style.width = '100vw';
+              win.style.height = '100vh';
+              winObj.isMaximized = true;
+              break;
+            case "topleft":
+              win.style.left = "0";
+              win.style.top = "0";
+              win.style.width = "50vw";
+              win.style.height = "50vh";
+              break;
+            case "topright":
+              win.style.left = (window.innerWidth / 2) + "px";
+              win.style.top = "0";
+              win.style.width = "50vw";
+              win.style.height = "50vh";
+              break;
+            case "bottomleft":
+              win.style.left = "0";
+              win.style.top = (window.innerHeight / 2) + "px";
+              win.style.width = "50vw";
+              win.style.height = "50vh";
+              break;
+            case "bottomright":
+              win.style.left = (window.innerWidth / 2) + "px";
+              win.style.top = (window.innerHeight / 2) + "px";
+              win.style.width = "50vw";
+              win.style.height = "50vh";
+              break;
+            case "left":
+              win.style.left = '0';
+              win.style.top = '0';
+              win.style.width = '50vw';
+              win.style.height = '100vh';
+              break;
+            case "right":
+              win.style.left = (window.innerWidth / 2) + 'px';
+              win.style.top = '0';
+              win.style.width = '50vw';
+              win.style.height = '100vh';
+              break;
+          }
+          hideSnapHint();
+          isDragging = false;
+          titleBar.style.cursor = "grab";
+          win.style.transition = prevTransition;
+          updateTaskbarVisibility();
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+        }
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      });
+
+      // 拉伸（可参考你原来的逻辑，略）
+    }
+
+    function addResizeHandles(winEl) {
+      const directions = ['n','e','s','w','nw','ne','sw','se'];
+      directions.forEach(dir => {
+        const handle = document.createElement('div');
+        handle.className = `resize-handle resize-handle-${dir}`;
+        winEl.appendChild(handle);
+        handle.addEventListener('mousedown', function(e) {
+          e.stopPropagation();
+          startResizing(winEl, dir, e);
+        });
+      });
+    }
+
+    function startResizing(winEl, dir, e) {
+      e.preventDefault();
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startRect = winEl.getBoundingClientRect();
+      const minWidth = 320, minHeight = 180;
+      let snapType = "";
+
+      function onMove(ev) {
+        let dx = ev.clientX - startX;
+        let dy = ev.clientY - startY;
+        let newLeft = startRect.left, newTop = startRect.top;
+        let newWidth = startRect.width, newHeight = startRect.height;
+        if (dir.includes('e')) newWidth = Math.max(minWidth, startRect.width + dx);
+        if (dir.includes('s')) newHeight = Math.max(minHeight, startRect.height + dy);
+        if (dir.includes('w')) {
+          newWidth = Math.max(minWidth, startRect.width - dx);
+          newLeft = startRect.left + dx;
+        }
+        if (dir.includes('n')) {
+          newHeight = Math.max(minHeight, startRect.height - dy);
+          newTop = startRect.top + dy;
+        }
+        // 判断是否靠近屏幕边缘，显示分屏吸附提示
+        snapType = getSnapType(ev);
+        if (snapType) {
+          showSnapHint(snapType);
+        } else {
+          hideSnapHint();
+          winEl.style.left = newLeft + 'px';
+          winEl.style.top = newTop + 'px';
+          winEl.style.width = newWidth + 'px';
+          winEl.style.height = newHeight + 'px';
+        }
+        updateTaskbarVisibility();
+      }
+
+      function onUp(ev) {
+        // 如果松开时在分屏吸附区，自动吸附
+        if (snapType) {
+          winEl.classList.remove('maximized');
+          switch (snapType) {
+            case "top":
+              winEl.classList.add('maximized');
+              winEl.style.left = '0';
+              winEl.style.top = '0';
+              winEl.style.width = '100vw';
+              winEl.style.height = '100vh';
+              break;
+            case "topleft":
+              winEl.style.left = "0";
+              winEl.style.height = "50vh";
+              break;
+            case "bottomleft":
+              winEl.style.left = "0";
+              winEl.style.top = (window.innerHeight / 2) + "px";
+              winEl.style.width = "50vw";
+              winEl.style.height = "50vh";
+              break;
+            case "bottomright":
+              winEl.style.left = (window.innerWidth / 2) + "px";
+              winEl.style.top = (window.innerHeight / 2) + "px";
+              winEl.style.width = "50vw";
+              winEl.style.height = "50vh";
+              break;
+            case "left":
+              winEl.style.left = '0';
+              winEl.style.top = '0';
+              winEl.style.width = '50vw';
+              winEl.style.height = '100vh';
+              break;
+            case "right":
+              winEl.style.left = (window.innerWidth / 2) + 'px';
+              winEl.style.top = '0';
+              winEl.style.width = '50vw';
+              winEl.style.height = '100vh';
+              break;
+          }
+        }
+        hideSnapHint();
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        updateTaskbarVisibility();
+      }
+
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    }
+
+    // 初始化所有窗口行为
+    windows.forEach(win => {
+      initWindowBehavior(win);
+      addResizeHandles(win.el);
+    });
+    updateTaskbarWindows();
+    updateTaskbarVisibility();
+
+    // Mac窗口演示按钮
+    let count = 0;
+    document.getElementById('helloBtn').onclick = function () {
+      alert('你好，欢迎使用可交互窗口！');
+    };
+    document.getElementById('incBtn').onclick = function () {
+      count++;
+      document.getElementById('counter').textContent = count;
+    };
+    document.getElementById('alertBtn').onclick = function () {
+      alert('这是一个弹窗按钮的演示。');
+    };
+
+    document.getElementById('show-desktop-btn').onclick = function () {
+      windows.forEach(win => {
+        if (win.isOpen && !win.isMinimized) {
+          win.el.classList.add('hidden');
+          win.isMinimized = true;
+        }
+      });
+      updateTaskbarWindows();
+      updateTaskbarVisibility();
+    };
+
+    // 启动台搜索逻辑
+    (function() {
+      const searchInput = document.getElementById('launchpad-search-input');
+      const searchBtn = document.getElementById('launchpad-search-btn');
+      const launchpad = document.getElementById('launchpad');
+      const content = launchpad.querySelector('.launchpad-content');
+      // 应用列表（与renderLaunchpad一致）
+      const APPS = [
+        { icon: './PIC/yhmb.svg', name: 'Mac窗口', app: 'macWindow' },
+        { icon: './PIC/bilibili.svg', name: '哔哩哔哩', app: 'bilibiliWindow' }
+      ];
+
+      function searchApps(keyword) {
+        const kw = keyword.trim().toLowerCase();
+        if (!kw) return APPS;
+        return APPS.filter(app =>
+          app.name.toLowerCase().includes(kw) ||
+          app.app.toLowerCase().includes(kw)
+        );
+      }
+
+      function renderSearchResult(keyword) {
+        const apps = searchApps(keyword);
+        content.innerHTML = '';
+        if (apps.length > 0) {
+          apps.forEach(app => {
+            const el = document.createElement('div');
+            el.className = 'launchpad-app';
+            el.dataset.app = app.app;
+            el.innerHTML = `<img src="${app.icon}" alt="${app.name}" /><span>${app.name}</span>`;
+            el.onclick = function () {
+              openWindow(app.app);
+              closeLaunchpad();
+            };
+            content.appendChild(el);
+          });
+        } else {
+          // 无本地应用，显示网页搜索建议
+          const tip = document.createElement('div');
+          tip.style.cssText = "color:#bcd;text-align:center;font-size:17px;margin:38px auto 0;";
+          tip.innerHTML = `未找到本地应用，可直接网页搜索：<br><span style="color:#88B1F1;">${keyword}</span>`;
+          content.appendChild(tip);
+        }
+      }
+
+      // 输入时本地应用搜索
+      searchInput.addEventListener('input', function() {
+        renderSearchResult(this.value);
+      });
+
+      // 回车或点击按钮网页搜索
+      function doWebSearch() {
+        const kw = searchInput.value.trim();
+        if (kw) {
+          window.open('https://www.bing.com/search?q=' + encodeURIComponent(kw), '_blank');
+        }
+      }
+      searchBtn.onclick = doWebSearch;
+      searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          // 若有本地应用则优先打开，否则网页搜索
+          const apps = searchApps(this.value);
+          if (apps.length > 0) {
+            openWindow(apps[0].app);
+            closeLaunchpad();
+          } else {
+            doWebSearch();
+          }
+        }
+      });
+
+      // 启动台每次打开时清空搜索
+      const origOpenLaunchpad = openLaunchpad;
+      window.openLaunchpad = function() {
+        searchInput.value = '';
+        renderLaunchpad(0);
+        content.scrollTop = 0;
+        origOpenLaunchpad();
+        setTimeout(() => searchInput.focus(), 120);
+      };
+    })();
+  </script>
+</body>
+
+</html>

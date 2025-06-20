@@ -1,0 +1,59 @@
+.backstoryMobile{
+    /* background: forestgreen; */
+    padding: 8vh 4vw;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+.backstoryMobile-top{
+    height: 28rem;
+    /* background: goldenrod; */
+    position: relative;
+    padding: 0 3vw;
+    background-size: 100%;
+    margin-bottom: 4rem;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+}
+.backstoryMobile-top-img{
+    height: 100%;
+    object-fit: cover;
+}
+.backstoryMobile-top-pre{
+    position: absolute;
+    left:0;
+    width: 3.75rem;    
+    z-index: 100;
+    top:45%;
+    transform: translateZ(1px);
+}
+.backstoryMobile-top-next{
+    position: absolute;
+    right:0;
+    width: 3.75rem;    
+    z-index: 100;
+    top:45%;
+    transform: translateZ(1px)
+}
+.backstoryMobile-top-title{
+    position: absolute;
+    z-index: 100;
+    width: 100%;
+    left: 0;
+    top: 28rem;
+    
+    object-fit: fill;
+}
+.backstoryMobile-mid{
+    height: 35%;
+    padding: 0 3vw;
+    /* background: firebrick; */
+    font-size:0.85rem;
+    font-weight: 300;  
+    color: #BBA893;
+    font-family:"cn" ;
+    padding-top: 0;
+    box-sizing: border-box;
+}

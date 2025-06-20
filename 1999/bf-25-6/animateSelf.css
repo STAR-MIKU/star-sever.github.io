@@ -1,0 +1,120 @@
+@keyframes selfFadeInRight {
+    0%{
+        opacity: 0;
+        transform: translateX(3rem);
+    }
+    100%{
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+@keyframes fadeInRight {
+    0%{
+        opacity: 0;
+        transform: translateX(2rem);
+    }
+    100%{
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+@keyframes selfFadeOutLeft {
+    0%{
+        opacity: 1;
+        transform: translateX(0);
+    }
+    100%{
+        opacity: 0;
+        transform: translateX(-3rem);
+    }
+}
+@keyframes selfFadeOut{
+    0%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+    }
+}
+@keyframes selfFadeInUp {
+    0%{
+        opacity: 0;
+        transform: translateY(2rem);
+    }
+    100%{
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes selfFadeOutBottom {
+    0%{
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100%{
+        opacity: 0;
+        transform: translateY(2rem);
+    }
+}
+@keyframes changeRotate{       
+    from {
+    transform: rotate(0deg);
+    }
+    to {
+    transform: rotate(360deg);
+    }
+}
+@keyframes selfFadeIn{       
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fadeInUpSelf{
+    animation-name: selfFadeInUp;
+    animation-duration:0.5s;
+}
+.fadeOutBottomSelf{
+    animation-name: selfFadeOutBottom;
+    animation-duration:0.5s;
+}
+.characterFadeInRight{
+    animation-name: selfFadeInRight ;
+    animation-duration:0.5s;
+}
+.characterFadeOutLeft{
+    animation-name: selfFadeOutLeft ;
+    animation-duration:0.5s;
+}
+.characterFadeOut{
+    animation-name: selfFadeOut;
+    animation-duration:0.8s;
+    animation-timing-function: ease;
+    
+}
+.characterFadeOut{
+    animation-name: selfFadeOut;
+    animation-duration:0.8s;
+    animation-timing-function: linear;
+    
+}
+.characterFadeIn{
+    animation-name: selfFadeIn;
+    animation-duration:0.9s;
+    animation-timing-function: linear;
+    
+}
+.music-rotate{
+    animation:changeRotate infinite 60s linear;
+}
+.mobileFadeIn{
+    animation-name: selfFadeIn ;
+    animation-duration:0.5s;
+}
+.mobileFadeInDelay{
+    animation-name: selfFadeIn ;
+    animation-duration:0.5s;
+}

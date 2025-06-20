@@ -1,0 +1,9 @@
+<img id="wallpaper" src="">
+<script>
+fetch('/1999/wallpaper/images.json')
+  .then(res => res.json())
+  .then(list => {
+    const img = list[Math.floor(Math.random() * list.length)];
+    document.getElementById('wallpaper').src = '/1999/wallpaper/' + img;
+  });
+</script>

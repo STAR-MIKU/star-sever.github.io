@@ -1,0 +1,110 @@
+.gallery{
+    display: flex;
+    height: 100%;
+    box-sizing: border-box;
+    padding-top: 8vh;
+    /* background: green; */
+
+    overflow: hidden;
+}
+.gallery-top{
+    height: 100%;
+    width: 100%;
+    /* background: firebrick; */
+    position: relative;
+    display: flex;
+}
+.gallery-top-img{
+    width: 100%;
+}
+
+.gallery-top-1{
+    position: absolute;
+    top: 4vh;
+    left: 15rem;
+    width: 22rem;
+}
+.gallery-top-1:hover .gallery-top-1-text{
+    transform: translateX(50px);
+    
+}
+.gallery-top-2:hover .gallery-top-2-text{
+    transform: translateX(-50px);
+    
+}
+.gallery-top-3:hover .gallery-top-3-text{
+    transform: translateX(-50px);
+    
+}
+.gallery-top-1-icon{
+    position: absolute;
+    top:50%;
+    right: -2rem;
+    transform: scale(0.8);
+}
+.gallery-top-1-text{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 68%;
+    transition: transform 0.5s;
+}
+.gallery-top-2{
+    position: absolute;
+    top:6vh;
+    right: 15rem;
+    width: 28rem;
+}
+.gallery-top-2-icon{
+    position: absolute;
+    top:50%;
+    right: -4rem;
+    transform: scale(0.8);
+}
+.gallery-top-2-text{
+    position: absolute;
+    bottom: -4vh;
+    left: -4rem;
+    width: 80%;
+    transition: transform 0.5s;
+}
+.gallery-top-3{
+    position: absolute;
+    bottom: 14vh;
+    left:45rem;
+    width: 26rem;   
+}
+.gallery-top-3-icon{
+    position: absolute;
+    top:2rem;
+    right: -3rem;
+    width: 70%;
+}
+.gallery-top-3-text{
+    position: absolute;
+    bottom: 0;
+    left: -8rem;
+    width: 65%;
+    transition: transform 0.5s;
+}
+.gallery-top-4{
+    position: absolute;
+    bottom: 30vh;
+    left: 14vw;
+    width: 7rem;
+}
+.gallery-top-5{
+    position: absolute;
+    top: 20vh;
+    left: 45vw;
+    width: 10rem;
+}
+.gallery-top-6{
+   position: absolute;
+    top: 50vh;
+    right: 14vw;
+    width: 10rem; 
+}
+.gallery-top-img-icon{
+    width: 100%;
+}

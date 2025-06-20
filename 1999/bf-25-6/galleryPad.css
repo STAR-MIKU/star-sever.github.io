@@ -1,0 +1,106 @@
+.galleryMobile{
+    /* background: orangered; */
+    padding: 8vh 4vw;
+    box-sizing: border-box;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+.galleryMobile-1{
+    height: 28vh;
+    width: 14.375rem;
+    padding: 0;
+    position: absolute;
+    left:10%;
+}
+.galleryMobile-1-img{
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+}
+.galleryMobile-1-gif{
+    position: absolute;
+    width: 20vw;
+    z-index: 2;
+    bottom: 10%;
+    right:-40%;
+}
+.galleryMobile-1-text{
+    position: absolute;
+    bottom:0 ;
+    left: 0;
+    width: 80%;
+    z-index: 3;
+}
+.galleryMobile-2{
+    height: 20vh;
+    width: 15.625rem;
+    padding: 0;
+    position: absolute;
+    top: 40vh;
+    right: 20vw;
+}
+.galleryMobile-2-img{
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+}
+.galleryMobile-2-gif{
+    position: absolute;
+    width: 7rem;
+    z-index: 2;
+    bottom: .75rem;
+    right: -2%;
+}
+.galleryMobile-2-text{
+    position: absolute;
+    bottom:-15% ;
+    left: -21%;
+    width: 98%;
+    z-index: 3;
+}
+.galleryMobile-3{
+    height: 22vh;
+    width: 12.9375rem;
+    padding: 0;
+    position: absolute;
+    bottom: 5vh;
+    left: 5vw;
+}
+.galleryMobile-3-img{
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+}
+.galleryMobile-3-gif{
+    position: absolute;
+    height: 80%;
+    z-index: 2;
+    bottom: 10%;
+    right: -16vw;
+}
+.galleryMobile-3-text{
+    position: absolute;
+    bottom:-10% ;
+    left: 0;
+    width: 80%;
+    z-index: 3;
+}
+.galleryMobile-4{
+    position: absolute;
+    right: 0;
+    top:20%;
+    transform: scale(0.5);
+}
+.galleryMobile-5{
+    position: absolute;
+    left: -10%;
+    top:50%;
+    transform: scale(0.5);
+}
+.galleryMobile-6{
+    position: absolute;
+    right: -15%;
+    bottom:10%;
+    transform: scale(0.5);
+}

@@ -1,0 +1,207 @@
+.backstory{
+    display: flex;
+    box-sizing: border-box;
+    padding-top: 10vh;
+}
+.backstory-left{
+    box-sizing: border-box;
+    width: 57%;
+    height: 85%;
+    /* padding-top: 5vh; */
+    padding-left:7vw ;
+    overflow: hidden;
+    border-top-right-radius: 100px;
+    margin-top: 2vh;
+}
+.backstory-left-list{
+    position: relative;
+    height: 100%;
+    
+    
+}
+ .backstory-left-list-big{
+    animation-name:bigIcon;
+    animation-duration:1.5s;
+    animation-iteration-count: infinite;
+}
+@keyframes bigIcon{
+    0%{
+        filter: brightness(100%);
+    }
+    50%{
+        filter: brightness(50%);
+    }
+    100%{
+        filter: brightness(100%);
+    }
+}
+.backstory-left-list-big{
+    position: absolute;
+    right: 1vw;
+    bottom: 2vh;
+}
+.backstory-right{
+    width: 43%;
+    height: 100%;
+    /* background: rebeccapurple; */
+    padding-left: 1vw;
+    padding-top: 5vh;
+    box-sizing: border-box;
+}
+.backstory-right-title{
+    height: 13rem;
+    /* background: yellow; */
+    display: flex;
+    align-items: center;
+    justify-self: start;
+}
+.backstory-right-title>img{
+    width: 40.3125rem;
+}
+.backstory-right-str{
+    height: 20.8125rem;
+    /* background: wheat; */
+    width: 70%;
+    color: #BBA893;
+    font-weight: 300;
+    font-size: 1rem;
+    text-align: left;
+    padding-left: 3vw;
+    box-sizing: border-box;
+    padding-top: 5vh;
+    font-family:"cn" ;
+    line-height: 1.875rem;
+}
+.backstory-right-page{
+    height: 5.1875rem;
+    /* background: #fff; */
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding-left: 2vw;
+    width: 80%;
+}
+.backstory-right-page-img{
+    margin-left: 0.625rem;
+    margin-right: 0.625rem;
+    width: 1rem;
+    height: 1.5rem;
+}
+.backstory-right-page-img1{
+   
+}
+.backstory-right-page-img1:hover{
+    content: url("../img/backstory/1_1.png");
+}
+.backstory-right-page-img2{
+    
+}
+.backstory-right-page-img2:hover{
+    content: url("../img/backstory/2_1.png");
+}
+.backstory-right-page-img3{
+    
+}
+.backstory-right-page-img3:hover{
+    content: url("../img/backstory/3_1.png");
+}
+.backstory-right-page-img4{
+    
+}
+.backstory-right-page-img4:hover{
+    content: url("../img/backstory/4_1.png");
+}
+.backstory-right-page-img5{
+    
+}
+.backstory-right-page-img5:hover{
+    content: url("../img/backstory/5_1.png");
+}
+.backstory-right-page-img6{
+    
+}
+.backstory-right-page-img6:hover{
+    content: url("../img/backstory/6_1.png");
+}
+.backstory-right-page-img7{
+    
+}
+.backstory-right-page-img7:hover{
+    content: url("../img/backstory/7_1.png");
+}
+.backstory-right-page-img8{
+   
+}
+.backstory-right-page-img8:hover{
+    content: url("../img/backstory/8_1.png");
+}
+.backstory-border{
+   height: 36rem;
+   
+}
+.backstory-img{
+   width: 100%;
+   
+}
+
+@keyframes bigImg{
+    0%{
+        transform: scale(1.0);
+    }
+    50%{
+        transform: scale(1.01);
+    }
+    100%{
+        transform: scale(1.0);
+    }
+}
+.slide-inner {
+	  position: absolute;
+	  width: 100%;  
+	  left: 0;
+	  background-size: cover;
+	  background-position: center;
+	  display: -webkit-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+	  color:#fff;
+	}
+  @keyframes moveLeft{
+    0%{
+        transform: translateX(0);
+    }
+    50%{
+        transform: translateX(-5px);
+    }
+    100%{
+        transform: translateX(0);
+    }
+} 
+@keyframes moveRight{
+   0%{
+        transform: translateX(0);
+    }
+    50%{
+        transform: translateX(5px);
+    }
+    100%{
+        transform: translateX(0);
+    }
+}
+#backstoryPre:hover{
+    animation-name:moveLeft;
+    animation-duration:0.8s; 
+}
+#backstoryNext:hover{
+    animation-name:moveRight;
+    animation-duration:0.8s; 
+} 

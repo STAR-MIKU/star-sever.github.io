@@ -1,0 +1,38 @@
+.statement{
+    height: 20vh;
+    position: absolute;
+    z-index: 1;
+    background: rgba(0, 0, 0, 1);
+    width: 100vw;
+    bottom: -20vh;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    border-top: 1px solid #B55829;
+}
+
+.statement-word{
+    color: #8C8D8C;
+    font-weight: 400;
+    font-size: 0.75rem;
+    margin-top:2vh;
+    line-height: 1.25rem;
+}
+.statement img{
+    margin-right: 4.375rem;
+    margin-top:5vh;
+}
+.statement-word-self{
+    display:flex ;
+}
+.statement-word-self>div>a{
+    cursor: none;
+    line-height: 35px;
+    color: #FFFFFF;
+    margin-right: 40px;
+    text-decoration: none;
+}
+.statement-href{
+    text-decoration: none;
+    color: #8C8D8C;
+}

@@ -1,0 +1,119 @@
+.videomaskMobile{
+    position: absolute;
+    /* background: url("../img/BGM.png") no-repeat center; */
+    /* background: green; */
+    width: 100%;
+    height: 100%;
+    top:0;
+    left: 0;
+    z-index: 10;
+    display: block;
+    box-sizing: border-box;
+    padding:0 7vw;
+    padding-top: 8vh;
+}
+.videomaskMobile-top{
+    /* background: darkcyan; */
+    position: relative;
+}
+.videomaskMobile-top-play{
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%) scale(0.5);
+}
+.videomaskMobile-top-img{
+    width: 85vw;
+    height: 85vw;
+    border-top-right-radius: 40px;
+    box-shadow: 2px 2px 10px rgba(10, 10, 10,.8);
+}
+.videomaskMobile-mid{
+    position: absolute;
+    width: 21.875rem;
+    height: 6.9375rem;
+    /* background: darkblue; */
+    right: -3em;
+    bottom: -4rem;
+}
+.videomaskMobile-mid-list{
+    height: 100%;
+    /* background: darkgoldenrod; */
+    position: relative;
+}
+.videomaskMobile-mid-list-img{
+    width: 100%;
+    border-top-left-radius: 30px;
+}
+.videomaskMobile-mid-list-img-active{
+    border: 1px solid rgba(181, 88, 41, 1);
+}
+.videomaskSwiper{
+    width: 100%;
+}
+.videomaskMobile-mid-list-bottom{
+    display: flex;
+    align-items: flex-end;
+}
+.videomaskMobile-mid-list-bottom-str{
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    white-space:nowrap;
+    color:rgba(233, 220, 205, 1);
+}
+.videomaskMobile-mid-list-hide{
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.5);
+    border-top-left-radius: 30px;
+}
+.videomaskMobile-center{
+    height: 10%;
+    margin-top: 5rem;
+    /* background: fuchsia; */
+    font-size: 2rem;
+    font-family:SourceHanSerifCN;
+    color: #E9DCCD;
+    font-weight: 500;
+    background: url("../img/video/str.png") no-repeat left;
+    background-size:50%;
+    display: flex;
+    align-items: center;
+}
+.videomaskMobile-center>img{
+    height: 100%;
+}
+.videomaskMobile-bottom{
+    width: 100%;
+    word-break: break-all;
+    color:rgba(187, 168, 147, 1);
+    font-size: 0.8rem;
+}
+.videomaskDetail-video-mobile{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    top:0;
+    left: 0;
+    z-index: 200;
+    background: rgba(0,0,0,.8);
+}
+.videomaskDetail-video-mobile-player{
+    position: absolute;
+    top:30%;
+    left:0;
+    width: 100%;
+}
+.videomaskMobile-mid-list-bottom-icon{
+    width: 15%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+}
+.videomaskMobile-mid-list-bottom-icon>img{
+    width: 100%;
+}

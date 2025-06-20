@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHOOTING STAR | 一言API</title>
+</head>
+<body>
+    <p id="displayText"></p>
+    <script>
+        setTimeout(function () {
+            fetch('https://v1.hitokoto.cn/?c=f&encode=text')
+          .then(response => response.text())
+          .then(data => {
+                document.getElementById('displayText').textContent = data;
+            })
+          .catch(error => {
+                console.error('获取内容出错:', error);
+            });
+        }, 500); // 延迟500毫秒，可根据实际情况调整
+    </script>
+</body>
+</html>

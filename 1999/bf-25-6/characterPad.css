@@ -1,0 +1,101 @@
+.characterMobile{
+    /* background: forestgreen; */
+    padding: 2vh 4vw;
+    box-sizing: border-box;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+.characterMobile-top{
+    height: 100%;
+    background: url("../img/role/1bg.png") no-repeat center;
+    background-size: 120%;
+    background-position: top;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+.characterMobile-top>img{
+    position: absolute;
+}
+.characterMobile-top-quan{
+    width: 120%;
+}
+.characterMobile-top-con{
+    position: absolute;
+    width: 50%;
+    height: 40%;
+    /* background: firebrick; */
+    top:45%;
+    left:0;
+}
+.characterMobile-top-con-title{
+    height: 44%;
+    /* background: goldenrod; */
+}
+.characterMobile-top-con-title>img{
+    height: 100%;
+}
+.characterMobile-top-con-str{
+    /* height: 30%; */
+    width: 100vw;
+    font-size: 0.8rem;    
+    font-weight: 300;
+    color: #BBA893;
+    font-family:"cn" ;
+    text-shadow: 0 0 10px #000000;
+}
+.characterMobile-top-con-icon{
+    height: 30%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between; 
+    
+}
+.character-right-right-button-left-mobile{
+    display: flex;
+    width: 40%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+.character-right-right-button-left-mobile img{
+    transform: scale(0.8);
+}
+.character-right-right-button-right-mobile{
+    display: flex;
+    width: 50%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+.character-right-right-button-right-mobile img{
+    transform: scale(0.8);
+}
+.characterMobile-top-role{
+    width: 100%;
+    object-fit: cover;
+    bottom: 0;
+}
+.characterMobile-mid{
+    height: 10%;
+    /* background: rosybrown; */
+    position: absolute;
+    bottom: 15%;
+    left: 0;
+    width: 100%;
+}
+.characterMobile-mid-list{
+    display: flex;
+    align-items: center;
+}
+.characterMobile-mid-list img{
+    /* transform: scale(0.6); */
+}
+.characterMobile-mid-list:nth-child(2n){
+    transform: translateY(20px);
+}
+#characterM{
+    overflow: visible!important;
+}

@@ -1,0 +1,30 @@
+var maskType=false;
+window.onload=function(){
+    //console.log(window.location)
+    let hash=window.location.hash;
+    if(hash=="#0"){
+        //咨询页 
+        changeBanner(0);
+        changeBannerMobile(0);
+    }
+   if(hash=="#1"){
+        //咨询页 
+        changeBanner(1);
+        changeBannerMobile(1);
+    }
+     if(hash=="#2"){
+        //咨询页 
+        changeBanner(2);
+        changeBannerMobile(2);
+    }
+     if(hash=="#3"){
+        //咨询页 
+        changeBanner(3);
+        changeBannerMobile(3);
+    }
+     if(hash=="#4"){
+        //咨询页 
+        changeBanner(4);
+        changeBannerMobile(4);
+    }
+}

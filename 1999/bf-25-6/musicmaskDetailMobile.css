@@ -1,0 +1,124 @@
+.musicmaskDetailMobile{
+    position: absolute;
+    background: url("../img/BGM.png") no-repeat center;
+    background-size: 100%;
+    /* background: green; */
+    width: 100%;
+    height: 100%;
+    left: 0;
+    z-index: 20;
+    display: none;
+    box-sizing: border-box;
+    padding:0 7vw;
+    padding-top:8vh;
+}
+.musicmaskDetail-top-mobile{
+    width: 15vw;
+    margin-left: 20px;
+    display: none;
+}
+.musicmaskDetail-con-top-mobile{
+    height: 49%;
+    /* background: darkcyan; */
+    width: 100%;
+    overflow: hidden;
+}
+.musicmaskDetail-con-top-mobile>img{
+    /* width: 75%; */
+}
+.musicmaskDetail-con-top-img-mobile{
+    position: absolute;
+    z-index: 10;
+    width: 72%;
+    left: 12vw;
+    top:5rem;
+}
+.musicmaskDetail-con-top-record-mobile{
+    position: absolute;
+    right: 6vw;
+    z-index: 1;
+    width: 60%;
+    top:6.5rem;
+}
+.musicmaskDetail-con-mid-mobile{
+    height: 10%;
+    /* background: darkblue; */
+    overflow-y: auto;
+    word-break: break-all;
+}
+.musicmaskDetail-con-right-top-mobile{
+    text-align: center;
+    color: #E9DCCD;
+    font-size: 2rem;
+    font-weight: 500;
+    background: url("../img/video/str.png") no-repeat center;
+    background-size:50%;
+    margin-bottom: 1vh;
+}
+.musicmaskDetail-con-right-mid-mobile{
+    font-size: 0.8rem;
+    color: #B55829;
+    text-align: center;
+    font-family: Den;
+    margin-bottom: 1vh;
+}
+.musicmaskDetail-con-right-bottom-mobile{
+    font-size: 0.8rem;
+    font-weight: 300;    
+    color: #BBA893;
+    text-align: center;
+}
+.musicmaskDetail-con-bottom-mobile{
+    height:10%;
+    /* background: darkgoldenrod; */
+    display: flex;
+    align-items: center;
+   justify-content: space-between;
+}
+.musicmaskDetail-con-right-bottom-bottom-time-mobile{
+    text-align: center;
+    padding-top: .625rem;
+    font-size: 0.8rem;
+    color: #BBA893;
+}
+.musicmask-player-con-mid-title-progress{
+    width: 80%;
+    height: 5px;
+    background: rgba(56, 56, 56, 1);
+    position: relative;
+    margin-top: 10px;
+}
+.musicmask-player-con-mid-title-progress-now{
+    position: absolute;
+    width: 0;
+    height: 5px;
+    background: rgba(181, 88, 41, 1);
+    display: flex;
+}
+.musicmask-player-con-mid-title-progress-now>img{
+    position: absolute;
+    right: -5px;
+    top:-5px;
+}
+.musicmaskDetail-player-mobile{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 12vw;
+    height: 10vh;
+}
+
+.musicmaskDetail-player-play-mobile{
+    /* transform: scale(0.7); */
+}
+.musicmaskDetail-player-stop-mobile{
+    /* transform: scale(0.9); */
+}
+.musicmaskDetail-player-pre-mobile{
+    height: 40%;
+}
+.musicmaskDetail-player-next-mobile{
+    height: 40%;
+}

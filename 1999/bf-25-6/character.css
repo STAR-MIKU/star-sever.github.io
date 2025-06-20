@@ -1,0 +1,150 @@
+.character{
+    display: flex;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+.character-left{
+    width: 25%;
+    height: 100%;
+    /* background: forestgreen; */
+    box-sizing: border-box;
+    padding: 14vh 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: 50;
+    left:0;
+}
+.character-left img{
+    height: 8.8125rem;
+    object-fit: cover;
+}
+.character-left-role-r{
+    position: relative;
+    left: 3.125rem;
+    transition: all 0.5s;
+}
+.character-left-role-r:hover{
+    transform: translateX(5px);
+}
+.character-left-role-l{
+    position: relative;
+    left: -3.125rem;
+    transition: all 0.5s;
+}
+.character-left-role-l:hover{
+    transform: translateX(5px);
+}
+.character-right{
+    width: 100%;
+    height: 100%;
+    
+    /* background: url("../img/b.png") no-repeat center; */
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+}
+.character-right-left{
+    width: 55rem;
+    background: url("../img/role/1bg.png") no-repeat center;
+    background-size: 110%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    left: -4rem;
+}
+.character-right-left img{
+    height: 110%;
+    object-fit: cover;
+    position: absolute;
+}
+.character-right-left img:nth-child(1){
+    width: 60rem;
+    object-fit: cover;
+    position: absolute;
+    left: -30px;
+    top:-56px;
+}
+.character-right-right{
+    box-sizing: border-box;
+    padding-top: 10vh;
+    height: 100%;
+    /* background: red; */
+    position: absolute;
+    z-index: 51;
+    right: 8.125rem;
+}
+.character-right-right-title{
+    height: 38%;
+    width: 25rem;
+    /* background: yellow; */
+    padding-top: 10vh;
+    box-sizing: border-box;
+    text-align: left;
+}
+.character-right-right-title>img{
+    width: 80%;
+}
+
+.character-right-right-str{
+    height: 15%;
+    /* background: red; */
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 300;
+    color: rgba(187, 168, 147, 1);
+    text-align: left;
+    font-family:"cn";
+    line-height: 1.875rem;
+}
+.character-right-right-button{
+    display: flex;
+    /* justify-content: space-around; */
+}
+
+.character-right-right-button-left{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background: url("../img/voicebg.png") no-repeat center; */
+    margin-right: 2vw;
+    background-size: 100%;
+}
+.character-right-right-button-left>img{
+   width: 5.1875rem;
+}
+.character-right-right-button-right>img{
+   width: 6.5rem;
+}
+#roleVoice:hover{
+    animation-name:bigIcon;
+    animation-duration:0.8s;
+}
+#roleLive:hover{
+    animation-name:bigIcon;
+    animation-duration:0.8s;
+}
+#roleVoiceing:hover{
+    animation-name:bigIcon;
+    animation-duration:0.8s;
+}
+#roleLiveing:hover{
+    animation-name:bigIcon;
+    animation-duration:0.8s;
+}
+
+
+.character-canvas{
+    height: 61rem;
+    position: absolute;
+    bottom: 0;
+}
+/* #player-container{
+    position: absolute;
+    width: 100%;
+    height: 150%;
+} */
+ 

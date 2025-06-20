@@ -1,0 +1,49 @@
+.papermask{
+        position: absolute;
+        /* background: url("../img/BG2.png") no-repeat center; */
+        /* background: green; */
+        width: 100%;
+        height: 93%;
+        top:7vh;
+        left: 0;
+        z-index: 10;
+        overflow: hidden;
+        overflow-y: auto;
+        display: none;  
+        box-sizing: border-box;
+        padding: 0 7vw;
+      }
+.papermask-top{
+    height: 10%;
+    width: 100%;
+    /* background: yellow; */
+    display: flex;
+    align-items: center;
+}
+.papermask-mid{
+    height: auto;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding-bottom: 10vh;
+    display: flex;
+}
+.papermask-mid-list{
+    /* background: floralwhite; */
+    margin-right: 1rem;
+    margin-bottom: 2vh;
+    margin-top: 1vh;
+    /* overflow: hidden; */
+    box-sizing: border-box;
+    flex: 1;
+    color: red;
+    height: 100%;
+}
+.papermask-mid-list img{
+    width: 100%;
+    border: 1px solid rgba(0, 0, 0, 0);
+    box-sizing: border-box;
+}   
+
+.holder-img:hover{
+    border: 1px solid #B55829;
+}
