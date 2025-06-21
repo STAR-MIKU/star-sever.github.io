@@ -617,16 +617,6 @@
       justify-content: center;
       position: relative;
     }
-    .show-desktop-btn::before {
-      content: "";
-      display: block;
-      width: 10px;
-      height: 30px;
-      border-radius: 2px;
-      background: #88b1f1;
-      margin: 0 auto;
-      box-shadow: 0 2px 8px #88b1f122;
-    }
     .show-desktop-btn:hover {
       background: #e6f0ff;
       box-shadow: 0 4px 16px #88b1f133;
@@ -2144,7 +2134,7 @@
         </div>
         <div class="close-btn">×</div>
         <div class="title">SHOOTING STAR</div>
-        <img src="./超级盒子.jpg" style="width:100%;:none;pointer-events:none;">
+        <img src="./PIC/cjbox.jpg" style="width:100%;:none;pointer-events:none;">
         <div class="bottom-nav">
             <div class="nav-btns">
                 <button class="nav-btn">首页</button>
@@ -3047,5 +3037,117 @@
             });
         })();
     </script>
+</body>
+<head>
+  <style>
+    body {
+      height: 100vh;
+      margin: 0;
+      background: #f5f5f5;
+    }
+    .context-menu {
+      position: absolute;
+      top: 0;
+      left: 0;
+      min-width: 150px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.95);
+      transition: opacity 0.2s cubic-bezier(.4,0,.2,1), transform 0.2s cubic-bezier(.4,0,.2,1);
+      z-index: 1000;
+    }
+    .context-menu.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+    .context-menu ul {
+      list-style: none;
+      margin: 0;
+      padding: 8px 0;
+    }
+    .context-menu li {
+      padding: 10px 24px;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+    }
+    .context-menu li:hover {
+      background: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <div id="menu" class="context-menu">
+    <ul>
+      <li>
+        <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:8px;" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="7" stroke="#888" stroke-width="2"/>
+        </svg>
+        菜单项 1
+      </li>
+      <li>
+        <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:8px;" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="10" height="10" stroke="#888" stroke-width="2"/>
+        </svg>
+        菜单项 2
+      </li>
+      <li>
+        <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:8px;" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="8,3 13,13 3,13" stroke="#888" stroke-width="2" fill="none"/>
+        </svg>
+        菜单项 3
+      </li>
+    </ul>
+  </div>
+  <script>
+    const menu = document.getElementById('menu');
+    let hideTimeout = null;
+
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      clearTimeout(hideTimeout);
+      menu.style.top = e.clientY + 'px';
+      menu.style.left = e.clientX + 'px';
+      menu.classList.add('show');
+    });
+
+    document.addEventListener('click', function() {
+      menu.classList.remove('show');
+      // 动画结束后 pointer-events: none
+      hideTimeout = setTimeout(() => {
+        menu.style.pointerEvents = 'none';
+      }, 200); // 与CSS动画时间一致
+    });
+
+    window.addEventListener('resize', function() {
+      menu.classList.remove('show');
+      hideTimeout = setTimeout(() => {
+        menu.style.pointerEvents = 'none';
+      }, 200);
+    });
+
+    // 防止菜单溢出屏幕
+    menu.addEventListener('transitionend', function() {
+      const rect = menu.getBoundingClientRect();
+      if (rect.right > window.innerWidth) {
+        menu.style.left = (window.innerWidth - rect.width - 10) + 'px';
+      }
+      if (rect.bottom > window.innerHeight) {
+        menu.style.top = (window.innerHeight - rect.height - 10) + 'px';
+      }
+    });
+
+    // 保证每次弹出都能点击
+    menu.addEventListener('transitionstart', function(e) {
+      if (menu.classList.contains('show')) {
+        menu.style.pointerEvents = 'auto';
+      }
+    });
+  </script>
 </body>
 </html>
