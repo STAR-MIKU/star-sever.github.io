@@ -6,6 +6,7 @@
   <title>SHOOTING STAR | 工作台</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /*全局字体*/
     @font-face {
       font-family: 'Chillax';
       src: url('/fonts/Chillax-Bold.otf') format('opentype');
@@ -127,7 +128,8 @@
       border: 1px solid #ddd;
       transition: background 0.15s;
       z-index: 1200;
-      margin: 0 8px; /* 两侧间距8px，可根据需要调整 */
+      margin: 0 8px;
+      /* 两侧间距8px，可根据需要调整 */
     }
 
     .taskbar-window:hover {
@@ -584,23 +586,71 @@
       z-index: 10;
       background: transparent;
     }
-    .resize-handle-n, .resize-handle-s {
-      left: 0; right: 0; height: 8px; cursor: ns-resize;
+
+    .resize-handle-n,
+    .resize-handle-s {
+      left: 0;
+      right: 0;
+      height: 8px;
+      cursor: ns-resize;
     }
-    .resize-handle-n { top: -4px; }
-    .resize-handle-s { bottom: -4px; }
-    .resize-handle-e, .resize-handle-w {
-      top: 0; bottom: 0; width: 8px; cursor: ew-resize;
+
+    .resize-handle-n {
+      top: -4px;
     }
-    .resize-handle-e { right: -4px; }
-    .resize-handle-w { left: -4px; }
-    .resize-handle-nw, .resize-handle-ne, .resize-handle-sw, .resize-handle-se {
-      width: 12px; height: 12px; z-index: 11;
+
+    .resize-handle-s {
+      bottom: -4px;
     }
-    .resize-handle-nw { left: -6px; top: -6px; cursor: nwse-resize; }
-    .resize-handle-ne { right: -6px; top: -6px; cursor: nesw-resize; }
-    .resize-handle-sw { left: -6px; bottom: -6px; cursor: nesw-resize; }
-    .resize-handle-se { right: -6px; bottom: -6px; cursor: nwse-resize; }
+
+    .resize-handle-e,
+    .resize-handle-w {
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      cursor: ew-resize;
+    }
+
+    .resize-handle-e {
+      right: -4px;
+    }
+
+    .resize-handle-w {
+      left: -4px;
+    }
+
+    .resize-handle-nw,
+    .resize-handle-ne,
+    .resize-handle-sw,
+    .resize-handle-se {
+      width: 12px;
+      height: 12px;
+      z-index: 11;
+    }
+
+    .resize-handle-nw {
+      left: -6px;
+      top: -6px;
+      cursor: nwse-resize;
+    }
+
+    .resize-handle-ne {
+      right: -6px;
+      top: -6px;
+      cursor: nesw-resize;
+    }
+
+    .resize-handle-sw {
+      left: -6px;
+      bottom: -6px;
+      cursor: nesw-resize;
+    }
+
+    .resize-handle-se {
+      right: -6px;
+      bottom: -6px;
+      cursor: nwse-resize;
+    }
 
     .show-desktop-btn {
       margin-left: 18px;
@@ -617,6 +667,7 @@
       justify-content: center;
       position: relative;
     }
+
     .show-desktop-btn:hover {
       background: #e6f0ff;
       box-shadow: 0 4px 16px #88b1f133;
@@ -643,16 +694,18 @@
       background-origin: padding-box, border-box;
       /* 与STAR+一致的流动渐变色 */
       background-image:
-        linear-gradient(rgba(30,32,38,0.92), rgba(30,32,38,0.92)),
+        linear-gradient(rgba(30, 32, 38, 0.92), rgba(30, 32, 38, 0.92)),
         linear-gradient(90deg, #88B1F1, #9AF0FD, #F0C4E5, #F9F871, #F0C4E5, #88B1F1);
       animation: gradient-move 2.5s linear infinite;
       background-size: 1000% 1000%;
       background-position: 0% 50%, 0% 50%;
     }
+
     .launchpad-search-bar:focus-within {
       box-shadow: 0 6px 32px #88b1f144;
       border-color: #9AF0FD;
     }
+
     #launchpad-search-input {
       flex: 1;
       height: 38px;
@@ -666,11 +719,13 @@
       letter-spacing: 1px;
       padding: 0 8px;
     }
+
     #launchpad-search-input::placeholder {
       color: #bcd;
       opacity: 0.85;
       font-weight: 400;
     }
+
     #launchpad-search-btn {
       background: none;
       border: none;
@@ -680,15 +735,18 @@
       align-items: center;
       transition: filter 0.18s;
     }
+
     #launchpad-search-btn:hover svg {
       filter: brightness(1.3) drop-shadow(0 2px 8px #88b1f133);
     }
+
     @media (max-width: 600px) {
       .launchpad-search-bar {
         width: 98vw;
         min-width: 0;
         padding: 0 6px 0 10px;
       }
+
       #launchpad-search-input {
         font-size: 16px;
       }
@@ -702,6 +760,7 @@
       box-sizing: border-box;
       display: flex;
     }
+
     #bilibiliWindow .window-content iframe {
       width: 100%;
       height: 100%;
@@ -728,6 +787,7 @@
       z-index: 5000;
       pointer-events: none;
     }
+
     .snap-top-btn {
       position: absolute;
       width: 60px;
@@ -742,129 +802,1692 @@
       transition: background 0.2s, transform 0.2s;
       pointer-events: auto;
     }
+
     .snap-top-btn:hover {
       background: rgba(255, 255, 255, 0.2);
     }
+
     .snap-top-btn:active {
       transform: scale(0.95);
     }
-    .snap-full { top: 10px; left: calc(50% - 30px); }
-    .snap-left { top: 10px; left: calc(10px); }
-    .snap-right { top: 10px; right: calc(10px); }
-    .snap-topleft { top: 10px; left: calc(10px); }
-    .snap-topright { top: 10px; right: calc(10px); }
-    .snap-bottomleft { bottom: 10px; left: calc(10px); }
-    .snap-bottomright { bottom: 10px; right: calc(10px); }
+
+    .snap-full {
+      top: 10px;
+      left: calc(50% - 30px);
+    }
+
+    .snap-left {
+      top: 10px;
+      left: calc(10px);
+    }
+
+    .snap-right {
+      top: 10px;
+      right: calc(10px);
+    }
+
+    .snap-topleft {
+      top: 10px;
+      left: calc(10px);
+    }
+
+    .snap-topright {
+      top: 10px;
+      right: calc(10px);
+    }
+
+    .snap-bottomleft {
+      bottom: 10px;
+      left: calc(10px);
+    }
+
+    .snap-bottomright {
+      bottom: 10px;
+      right: calc(10px);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f4f4f4;
+      /* 让内容居中显示 */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    /* 窗口容器样式 */
+    .window-container {
+      position: relative;
+      width: 900px;
+      height: 510px;
+      background: url('your-image.jpg') no-repeat center center / cover;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+
+    /* 关闭按钮样式，定位在右上角 */
+    .close-btn {
+      position: absolute;
+      display: flex;
+      top: 30.5px;
+      right: 26px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-size: 45px;
+      color: #fff;
+      text-align: center;
+      line-height: 30px;
+      border-radius: 50%;
+    }
+
+    /* 标题样式，左上角显示 */
+    .title {
+      position: absolute;
+      display: flex;
+      top: 25px;
+      left: 26px;
+      font-size: 28px;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    /* 底部导航栏样式 */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 20px;
+      z-index: 1001;
+    }
+
+    .nav-btns {
+      display: flex;
+      gap: 14px;
+    }
+
+    .nav-btn {
+      width: 100px;
+      height: 44px;
+      border-radius: 12px;
+      background-color: rgb(255 255 255 / 0%);
+      backdrop-filter: blur(20px);
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #ffffff;
+    }
+
+    .start-btn {
+      height: 56px;
+      width: 190px;
+      border: none;
+      color: #fff;
+      border-radius: 29px;
+      background-color: rgb(255 255 255 / 0%);
+      backdrop-filter: blur(20px);
+      cursor: pointer;
+      font-size: 20px;
+      margin-left: auto;
+    }
+
+    /* 个人信息样式，右下角位置 */
+    .creator {
+      position: absolute;
+      bottom: 100px;
+      /* right: -82px; */
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #fff;
+      justify-content: right;
+      /* width: 200px; */
+    }
+
+    .creator img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
+
+    .creator span {
+      max-width: 180px;
+      width: auto;
+      padding: 0 26px 0 0;
+      display: inline-block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    /* 拉伸手柄样式 */
+    .resize-handle {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      /*background: rgba(255, 255, 255, 0.7); 是否显示拉伸区域*/
+      border-radius: 50%;
+      z-index: 1010;
+      cursor: pointer;
+    }
+
+    .resize-handle.nw {
+      top: -8px;
+      left: -8px;
+      cursor: nwse-resize;
+    }
+
+    .resize-handle.ne {
+      top: -8px;
+      right: -8px;
+      cursor: nesw-resize;
+    }
+
+    .resize-handle.sw {
+      bottom: -8px;
+      left: -8px;
+      cursor: nesw-resize;
+    }
+
+    .resize-handle.se {
+      bottom: -8px;
+      right: -8px;
+      cursor: nwse-resize;
+    }
+
+    .resize-handle.n {
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: ns-resize;
+    }
+
+    .resize-handle.s {
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: ns-resize;
+    }
+
+    .resize-handle.e {
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: ew-resize;
+    }
+
+    .resize-handle.w {
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: ew-resize;
+    }
+
+    /* 圆角矩形样式 */
+    .rounded-rect {
+      position: absolute;
+      top: 80px;
+      left: 80px;
+      min-width: 120px;
+      max-width: 400px;
+      height: auto;
+      min-height: 60px;
+      padding: 18px 24px;
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: width 0.3s, font-size 0.3s;
+      word-break: break-all;
+      overflow-wrap: break-word;
+    }
+
+    .hitokoto-text {
+      font-size: 22px;
+      color: #333;
+      text-align: center;
+      word-break: break-all;
+      line-height: 1.4;
+      transition: font-size 0.3s;
+      width: 100%;
+      display: block;
+      max-width: 100%;
+      white-space: pre-line;
+    }
+
+    /* 城市选择弹窗样式 */
+    #city-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.18);
+      align-items: center;
+      justify-content: center;
+    }
+
+    #city-modal>div {
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(18px);
+      border-radius: 24px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+      padding: 36px 32px 28px 32px;
+      min-width: 320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    #city-modal button {
+      /* position: absolute; */
+      top: 18px;
+      right: 22px;
+      font-size: 28px;
+      background: none;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    #city-modal button:hover {
+      color: #333;
+    }
+
+    #city-modal select {
+      font-size: 20px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      width: 220px;
+      background: rgba(255, 255, 255, 0.7);
+      margin-bottom: 22px;
+      outline: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      color: #333;
+    }
+
+    #city-modal #city-save-btn {
+      font-size: 20px;
+      padding: 8px 38px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(90deg, #4e8cff 0%, #6ad1ff 100%);
+      color: #fff;
+      font-weight: bold;
+      letter-spacing: 2px;
+      box-shadow: 0 2px 8px rgba(78, 140, 255, 0.08);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #city-modal #city-save-btn:hover {
+      background: linear-gradient(90deg, #6ad1ff 0%, #4e8cff 100%);
+    }
+
+    /* 汉堡菜单样式 */
+    .hamburger-menu {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgb(0 0 0 / 22%);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -30px 12px rgba(0, 0, 0, 0.12);
+      z-index: 99;
+      backdrop-filter: blur(20px);
+      padding: 0 0 24px 0;
+      animation: fadeIn .2s;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 32px 8px 32px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #222;
+    }
+
+    .menu-close {
+      font-size: 28px;
+      background: none;
+      border: none;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .menu-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding: 0 32px;
+    }
+
+    .game-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(78, 140, 255, 0.08);
+      border-radius: 18px;
+      width: 90px;
+      padding: 12px 0;
+    }
+
+    .game-icon {
+      width: 48px;
+      height: 48px;
+      background: #eee;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+
+    .game-name {
+      font-size: 16px;
+      color: #333;
+    }
+
+    .message-layout {
+      display: flex;
+      height: 220px;
+      margin: 0 32px;
+    }
+
+    .contacts {
+      width: 90px;
+      border-right: 1px solid #eee;
+      padding: 8px 0;
+    }
+
+    .contact {
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 8px;
+      margin-bottom: 6px;
+    }
+
+    .contact.active,
+    .contact:hover {
+      background: #e6f0ff;
+      color: #4e8cff;
+    }
+
+    .chat-window {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 0 0 18px;
+    }
+
+    .chat-history {
+      flex: 1;
+      overflow-y: auto;
+      background: #f7f7fa;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      padding: 8px;
+      font-size: 15px;
+    }
+
+    .chat-input {
+      width: 70%;
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .chat-send {
+      padding: 6px 18px;
+      border-radius: 8px;
+      background: #4e8cff;
+      color: #fff;
+      border: none;
+      margin-left: 8px;
+    }
+
+    #menu-account input[type="text"] {
+      margin-top: 8px;
+      width: 70%;
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    #menu-account button {
+      margin-top: 16px;
+      width: 100%;
+      padding: 8px;
+      border-radius: 12px;
+      background: #4e8cff;
+      color: #fff;
+      border: none;
+    }
+
+    .chart-block {
+      margin-bottom: 18px;
+    }
+
+    .chart-title {
+      font-size: 15px;
+      color: #333;
+      margin-bottom: 2px;
+    }
+
+    /* 分屏吸附提示样式 */
+    .snap-hint {
+      position: fixed;
+      z-index: 9998;
+      width: 120px;
+      height: 120px;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      background: rgba(78, 140, 255, 0.9);
+      border-radius: 24px;
+      transition: opacity 0.2s;
+      opacity: 0;
+    }
+
+    .snap-hint.left {
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .snap-hint.right {
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .snap-hint.top {
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .snap-hint.bottom {
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .snap-hint.topleft {
+      left: 10px;
+      top: 10px;
+    }
+
+    .snap-hint.topright {
+      right: 10px;
+      top: 10px;
+    }
+
+    .snap-hint.bottomleft {
+      left: 10px;
+      bottom: 10px;
+    }
+
+    .snap-hint.bottomright {
+      right: 10px;
+      bottom: 10px;
+    }
+
+    body {
+      height: 100vh;
+      margin: 0;
+      background: #f5f5f5;
+    }
+
+    .context-menu {
+      position: absolute;
+      top: 0;
+      left: 0;
+      min-width: 150px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.95);
+      transition: opacity 0.2s cubic-bezier(.4, 0, .2, 1), transform 0.2s cubic-bezier(.4, 0, .2, 1);
+      z-index: 10000;
+    }
+
+    .context-menu.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    .context-menu ul {
+      list-style: none;
+      margin: 0;
+      padding: 8px 0;
+    }
+
+    .context-menu li {
+      padding: 10px 24px;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+    }
+
+    .context-menu li:hover {
+      background: #f0f0f0;
+    }
   </style>
 </head>
+<!-- 启动引导视频及跳过按钮 -->
+<video id="intro-video" src="./VF/kjgm.mp4" autoplay muted playsinline></video>
+<button id="skip-btn">跳过</button>
 
-<body>
-  <!-- 启动引导视频及跳过按钮 -->
-  <video id="intro-video" src="./VF/kjgm.mp4" autoplay muted playsinline></video>
-  <button id="skip-btn">跳过</button>
-
-  <div id="main-content" style="display:none;">
-    <video id="video-wallpaper" autoplay loop muted playsinline></video>
-    <!-- 桌面快捷方式 -->
-    <div id="desktop" class="desktop-area">
-      <div class="desktop-shortcut" data-app="macWindow">
-        <img src="./PIC/yhmb.svg" alt="窗口" />
-        <span>Mac窗口</span>
-      </div>
-      <div class="desktop-shortcut" data-app="bilibiliWindow" style="top: 180px; left: 32px;">
-        <img src="./PIC/bilibili.svg" alt="哔哩哔哩" />
-        <span>哔哩哔哩</span>
-      </div>
+<div id="main-content" style="display:none;">
+  <video id="video-wallpaper" autoplay loop muted playsinline></video>
+  <!-- 桌面快捷方式 -->
+  <div id="desktop" class="desktop-area">
+    <div class="desktop-shortcut" data-app="macWindow">
+      <img src="./PIC/yhmb.svg" alt="窗口" />
+      <span>Mac窗口</span>
     </div>
-    <!-- 任务栏 -->
-    <div class="taskbar" id="taskbar">
-      <span class="gradient-text" id="starPlus">STAR+</span>
-      <div class="taskbar-center"></div>
-      <div class="date-info">
-        <div id="date-main"></div>
-        <div id="date-sub"></div>
-      </div>
-      <button id="show-desktop-btn" class="show-desktop-btn" title="显示桌面"></button>
+    <div class="desktop-shortcut" data-app="bilibiliWindow" style="top: 180px; left: 32px;">
+      <img src="./PIC/bilibili.svg" alt="哔哩哔哩" />
+      <span>哔哩哔哩</span>
     </div>
-    <!-- 启动台界面 -->
-    <div id="launchpad" class="launchpad-overlay hidden">
-      <!-- 新增：启动台搜索框 -->
-      <div class="launchpad-search-bar">
-        <input id="launchpad-search-input" type="text" placeholder="搜索应用或网页..." autocomplete="off" />
-        <button id="launchpad-search-btn" title="Bing搜索">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-            <circle cx="10" cy="10" r="8" stroke="#88B1F1" stroke-width="2"/>
-            <line x1="16.071" y1="16.485" x2="20" y2="20" stroke="#88B1F1" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-      <div class="launchpad-content"></div>
-    </div>
-    <!-- Mac风格窗口 -->
-    <div class="window hidden" id="macWindow">
-      <div class="title-bar">
-        <span class="title">Mac风格窗口</span>
-        <span class="mac-btns">
-          <span class="mac-btn red" title="关闭"></span>
-          <span class="mac-btn yellow" title="最大化/还原"></span>
-          <span class="mac-btn green" title="最小化到任务栏"></span>
-        </span>
-      </div>
-      <div class="window-content">
-        <button class="btn" id="helloBtn">你好</button>
-        <div>
-          <span class="counter-value" id="counter">0</span>
-          <button class="btn" id="incBtn">计数器+1</button>
-        </div>
-        <button class="btn" id="alertBtn">弹窗</button>
-      </div>
-      <!-- ==== 拉伸手柄 ==== -->
-      <div class="resize-handle resize-handle-n"></div>
-      <div class="resize-handle resize-handle-e"></div>
-      <div class="resize-handle resize-handle-s"></div>
-      <div class="resize-handle resize-handle-w"></div>
-      <div class="resize-handle resize-handle-nw"></div>
-      <div class="resize-handle resize-handle-ne"></div>
-      <div class="resize-handle resize-handle-sw"></div>
-      <div class="resize-handle resize-handle-se"></div>
-    </div>
-    <!-- 哔哩哔哩窗口 -->
-    <div class="window hidden" id="bilibiliWindow">
-      <div class="title-bar">
-        <span class="title">哔哩哔哩</span>
-        <span class="mac-btns">
-          <span class="mac-btn red" title="关闭"></span>
-          <span class="mac-btn yellow" title="最大化/还原"></span>
-          <span class="mac-btn green" title="最小化到任务栏"></span>
-        </span>
-      </div>
-      <div class="window-content">
-        <iframe src="https://www.wps.cn/" style="width:100%;height:100%;border:none;"></iframe>
-      </div>
-      <!-- ==== 拉伸手柄 ==== -->
-      <div class="resize-handle resize-handle-n"></div>
-      <div class="resize-handle resize-handle-e"></div>
-      <div class="resize-handle resize-handle-s"></div>
-      <div class="resize-handle resize-handle-w"></div>
-      <div class="resize-handle resize-handle-nw"></div>
-      <div class="resize-handle resize-handle-ne"></div>
-      <div class="resize-handle resize-handle-sw"></div>
-      <div class="resize-handle resize-handle-se"></div>
+    <div class="desktop-shortcut" data-app="superBoxWindow" style="top: 282px; left: 32px;">
+      <img src="./PIC/bilibili.svg" alt="超级盒子" id="showWindowBox" style="cursor:pointer;" />
+      <span>超级盒子</span>
     </div>
   </div>
+  <!-- 任务栏 -->
+  <div class="taskbar" id="taskbar">
+    <span class="gradient-text" id="starPlus">STAR+</span>
+    <div class="taskbar-center"></div>
+    <div class="date-info">
+      <div id="date-main"></div>
+      <div id="date-sub"></div>
+    </div>
+    <button id="show-desktop-btn" class="show-desktop-btn" title="显示桌面"></button>
+  </div>
+  <!-- 启动台界面 -->
+  <div id="launchpad" class="launchpad-overlay hidden">
+    <!-- 新增：启动台搜索框 -->
+    <div class="launchpad-search-bar">
+      <input id="launchpad-search-input" type="text" placeholder="搜索应用或网页..." autocomplete="off" />
+      <button id="launchpad-search-btn" title="Bing搜索">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="10" cy="10" r="8" stroke="#88B1F1" stroke-width="2" />
+          <line x1="16.071" y1="16.485" x2="20" y2="20" stroke="#88B1F1" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+    <div class="launchpad-content"></div>
+  </div>
+  <!-- Mac风格窗口 -->
+  <div class="window hidden" id="macWindow">
+    <div class="title-bar">
+      <span class="title">Mac风格窗口</span>
+      <span class="mac-btns">
+        <span class="mac-btn red" title="关闭"></span>
+        <span class="mac-btn yellow" title="最大化/还原"></span>
+        <span class="mac-btn green" title="最小化到任务栏"></span>
+      </span>
+    </div>
+    <div class="window-content">
+      <button class="btn" id="helloBtn">你好</button>
+      <div>
+        <span class="counter-value" id="counter">0</span>
+        <button class="btn" id="incBtn">计数器+1</button>
+      </div>
+      <button class="btn" id="alertBtn">弹窗</button>
+    </div>
+    <!-- ==== 拉伸手柄 ==== -->
+    <div class="resize-handle resize-handle-n"></div>
+    <div class="resize-handle resize-handle-e"></div>
+    <div class="resize-handle resize-handle-s"></div>
+    <div class="resize-handle resize-handle-w"></div>
+    <div class="resize-handle resize-handle-nw"></div>
+    <div class="resize-handle resize-handle-ne"></div>
+    <div class="resize-handle resize-handle-sw"></div>
+    <div class="resize-handle resize-handle-se"></div>
+  </div>
+  <!-- 哔哩哔哩窗口 -->
+  <div class="window hidden" id="bilibiliWindow">
+    <div class="title-bar">
+      <span class="title">哔哩哔哩</span>
+      <span class="mac-btns">
+        <span class="mac-btn red" title="关闭"></span>
+        <span class="mac-btn yellow" title="最大化/还原"></span>
+        <span class="mac-btn green" title="最小化到任务栏"></span>
+      </span>
+    </div>
+    <div class="window-content">
+      <iframe src="https://www.wps.cn/" style="width:100%;height:100%;border:none;"></iframe>
+    </div>
+    <!-- ==== 拉伸手柄 ==== -->
+    <div class="resize-handle resize-handle-n"></div>
+    <div class="resize-handle resize-handle-e"></div>
+    <div class="resize-handle resize-handle-s"></div>
+    <div class="resize-handle resize-handle-w"></div>
+    <div class="resize-handle resize-handle-nw"></div>
+    <div class="resize-handle resize-handle-ne"></div>
+    <div class="resize-handle resize-handle-sw"></div>
+    <div class="resize-handle resize-handle-se"></div>
+  </div>
 
-  <div id="snap-top-options" style="display:none;position:fixed;top:0;left:0;width:100vw;height:80px;z-index:5000;pointer-events:none;">
-    <div class="snap-top-btn snap-full" data-snap="top" title="全屏"></div>
-    <div class="snap-top-btn snap-left" data-snap="left" title="左半屏"></div>
-    <div class="snap-top-btn snap-right" data-snap="right" title="右半屏"></div>
-    <div class="snap-top-btn snap-topleft" data-snap="topleft" title="左上"></div>
-    <div class="snap-top-btn snap-topright" data-snap="topright" title="右上"></div>
-    <div class="snap-top-btn snap-bottomleft" data-snap="bottomleft" title="左下"></div>
-    <div class="snap-top-btn snap-bottomright" data-snap="bottomright" title="右下"></div>
+</div>
+
+<div id="snap-top-options"
+  style="display:none;position:fixed;top:0;left:0;width:100vw;height:80px;z-index:5000;pointer-events:none;">
+  <div class="snap-top-btn snap-full" data-snap="top" title="全屏"></div>
+  <div class="snap-top-btn snap-left" data-snap="left" title="左半屏"></div>
+  <div class="snap-top-btn snap-right" data-snap="right" title="右半屏"></div>
+  <div class="snap-top-btn snap-topleft" data-snap="topleft" title="左上"></div>
+  <div class="snap-top-btn snap-topright" data-snap="topright" title="右上"></div>
+  <div class="snap-top-btn snap-bottomleft" data-snap="bottomleft" title="左下"></div>
+  <div class="snap-top-btn snap-bottomright" data-snap="bottomright" title="右下"></div>
+</div>
+
+<body>
+  <div class="window-container" id="windowBox" style="z-index:2001;display:none;">
+    <div class="resize-handle nw"></div>
+    <div class="resize-handle ne"></div>
+    <div class="resize-handle sw"></div>
+    <div class="resize-handle se"></div>
+    <div class="resize-handle n"></div>
+    <div class="resize-handle s"></div>
+    <div class="resize-handle e"></div>
+    <div class="resize-handle w"></div>
+    <!-- 新增圆角矩形div -->
+    <div class="rounded-rect" id="random-component">
+      <span id="hitokoto" class="hitokoto-text">加载中...</span>
+    </div>
+    <!-- 新增圆角矩形div：天气 -->
+    <div class="rounded-rect" id="weather-component" style="visibility:hidden;">
+      <span id="weather-text" class="hitokoto-text">加载中...</span>
+    </div>
+    <div class="close-btn">×</div>
+    <div class="title">SHOOTING STAR</div>
+    <img src="./PIC/cjbox.jpg" style="width:100%;:none;pointer-events:none;">
+    <div class="bottom-nav">
+      <div class="nav-btns">
+        <button class="nav-btn">首页</button>
+        <button class="nav-btn">游戏列表</button>
+        <button class="nav-btn">仪表盘</button>
+        <button class="nav-btn">消息</button>
+        <button class="nav-btn">账户</button>
+      </div>
+      <button class="start-btn">开始 Start</button>
+    </div>
+    <!-- 游戏列表汉堡菜单 -->
+    <div id="menu-game" class="hamburger-menu" style="display:none;">
+      <div class="menu-header">
+        <span>游戏列表</span>
+        <button class="menu-close">×</button>
+      </div>
+      <input type="text" id="game-search" placeholder="搜索游戏..."
+        style="margin:12px 0;width:90%;padding:8px;border-radius:8px;border:1px solid #ccc;">
+      <div id="game-list" class="menu-list">
+        <!-- 示例游戏项 -->
+        <div class="game-item">
+          <div class="game-icon"></div>
+          <div class="game-name">原神</div>
+        </div>
+        <div class="game-item">
+          <div class="game-icon"></div>
+          <div class="game-name">我的世界</div>
+        </div>
+        <!-- 可继续添加 -->
+      </div>
+    </div>
+    <!-- 仪表盘汉堡菜单 -->
+    <div id="menu-dashboard" class="hamburger-menu" style="display:none;">
+      <div class="menu-header">
+        <span>仪表盘</span>
+        <button class="menu-close">×</button>
+      </div>
+      <div id="device-info" style="margin:12px 0;">
+        <div>设备名：<span id="device-name">本机</span></div>
+        <div>系统：<span id="device-os"></span></div>
+      </div>
+      <div class="chart-block">
+        <div class="chart-title">CPU 频率：<span id="cpu-freq">0 MHz</span></div>
+        <canvas id="chart-cpu" width="320" height="80"></canvas>
+      </div>
+      <div class="chart-block">
+        <div class="chart-title">GPU 频率：<span id="gpu-freq">0 MHz</span></div>
+        <canvas id="chart-gpu" width="320" height="80"></canvas>
+      </div>
+      <div class="chart-block">
+        <div class="chart-title">内存占用：<span id="mem-usage">0%</span></div>
+        <canvas id="chart-mem" width="320" height="80"></canvas>
+      </div>
+    </div>
+    <!-- 消息汉堡菜单 -->
+    <div id="menu-message" class="hamburger-menu" style="display:none;">
+      <div class="menu-header">
+        <span>消息</span>
+        <button class="menu-close">×</button>
+      </div>
+      <div class="message-layout">
+        <div class="contacts">
+          <div class="contact active">小明</div>
+          <div class="contact">小红</div>
+        </div>
+        <div class="chat-window">
+          <div class="chat-history"></div>
+          <input type="text" class="chat-input" placeholder="输入消息...">
+          <button class="chat-send">发送</button>
+        </div>
+      </div>
+    </div>
+    <!-- 账户汉堡菜单 -->
+    <div id="menu-account" class="hamburger-menu" style="display:none;">
+      <div class="menu-header">
+        <span>账户</span>
+        <button class="menu-close">×</button>
+      </div>
+      <div style="text-align:center;margin:18px 0;">
+        <img id="avatar-preview" src="默认头像.png" style="width:64px;height:64px;border-radius:50%;object-fit:cover;">
+        <input type="file" id="avatar-upload" accept="image/*" style="display:block;margin:8px auto;">
+      </div>
+      <div>
+        <label>昵称：</label>
+        <input type="text" id="account-name" style="width:70%;padding:6px;border-radius:8px;border:1px solid #ccc;">
+      </div>
+      <button id="account-save"
+        style="margin-top:16px;width:100%;padding:8px;border-radius:12px;background:#4e8cff;color:#fff;border:none;">保存</button>
+    </div>
+  </div>
+  <!-- 城市选择弹窗（优化风格） -->
+  <div id="city-modal"
+    style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
+    <div style="
+        background: rgba(255,255,255,0.55);
+        backdrop-filter: blur(18px);
+        border-radius: 24px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+        padding: 36px 32px 28px 32px;
+        width: 320px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        ">
+      <button id="city-modal-close" style="
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            font-size: 28px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0);
+            cursor: pointer;
+            transition: color 0.2s;
+        " onmouseover="this.style.color='#333'" onmouseout="this.style.color='#888'">×</button>
+      <div style="font-size: 22px; font-weight: bold; color: #222; margin-bottom: 18px; letter-spacing: 2px;">
+        选择城市
+      </div>
+      <select id="city-select" style="
+            font-size: 20px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            width: 220px;
+            background: rgba(255,255,255,0.7);
+            margin-bottom: 22px;
+            outline: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            color: #333;
+        ">
+        <option value="武汉">武汉</option>
+        <option value="北京">北京</option>
+        <option value="上海">上海</option>
+        <option value="广州">广州</option>
+        <option value="深圳">深圳</option>
+        <option value="成都">成都</option>
+        <option value="杭州">杭州</option>
+        <option value="南京">南京</option>
+        <option value="重庆">重庆</option>
+        <option value="西安">西安</option>
+        <option value="长沙">长沙</option>
+        <option value="苏州">苏州</option>
+        <option value="天津">天津</option>
+        <option value="郑州">郑州</option>
+        <option value="青岛">青岛</option>
+        <option value="合肥">合肥</option>
+        <option value="福州">福州</option>
+        <option value="厦门">厦门</option>
+        <option value="济南">济南</option>
+        <option value="大连">大连</option>
+      </select>
+      <button id="city-save-btn" style="
+            font-size: 20px;
+            padding: 8px 38px;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(90deg, #4e8cff 0%, #6ad1ff 100%);
+            color: #fff;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0 2px 8px rgba(78,140,255,0.08);
+            cursor: pointer;
+            transition: background 0.2s;
+        " onmouseover="this.style.background='linear-gradient(90deg,#6ad1ff 0%,#4e8cff 100%)'"
+        onmouseout="this.style.background='linear-gradient(90deg,#4e8cff 0%,#6ad1ff 100%)'">
+        保存
+      </button>
+    </div>
+  </div>
+  <div id="menu" class="context-menu">
+    <ul>
+      <li>
+        <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:8px;" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="7" stroke="#888" stroke-width="2" />
+        </svg>
+        复制
+      </li>
+      <li>
+        <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:8px;" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="10" height="10" stroke="#888" stroke-width="2" />
+        </svg>
+        粘贴
+      </li>
+      <li>
+        <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:8px;" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <polygon points="8,3 13,13 3,13" stroke="#888" stroke-width="2" fill="none" />
+        </svg>
+        剪切
+      </li>
+    </ul>
   </div>
 
   <script>
-    // 启动引导视频逻辑
+    const box = document.getElementById('windowBox');
+    const minWidth = 400,
+      minHeight = 250;
+    const aspectRatio = 900 / 510; // 宽高比
+    let startX, startY, startW, startH, startL, startT, dir;
+
+    function onMouseMove(e) {
+      let dx = e.clientX - startX;
+      let dy = e.clientY - startY;
+      let newW = startW,
+        newH = startH,
+        newL = startL,
+        newT = startT;
+
+      if (dir === 'e' || dir === 'w') {
+        if (dir === 'e') newW = Math.max(minWidth, startW + dx);
+        if (dir === 'w') {
+          newW = Math.max(minWidth, startW - dx);
+          newL = startL + dx;
+        }
+        newH = newW / aspectRatio;
+        if (newH < minHeight) {
+          newH = minHeight;
+          newW = newH * aspectRatio;
+        }
+      } else if (dir === 'n' || dir === 's') {
+        if (dir === 's') newH = Math.max(minHeight, startH + dy);
+        if (dir === 'n') {
+          newH = Math.max(minHeight, startH - dy);
+          newT = startT + dy;
+        }
+        newW = newH * aspectRatio;
+        if (newW < minWidth) {
+          newW = minWidth;
+          newH = newW / aspectRatio;
+        }
+      } else {
+        let delta = 0;
+        if (dir === 'se') delta = Math.max(dx, dy);
+        if (dir === 'sw') delta = Math.max(-dx, dy);
+        if (dir === 'ne') delta = Math.max(dx, -dy);
+        if (dir === 'nw') delta = Math.max(-dx, -dy);
+
+        if (dir === 'se' || dir === 'ne') {
+          newW = Math.max(minWidth, startW + delta);
+          newH = newW / aspectRatio;
+        } else if (dir === 'sw' || dir === 'nw') {
+          newW = Math.max(minWidth, startW - delta);
+          newL = startL + delta;
+          newH = newW / aspectRatio;
+        }
+
+        if (dir === 'ne' || dir === 'nw') {
+          newT = startT - (newH - startH);
+        }
+        if (newH < minHeight) {
+          newH = minHeight;
+          newW = newH * aspectRatio;
+        }
+        if (newW < minWidth) {
+          newW = minWidth;
+          newH = newW / aspectRatio;
+        }
+      }
+
+      box.style.width = newW + 'px';
+      box.style.height = newH + 'px';
+      box.style.left = newL + 'px';
+      box.style.top = newT + 'px';
+    }
+
+    function onMouseUp() {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+
+      // 拉伸结束后重新调整两个圆角矩形的位置和大小，确保内容适配
+      adjustRoundedRectPositionById('weather-component', 'weather-text', []);
+      const weatherRect = getRoundedRectInfo('weather-component');
+      adjustRoundedRectPositionById('random-component', 'hitokoto', weatherRect ? [weatherRect] : []);
+    }
+
+    document.querySelectorAll('.resize-handle').forEach(handle => {
+      handle.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        dir = this.className.split(' ')[1];
+        const rect = box.getBoundingClientRect();
+        startX = e.clientX;
+        startY = e.clientY;
+        startW = rect.width;
+        startH = rect.height;
+        startL = box.offsetLeft;
+        startT = box.offsetTop;
+        box.style.position = 'absolute';
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      });
+    });
+
+    document.querySelector('.close-btn').onclick = function () {
+      // 隐藏 windowBox
+      document.getElementById('windowBox').style.display = 'none';
+    };
+
+    document.getElementById('showWindowBox').onclick = function () {
+      document.getElementById('windowBox').style.display = '';
+    };
+
+
+    // 判断两个矩形是否重叠
+    function isRectOverlap(r1, r2) {
+      return !(r1.left + r1.width <= r2.left ||
+        r2.left + r2.width <= r1.left ||
+        r1.top + r1.height <= r2.top ||
+        r2.top + r2.height <= r1.top);
+    }
+
+    // 动态避让的通用位置调整函数
+    function adjustRoundedRectPositionById(componentId, textId, avoidRects = []) {
+      const textElement = document.getElementById(textId);
+      const componentElement = document.getElementById(componentId);
+      const windowBox = document.getElementById('windowBox');
+
+      // 先重置样式
+      textElement.style.fontSize = '22px';
+      textElement.style.whiteSpace = 'nowrap';
+      componentElement.style.width = 'auto';
+      componentElement.style.height = 'auto';
+
+      setTimeout(() => {
+        const maxWidth = 400;
+        const minWidth = 120;
+        const maxHeight = windowBox.offsetHeight - 40; // 预留边距
+        let width = textElement.scrollWidth + 48;
+        let height = textElement.scrollHeight + 36;
+
+        // 先调整字号
+        if (width > maxWidth) {
+          textElement.style.fontSize = '18px';
+          width = textElement.scrollWidth + 48;
+          height = textElement.scrollHeight + 36;
+        }
+        // 再判断是否需要换行
+        if (width > maxWidth) {
+          width = maxWidth;
+          textElement.style.whiteSpace = 'pre-line';
+          textElement.style.wordBreak = 'break-all';
+          // 重新计算高度
+          componentElement.style.width = width + 'px';
+          setTimeout(() => {
+            height = textElement.scrollHeight + 36;
+            if (height > maxHeight) height = maxHeight;
+            componentElement.style.height = height + 'px';
+            // 修正：同步max-width，防止文字溢出
+            textElement.style.maxWidth = width - 24 + 'px';
+          }, 0);
+        } else {
+          textElement.style.whiteSpace = 'nowrap';
+          componentElement.style.height = 'auto';
+          // 修正：同步max-width，防止文字溢出
+          textElement.style.maxWidth = width - 24 + 'px';
+        }
+        if (width < minWidth) width = minWidth;
+        if (height > maxHeight) height = maxHeight;
+        componentElement.style.width = width + 'px';
+        componentElement.style.height = height + 'px';
+        // 修正：同步max-width，防止文字溢出
+        textElement.style.maxWidth = width - 24 + 'px';
+
+        // 定位逻辑
+        const boxRect = windowBox.getBoundingClientRect();
+        const rectWidth = width;
+        const rectHeight = componentElement.offsetHeight;
+
+        const centerWidth = boxRect.width * 0.6;
+        const centerHeight = boxRect.height * 0.6;
+        const minLeft = (boxRect.width - centerWidth) / 2;
+        const minTop = (boxRect.height - centerHeight) / 2;
+        const maxLeft = minLeft + centerWidth - rectWidth;
+        const maxTop = minTop + centerHeight - rectHeight;
+
+        let left, top, tryCount = 0, maxTry = 30, found = false;
+        do {
+          left = Math.random() * (maxLeft - minLeft) + minLeft;
+          top = Math.random() * (maxTop - minTop) + minTop;
+          const thisRect = { left, top, width: rectWidth, height: rectHeight };
+          found = avoidRects.every(r => !isRectOverlap(thisRect, r));
+          tryCount++;
+        } while (
+          (!found || left < 0 || top < 0 || left + rectWidth > boxRect.width || top + rectHeight > boxRect.height)
+          && tryCount < maxTry
+        );
+        left = Math.max(0, Math.min(left, boxRect.width - rectWidth));
+        top = Math.max(0, Math.min(top, boxRect.height - rectHeight));
+
+        componentElement.style.left = left + 'px';
+        componentElement.style.top = top + 'px';
+        componentElement.style.visibility = 'visible';
+      }, 50);
+    }
+
+    // 获取某个圆角矩形的相对windowBox的矩形信息
+    function getRoundedRectInfo(componentId) {
+      const el = document.getElementById(componentId);
+      const box = document.getElementById('windowBox');
+      if (!el || el.style.visibility === 'hidden') return null;
+      const boxRect = box.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      return {
+        left: elRect.left - boxRect.left,
+        top: elRect.top - boxRect.top,
+        width: el.offsetWidth,
+        height: el.offsetHeight
+      };
+    }
+
+    // 一言加载与避让天气
+    fetch('https://v1.hitokoto.cn/?c=b')
+      .then(response => response.json())
+      .then(data => {
+        const hitokotoElement = document.getElementById('hitokoto');
+        const randomComponentElement = document.getElementById('random-component');
+        randomComponentElement.style.visibility = 'hidden';
+        hitokotoElement.textContent = data.hitokoto;
+        // 避让天气组件
+        const weatherRect = getRoundedRectInfo('weather-component');
+        adjustRoundedRectPositionById('random-component', 'hitokoto', weatherRect ? [weatherRect] : []);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        document.getElementById('hitokoto').textContent = '获取一言失败';
+        document.getElementById('random-component').style.visibility = 'visible';
+      });
+
+    // 获取本地存储的城市名，没有则默认武汉
+    function getWeatherCity() {
+      return localStorage.getItem('weather_city') || '武汉';
+    }
+
+    function setWeatherCity(city) {
+      localStorage.setItem('weather_city', city);
+    }
+
+    // 封装天气加载
+    function loadWeather() {
+      const city = getWeatherCity();
+      fetch(`https://api.vvhan.com/api/weather?type=now&city=${encodeURIComponent(city)}`)
+        .then(response => response.json())
+        .then(data => {
+          const weatherText = document.getElementById('weather-text');
+          const weatherComponent = document.getElementById('weather-component');
+          weatherComponent.style.visibility = 'hidden';
+          if (data && data.success && data.data && data.data.type && data.data.high) {
+            const temp = data.data.high.replace('°C', '°C').replace('℃', '°C');
+            weatherText.textContent = `${data.data.type} ${temp}`;
+          } else {
+            weatherText.textContent = '晴 25°C'; // 默认内容
+          }
+          const hitokotoRect = getRoundedRectInfo('random-component');
+          adjustRoundedRectPositionById('weather-component', 'weather-text', hitokotoRect ? [hitokotoRect] : []);
+        })
+        .catch(error => {
+          console.error('Error fetching weather:', error);
+          const weatherText = document.getElementById('weather-text');
+          weatherText.textContent = '晴 25°C'; // 默认内容
+          document.getElementById('weather-component').style.visibility = 'visible';
+          const hitokotoRect = getRoundedRectInfo('random-component');
+          adjustRoundedRectPositionById('weather-component', 'weather-text', hitokotoRect ? [hitokotoRect] : []);
+        });
+    }
+
+    // 初始加载
+    loadWeather();
+
+    // 点击天气控件弹出城市选择弹窗
+    document.getElementById('weather-component').onclick = function () {
+      document.getElementById('city-modal').style.display = 'flex';
+      document.getElementById('city-select').value = getWeatherCity();
+    };
+    // 关闭弹窗
+    document.getElementById('city-modal-close').onclick = function () {
+      document.getElementById('city-modal').style.display = 'none';
+    };
+    // 点击遮罩关闭
+    document.getElementById('city-modal').onclick = function (e) {
+      if (e.target === this) this.style.display = 'none';
+    };
+    // 保存城市
+    document.getElementById('city-save-btn').onclick = function () {
+      const city = document.getElementById('city-select').value;
+      setWeatherCity(city);
+      document.getElementById('city-modal').style.display = 'none';
+      loadWeather();
+    };
+
+    // 拉伸时两个都自适应且动态避让
+    const resizeObserver = new ResizeObserver(() => {
+      // 先天气，后避让一言
+      adjustRoundedRectPositionById('weather-component', 'weather-text', []);
+      const weatherRect = getRoundedRectInfo('weather-component');
+      adjustRoundedRectPositionById('random-component', 'hitokoto', weatherRect ? [weatherRect] : []);
+    });
+    resizeObserver.observe(document.getElementById('windowBox'));
+
+    // 折叠菜单功能
+    function handleNavCollapse() {
+      const navBtns = document.querySelector('.nav-btns');
+      const navBtnsArray = Array.from(navBtns.children);
+      const windowBox = document.getElementById('windowBox');
+      const minNavWidth = 600; // 触发折叠的宽度阈值，可根据实际调整
+
+      // 检查是否已存在折叠菜单
+      let collapseMenu = document.getElementById('collapse-menu');
+      if (!collapseMenu) {
+        collapseMenu = document.createElement('div');
+        collapseMenu.id = 'collapse-menu';
+        collapseMenu.style.display = 'none';
+        collapseMenu.style.position = 'relative';
+        collapseMenu.innerHTML = `
+            <button id="collapse-toggle" style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.7);border:none;cursor:pointer;font-size:24px;">☰</button>
+            <div id="collapse-list" style="display:none;position:absolute;top:50px;left:0;z-index:99;background:rgba(255,255,255,0.95);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+            </div>
+        `;
+        navBtns.parentNode.insertBefore(collapseMenu, navBtns);
+        // 事件
+        collapseMenu.querySelector('#collapse-toggle').onclick = function () {
+          const list = collapseMenu.querySelector('#collapse-list');
+          list.style.display = list.style.display === 'block' ? 'none' : 'block';
+        };
+        document.addEventListener('click', function (e) {
+          if (!collapseMenu.contains(e.target)) {
+            collapseMenu.querySelector('#collapse-list').style.display = 'none';
+          }
+        });
+      }
+
+      if (windowBox.offsetWidth < minNavWidth) {
+        // 折叠
+        collapseMenu.style.display = 'block';
+        navBtns.style.display = 'none';
+        // 填充折叠菜单
+        const list = collapseMenu.querySelector('#collapse-list');
+        list.innerHTML = '';
+        navBtnsArray.forEach(btn => {
+          const clone = btn.cloneNode(true);
+          clone.style.width = '100%';
+          clone.style.margin = '0';
+          list.appendChild(clone);
+        });
+      } else {
+        // 展开
+        collapseMenu.style.display = 'none';
+        navBtns.style.display = 'flex';
+      }
+    }
+
+    // 初始化和监听窗口变化
+    window.addEventListener('resize', handleNavCollapse);
+    document.addEventListener('DOMContentLoaded', handleNavCollapse);
+    const resizeObserverNav = new ResizeObserver(handleNavCollapse);
+    resizeObserverNav.observe(document.getElementById('windowBox'));
+
+    // 城市选择相关
+    const cityModal = document.getElementById('city-modal');
+    const citySelect = document.getElementById('city-select');
+    const citySaveBtn = document.getElementById('city-save-btn');
+
+    // 打开城市选择弹窗
+    function openCityModal() {
+      cityModal.style.display = 'flex';
+    }
+
+    // 关闭城市选择弹窗
+    function closeCityModal() {
+      cityModal.style.display = 'none';
+    }
+
+    // 保存选择的城市并刷新天气
+    function saveSelectedCity() {
+      const selectedCity = citySelect.value;
+      setWeatherCity(selectedCity); // 保存到本地
+      loadWeather();                // 刷新天气控件
+      closeCityModal();
+    }
+
+    // 绑定事件
+    document.getElementById('city-modal-close').onclick = closeCityModal;
+    citySaveBtn.onclick = saveSelectedCity;
+
+    // 菜单显示/隐藏控制
+    const menuIds = ['menu-game', 'menu-dashboard', 'menu-message', 'menu-account'];
+    function closeAllMenus() {
+      menuIds.forEach(id => document.getElementById(id).style.display = 'none');
+    }
+    document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
+      btn.onclick = function () {
+        closeAllMenus();
+        if (idx === 0) return; // 首页，关闭所有菜单
+        if (idx === 1) document.getElementById('menu-game').style.display = 'block';
+        if (idx === 2) document.getElementById('menu-dashboard').style.display = 'block';
+        if (idx === 3) document.getElementById('menu-message').style.display = 'block';
+        if (idx === 4) document.getElementById('menu-account').style.display = 'block';
+      };
+    });
+    // 菜单内关闭按钮
+    document.querySelectorAll('.menu-close').forEach(btn => {
+      btn.onclick = closeAllMenus;
+    });
+
+    // 游戏搜索功能
+    document.getElementById('game-search').oninput = function () {
+      const kw = this.value.trim();
+      document.querySelectorAll('#game-list .game-item').forEach(item => {
+        const name = item.querySelector('.game-name').textContent;
+        item.style.display = name.includes(kw) ? '' : 'none';
+      });
+    };
+
+    // 仪表盘设备信息与折线图（仅演示，需引入Chart.js或自绘）
+    document.getElementById('device-os').textContent = navigator.userAgent;
+    // 简单CPU等数据模拟
+    function drawLineChart(canvasId, label, color) {
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      ctx.clearRect(0, 0, 320, 80);
+      ctx.strokeStyle = color;
+      ctx.beginPath();
+      for (let i = 0; i < 32; i++) {
+        const y = 60 - Math.random() * 50;
+        ctx.lineTo(10 + i * 9, y);
+      }
+      ctx.stroke();
+    }
+    setInterval(() => {
+      drawLineChart('chart-cpu', 'CPU', '#4e8cff');
+      drawLineChart('chart-gpu', 'GPU', '#6ad1ff');
+      drawLineChart('chart-mem', '内存', '#ffb84e');
+    }, 1500);
+
+    // 消息功能（本地演示，局域网需WebSocket等）
+    document.querySelectorAll('.contact').forEach(c => {
+      c.onclick = function () {
+        document.querySelectorAll('.contact').forEach(x => x.classList.remove('active'));
+        this.classList.add('active');
+        document.querySelector('.chat-history').textContent = '';
+      }
+    });
+    document.querySelector('.chat-send').onclick = function () {
+      const input = document.querySelector('.chat-input');
+      if (input.value.trim()) {
+        const history = document.querySelector('.chat-history');
+        history.innerHTML += `<div style="text-align:right;color:#4e8cff;">我: ${input.value}</div>`;
+        input.value = '';
+        history.scrollTop = history.scrollHeight;
+      }
+    };
+
+    // 账户头像与昵称
+    document.getElementById('avatar-upload').onchange = function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          document.getElementById('avatar-preview').src = ev.target.result;
+          localStorage.setItem('user_avatar', ev.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    document.getElementById('account-save').onclick = function () {
+      const name = document.getElementById('account-name').value;
+      localStorage.setItem('user_name', name);
+      alert('保存成功');
+      // 首页右下角显示
+      showCreatorInfo();
+    };
+    function showCreatorInfo() {
+      let creator = document.querySelector('.creator');
+      if (!creator) {
+        creator = document.createElement('div');
+        creator.className = 'creator';
+        document.getElementById('windowBox').appendChild(creator);
+      }
+      const avatar = localStorage.getItem('user_avatar') || '默认头像.png';
+      const name = localStorage.getItem('user_name') || '未命名';
+      creator.innerHTML = `<img src="${avatar}"><span>${name}</span>`;
+      // 不再需要动态调整 right
+    }
+    showCreatorInfo();
+
+    // 获取真实数据的函数（请根据实际接口替换实现）
+    async function fetchRealStats() {
+      // 示例：假设有本地API /api/stats 返回 {cpu: 3200, gpu: 1200, mem: 56}
+      // const res = await fetch('/api/stats');
+      // return await res.json();
+
+      // 没有真实接口时，仍用模拟数据
+      return {
+        cpu: Math.round(Math.random() * 2000 + 2000), // 2000~4000 MHz
+        gpu: Math.round(Math.random() * 800 + 800),   // 800~1600 MHz
+        mem: Math.round(Math.random() * 60 + 30)      // 30~90 %
+      };
+    }
+
+    function drawLineChart(canvasId, label, color, value, min, max, unit, freqId) {
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      ctx.clearRect(0, 0, 320, 80);
+
+      // 绘制Y轴
+      ctx.strokeStyle = "#bbb";
+      ctx.beginPath();
+      ctx.moveTo(30, 10);
+      ctx.lineTo(30, 70);
+      ctx.stroke();
+
+      // 绘制X轴
+      ctx.beginPath();
+      ctx.moveTo(30, 70);
+      ctx.lineTo(310, 70);
+      ctx.stroke();
+
+      // Y轴刻度
+      ctx.fillStyle = "#888";
+      ctx.font = "12px Arial";
+      ctx.fillText(max + unit, 2, 18);
+      ctx.fillText(min + unit, 2, 72);
+
+      // 绘制折线
+      ctx.strokeStyle = color;
+      ctx.beginPath();
+      for (let i = 0; i < 32; i++) {
+        // 模拟数据
+        let v = Math.random() * (max - min) + min;
+        let y = 70 - ((v - min) / (max - min)) * 60;
+        let x = 30 + i * 9;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // 当前值显示
+      if (freqId) {
+        document.getElementById(freqId).textContent = value + unit;
+      }
+    }
+
+    // 每5秒获取一次真实数据并绘图
+    setInterval(async () => {
+      const stats = await fetchRealStats();
+      drawLineChart('chart-cpu', 'CPU', '#4e8cff', stats.cpu, 2000, 4000, ' MHz', 'cpu-freq');
+      drawLineChart('chart-gpu', 'GPU', '#6ad1ff', stats.gpu, 800, 1600, ' MHz', 'gpu-freq');
+      drawLineChart('chart-mem', '内存', '#ffb84e', stats.mem, 0, 100, '%', 'mem-usage');
+    }, 5000);
+
+    // 页面加载时先画一次
+    (async () => {
+      const stats = await fetchRealStats();
+      drawLineChart('chart-cpu', 'CPU', '#4e8cff', stats.cpu, 2000, 4000, ' MHz', 'cpu-freq');
+      drawLineChart('chart-gpu', 'GPU', '#6ad1ff', stats.gpu, 800, 1600, ' MHz', 'gpu-freq');
+      drawLineChart('chart-mem', '内存', '#ffb84e', stats.mem, 0, 100, '%', 'mem-usage');
+    })();
+
+    // ==== 超级盒子窗口拖动、分屏吸附，且保持比例缩放 ====
+    (function () {
+      const box = document.getElementById('windowBox');
+      let isDragging = false, dragOffsetX = 0, dragOffsetY = 0;
+      let dragStartW = 0, dragStartH = 0;
+      let dragStartL = 0, dragStartT = 0;
+      let prevTransition = '';
+      const minWidth = 400, minHeight = 250;
+      const aspectRatio = 900 / 510;
+
+      // 分屏吸附提示
+      let snapHint = null;
+      function showSnapHint(type) {
+        if (!snapHint) {
+          snapHint = document.createElement('div');
+          snapHint.className = 'snap-hint';
+          document.body.appendChild(snapHint);
+        }
+        snapHint.className = 'snap-hint ' + type;
+      }
+      function hideSnapHint() {
+        if (snapHint) {
+          snapHint.remove();
+          snapHint = null;
+        }
+      }
+      function getSnapType(e) {
+        const margin = 20, w = window.innerWidth, h = window.innerHeight;
+        const nearLeft = e.clientX < margin;
+        const nearRight = e.clientX > w - margin;
+        const nearTop = e.clientY < margin;
+        const nearBottom = e.clientY > h - margin;
+
+        if (nearLeft && nearTop) return "topleft";
+        if (nearRight && nearTop) return "topright";
+        if (nearLeft && nearBottom) return "bottomleft";
+        if (nearRight && nearBottom) return "bottomright";
+        if (nearLeft) return "left";
+        if (nearRight) return "right";
+        if (nearTop) return "top";
+        return "";
+      }
+
+      // 鼠标按下拖动
+      box.addEventListener('mousedown', function (e) {
+        // 排除拉伸手柄、菜单、按钮等
+        if (
+          e.target.classList.contains('resize-handle') ||
+          e.target.classList.contains('close-btn') ||
+          e.target.classList.contains('nav-btn') ||
+          e.target.classList.contains('start-btn') ||
+          e.target.closest('.hamburger-menu')
+        ) return;
+
+        isDragging = true;
+        dragOffsetX = e.clientX - box.offsetLeft;
+        dragOffsetY = e.clientY - box.offsetTop;
+        dragStartW = box.offsetWidth;
+        dragStartH = box.offsetHeight;
+        dragStartL = box.offsetLeft;
+        dragStartT = box.offsetTop;
+        prevTransition = box.style.transition;
+        box.style.transition = 'none';
+        box.style.position = 'absolute';
+
+        function onMove(ev) {
+          if (!isDragging) return;
+          let newL = ev.clientX - dragOffsetX;
+          let newT = ev.clientY - dragOffsetY;
+          // 限制不超出视口
+          newL = Math.max(0, Math.min(newL, window.innerWidth - box.offsetWidth));
+          newT = Math.max(0, Math.min(newT, window.innerHeight - box.offsetHeight));
+          box.style.left = newL + 'px';
+          box.style.top = newT + 'px';
+
+          // 分屏吸附提示
+          const snapType = getSnapType(ev);
+          if (snapType) showSnapHint(snapType);
+          else hideSnapHint();
+        }
+        function onUp(ev) {
+          if (!isDragging) return;
+          const snapType = getSnapType(ev);
+          let winW = window.innerWidth, winH = window.innerHeight;
+          let newW = dragStartW, newH = dragStartH, newL = dragStartL, newT = dragStartT;
+          switch (snapType) {
+            case "top":
+              newW = winW;
+              newH = winW / aspectRatio;
+              if (newH > winH) {
+                newH = winH;
+                newW = newH * aspectRatio;
+              }
+              newL = (winW - newW) / 2;
+              newT = 0;
+              break;
+            case "left":
+              newW = winW / 2;
+              newH = newW / aspectRatio;
+              if (newH > winH) {
+                newH = winH;
+                newW = newH * aspectRatio;
+              }
+              newL = 0;
+              newT = (winH - newH) / 2;
+              break;
+            case "right":
+              newW = winW / 2;
+              newH = newW / aspectRatio;
+              if (newH > winH) {
+                newH = winH;
+                newW = newH * aspectRatio;
+              }
+              newL = winW - newW;
+              newT = (winH - newH) / 2;
+              break;
+            case "topleft":
+              newW = winW / 2;
+              newH = newW / aspectRatio;
+              if (newH > winH / 2) {
+                newH = winH / 2;
+                newW = newH * aspectRatio;
+              }
+              newL = 0;
+              newT = 0;
+              break;
+            case "topright":
+              newW = winW / 2;
+              newH = newW / aspectRatio;
+              if (newH > winH / 2) {
+                newH = winH / 2;
+                newW = newH * aspectRatio;
+              }
+              newL = winW - newW;
+              newT = 0;
+              break;
+            case "bottomleft":
+              newW = winW / 2;
+              newH = newW / aspectRatio;
+              if (newH > winH / 2) {
+                newH = winH / 2;
+                newW = newH * aspectRatio;
+              }
+              newL = 0;
+              newT = winH - newH;
+              break;
+            case "bottomright":
+              newW = winW / 2;
+              newH = newW / aspectRatio;
+              if (newH > winH / 2) {
+                newH = winH / 2;
+                newW = newH * aspectRatio;
+              }
+              newL = winW - newW;
+              newT = winH - newH;
+              break;
+          }
+          if (snapType) {
+            box.style.width = newW + 'px';
+            box.style.height = newH + 'px';
+            box.style.left = newL + 'px';
+            box.style.top = newT + 'px';
+          }
+          hideSnapHint();
+          isDragging = false;
+          box.style.transition = prevTransition;
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+
+          // 拉伸结束后重新调整两个圆角矩形的位置和大小，确保内容适配
+          adjustRoundedRectPositionById('weather-component', 'weather-text', []);
+          const weatherRect = getRoundedRectInfo('weather-component');
+          adjustRoundedRectPositionById('random-component', 'hitokoto', weatherRect ? [weatherRect] : []);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+    })();
+
     const introVideo = document.getElementById('intro-video');
     const mainContent = document.getElementById('main-content');
     const skipBtn = document.getElementById('skip-btn');
@@ -928,65 +2551,6 @@
     }
     updateDateInfo();
     setInterval(updateDateInfo, 600000);
-
-    // snap分屏提示
-    let snapHint = null;
-    function showSnapHint(type) {
-      if (!snapHint) {
-        snapHint = document.createElement('div');
-        snapHint.className = 'snap-hint';
-        document.body.appendChild(snapHint);
-      }
-      snapHint.className = 'snap-hint ' + type;
-    }
-    function hideSnapHint() {
-      if (snapHint) {
-        snapHint.remove();
-        snapHint = null;
-      }
-    }
-    function getSnapType(e) {
-      const margin = 20, w = window.innerWidth, h = window.innerHeight;
-      const nearLeft = e.clientX < margin;
-      const nearRight = e.clientX > w - margin;
-      const nearTop = e.clientY < margin;
-      const nearBottom = e.clientY > h - margin;
-
-      if (nearLeft && nearTop) return "topleft";
-      if (nearRight && nearTop) return "topright";
-      if (nearLeft && nearBottom) return "bottomleft";
-      if (nearRight && nearBottom) return "bottomright";
-      if (nearLeft) return "left";
-      if (nearRight) return "right";
-      if (nearTop) return "top";
-      return "";
-    }
-
-    // 多窗口统一管理
-    const windows = [
-      {
-        id: 'macWindow',
-        title: 'Mac窗口',
-        icon: './PIC/yhmb.svg',
-        el: document.getElementById('macWindow'),
-        taskbarBtn: null,
-        isOpen: false,
-        isMinimized: false,
-        isMaximized: false,
-        lastPosition: null
-      },
-      {
-        id: 'bilibiliWindow',
-        title: '哔哩哔哩',
-        icon: './PIC/bilibili.svg',
-        el: document.getElementById('bilibiliWindow'),
-        taskbarBtn: null,
-        isOpen: false,
-        isMinimized: false,
-        isMaximized: false,
-        lastPosition: null
-      }
-    ];
 
     let topZIndex = 3000;
 
@@ -1179,6 +2743,50 @@
       });
     }
 
+    const menu = document.getElementById('menu');
+    let hideTimeout = null;
+
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+      clearTimeout(hideTimeout);
+      menu.style.top = e.clientY + 'px';
+      menu.style.left = e.clientX + 'px';
+      menu.classList.add('show');
+    });
+
+    document.addEventListener('click', function () {
+      menu.classList.remove('show');
+      // 动画结束后 pointer-events: none
+      hideTimeout = setTimeout(() => {
+        menu.style.pointerEvents = 'none';
+      }, 200); // 与CSS动画时间一致
+    });
+
+    window.addEventListener('resize', function () {
+      menu.classList.remove('show');
+      hideTimeout = setTimeout(() => {
+        menu.style.pointerEvents = 'none';
+      }, 200);
+    });
+
+    // 防止菜单溢出屏幕
+    menu.addEventListener('transitionend', function () {
+      const rect = menu.getBoundingClientRect();
+      if (rect.right > window.innerWidth) {
+        menu.style.left = (window.innerWidth - rect.width - 10) + 'px';
+      }
+      if (rect.bottom > window.innerHeight) {
+        menu.style.top = (window.innerHeight - rect.height - 10) + 'px';
+      }
+    });
+
+    // 保证每次弹出都能点击
+    menu.addEventListener('transitionstart', function (e) {
+      if (menu.classList.contains('show')) {
+        menu.style.pointerEvents = 'auto';
+      }
+    });
+
     // 窗口按钮事件绑定
     windows.forEach(win => {
       win.el.querySelector('.mac-btn.red').onclick = () => closeWindow(win.id);
@@ -1347,12 +2955,12 @@
     }
 
     function addResizeHandles(winEl) {
-      const directions = ['n','e','s','w','nw','ne','sw','se'];
+      const directions = ['n', 'e', 's', 'w', 'nw', 'ne', 'sw', 'se'];
       directions.forEach(dir => {
         const handle = document.createElement('div');
         handle.className = `resize-handle resize-handle-${dir}`;
         winEl.appendChild(handle);
-        handle.addEventListener('mousedown', function(e) {
+        handle.addEventListener('mousedown', function (e) {
           e.stopPropagation();
           startResizing(winEl, dir, e);
         });
@@ -1481,7 +3089,7 @@
     };
 
     // 启动台搜索逻辑
-    (function() {
+    (function () {
       const searchInput = document.getElementById('launchpad-search-input');
       const searchBtn = document.getElementById('launchpad-search-btn');
       const launchpad = document.getElementById('launchpad');
@@ -1526,7 +3134,7 @@
       }
 
       // 输入时本地应用搜索
-      searchInput.addEventListener('input', function() {
+      searchInput.addEventListener('input', function () {
         renderSearchResult(this.value);
       });
 
@@ -1538,7 +3146,7 @@
         }
       }
       searchBtn.onclick = doWebSearch;
-      searchInput.addEventListener('keydown', function(e) {
+      searchInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
           // 若有本地应用则优先打开，否则网页搜索
           const apps = searchApps(this.value);
@@ -1553,7 +3161,7 @@
 
       // 启动台每次打开时清空搜索
       const origOpenLaunchpad = openLaunchpad;
-      window.openLaunchpad = function() {
+      window.openLaunchpad = function () {
         searchInput.value = '';
         renderLaunchpad(0);
         content.scrollTop = 0;
@@ -1561,1593 +3169,64 @@
         setTimeout(() => searchInput.focus(), 120);
       };
     })();
+
+    // 复制
+    document.querySelector('#menu ul li:nth-child(1)').onclick = function () {
+      const selection = window.getSelection();
+      if (selection && selection.toString()) {
+        navigator.clipboard.writeText(selection.toString());
+        alert('已复制: ' + selection.toString());
+      } else {
+        alert('请先选中要复制的内容');
+      }
+    };
+
+    // 粘贴
+    document.querySelector('#menu ul li:nth-child(2)').onclick = async function () {
+      const text = await navigator.clipboard.readText();
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        selection.deleteFromDocument();
+        selection.getRangeAt(0).insertNode(document.createTextNode(text));
+      }
+    };
+
+    // 剪切
+    document.querySelector('#menu ul li:nth-child(3)').onclick = function () {
+      const selection = window.getSelection();
+      if (selection && selection.toString()) {
+        navigator.clipboard.writeText(selection.toString());
+        selection.deleteFromDocument();
+        alert('已剪切: ' + selection.toString());
+      } else {
+        alert('请先选中要剪切的内容');
+      }
+    };
+
+    document.getElementById('random-component').onclick = function () {
+      const text = document.getElementById('hitokoto').innerText;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () {
+          alert('已复制到剪贴板');
+        }, function () {
+          alert('复制失败，请检查浏览器权限');
+        });
+      } else {
+        // 兼容旧浏览器
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          alert('已复制到剪贴板');
+        } catch (err) {
+          alert('复制失败');
+        }
+        document.body.removeChild(textarea);
+      }
+    };
   </script>
 </body>
-<!DOCTYPE html>
-<html lang="zh-CN">
 
-<head>
-    <style>
-        @font-face {
-            font-family: 'Chillax';
-            src: url('/fonts/Chillax-Bold.otf') format('opentype');
-            font-weight: 800;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        html,
-        body,
-        * {
-            font-family: 'Chillax', Arial, sans-serif !important;
-            font-weight: 800;
-        }
-
-        /* 页面整体重置，清除默认边距，方便布局 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #f4f4f4;
-            /* 让内容居中显示 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-        }
-
-        /* 窗口容器样式 */
-        .window-container {
-            position: relative;
-            width: 900px;
-            height: 510px;
-            background: url('your-image.jpg') no-repeat center center / cover;
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        }
-
-        /* 关闭按钮样式，定位在右上角 */
-        .close-btn {
-            position: absolute;
-            display: flex;
-            top: 30.5px;
-            right: 26px;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            font-size: 45px;
-            color: #fff;
-            text-align: center;
-            line-height: 30px;
-            border-radius: 50%;
-        }
-
-        /* 标题样式，左上角显示 */
-        .title {
-            position: absolute;
-            display: flex;
-            top: 25px;
-            left: 26px;
-            font-size: 28px;
-            color: #fff;
-            font-weight: bold;
-        }
-
-        /* 底部导航栏样式 */
-        .bottom-nav {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 80px;
-            background-color: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(20px);
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 0 20px;
-            z-index: 1001;
-        }
-
-        .nav-btns {
-            display: flex;
-            gap: 14px;
-        }
-
-        .nav-btn {
-            width: 100px;
-            height: 44px;
-            border-radius: 12px;
-            background-color: rgb(255 255 255 / 0%);
-            backdrop-filter: blur(20px);
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            color: #ffffff;
-        }
-
-        .start-btn {
-            height: 56px;
-            width: 190px;
-            border: none;
-            color: #fff;
-            border-radius: 29px;
-            background-color: rgb(255 255 255 / 0%);
-            backdrop-filter: blur(20px);
-            cursor: pointer;
-            font-size: 20px;
-            margin-left: auto;
-        }
-
-        /* 个人信息样式，右下角位置 */
-        .creator {
-            position: absolute;
-            bottom: 100px;
-            /* right: -82px; */
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #fff;
-            justify-content: right;
-            /* width: 200px; */
-        }
-
-        .creator img {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-        }
-
-        .creator span {
-            max-width: 180px;
-            width: auto;
-            padding: 0 26px 0 0;
-            display: inline-block;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            text-align: right;
-        }
-
-        /* 拉伸手柄样式 */
-        .resize-handle {
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            /*background: rgba(255, 255, 255, 0.7); 是否显示拉伸区域*/
-            border-radius: 50%;
-            z-index: 1010;
-            cursor: pointer;
-        }
-
-        .resize-handle.nw {
-            top: -8px;
-            left: -8px;
-            cursor: nwse-resize;
-        }
-
-        .resize-handle.ne {
-            top: -8px;
-            right: -8px;
-            cursor: nesw-resize;
-        }
-
-        .resize-handle.sw {
-            bottom: -8px;
-            left: -8px;
-            cursor: nesw-resize;
-        }
-
-        .resize-handle.se {
-            bottom: -8px;
-            right: -8px;
-            cursor: nwse-resize;
-        }
-
-        .resize-handle.n {
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            cursor: ns-resize;
-        }
-
-        .resize-handle.s {
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            cursor: ns-resize;
-        }
-
-        .resize-handle.e {
-            right: -8px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: ew-resize;
-        }
-
-        .resize-handle.w {
-            left: -8px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: ew-resize;
-        }
-
-        /* 圆角矩形样式 */
-        .rounded-rect {
-            position: absolute;
-            top: 80px;
-            left: 80px;
-            min-width: 120px;
-            max-width: 400px;
-            height: auto;
-            min-height: 60px;
-            padding: 18px 24px;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: width 0.3s, font-size 0.3s;
-            word-break: break-all;
-            overflow-wrap: break-word;
-        }
-
-        .hitokoto-text {
-            font-size: 22px;
-            color: #333;
-            text-align: center;
-            word-break: break-all;
-            line-height: 1.4;
-            transition: font-size 0.3s;
-            width: 100%;
-            display: block;
-            max-width: 100%;
-            white-space: pre-line;
-        }
-
-        /* 城市选择弹窗样式 */
-        #city-modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.18);
-            align-items: center;
-            justify-content: center;
-        }
-
-        #city-modal>div {
-            background: rgba(255, 255, 255, 0.55);
-            backdrop-filter: blur(18px);
-            border-radius: 24px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
-            padding: 36px 32px 28px 32px;
-            min-width: 320px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-        }
-
-        #city-modal button {
-            /* position: absolute; */
-            top: 18px;
-            right: 22px;
-            font-size: 28px;
-            background: none;
-            border: none;
-            color: #888;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        #city-modal button:hover {
-            color: #333;
-        }
-
-        #city-modal select {
-            font-size: 20px;
-            padding: 10px 18px;
-            border-radius: 12px;
-            border: 1px solid #e0e0e0;
-            width: 220px;
-            background: rgba(255, 255, 255, 0.7);
-            margin-bottom: 22px;
-            outline: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            color: #333;
-        }
-
-        #city-modal #city-save-btn {
-            font-size: 20px;
-            padding: 8px 38px;
-            border-radius: 14px;
-            border: none;
-            background: linear-gradient(90deg, #4e8cff 0%, #6ad1ff 100%);
-            color: #fff;
-            font-weight: bold;
-            letter-spacing: 2px;
-            box-shadow: 0 2px 8px rgba(78, 140, 255, 0.08);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        #city-modal #city-save-btn:hover {
-            background: linear-gradient(90deg, #6ad1ff 0%, #4e8cff 100%);
-        }
-
-        /* 汉堡菜单样式 */
-        .hamburger-menu {
-            position: absolute;
-            top: 60px;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgb(0 0 0 / 22%);
-            border-radius: 24px 24px 0 0;
-            box-shadow: 0 -30px 12px rgba(0, 0, 0, 0.12);
-            z-index: 99;
-            backdrop-filter: blur(20px);
-            padding: 0 0 24px 0;
-            animation: fadeIn .2s;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .menu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 32px 8px 32px;
-            font-size: 22px;
-            font-weight: bold;
-            color: #222;
-        }
-
-        .menu-close {
-            font-size: 28px;
-            background: none;
-            border: none;
-            color: #888;
-            cursor: pointer;
-        }
-
-        .menu-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 18px;
-            padding: 0 32px;
-        }
-
-        .game-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: rgba(78, 140, 255, 0.08);
-            border-radius: 18px;
-            width: 90px;
-            padding: 12px 0;
-        }
-
-        .game-icon {
-            width: 48px;
-            height: 48px;
-            background: #eee;
-            border-radius: 12px;
-            margin-bottom: 8px;
-        }
-
-        .game-name {
-            font-size: 16px;
-            color: #333;
-        }
-
-        .message-layout {
-            display: flex;
-            height: 220px;
-            margin: 0 32px;
-        }
-
-        .contacts {
-            width: 90px;
-            border-right: 1px solid #eee;
-            padding: 8px 0;
-        }
-
-        .contact {
-            padding: 8px 12px;
-            cursor: pointer;
-            border-radius: 8px;
-            margin-bottom: 6px;
-        }
-
-        .contact.active,
-        .contact:hover {
-            background: #e6f0ff;
-            color: #4e8cff;
-        }
-
-        .chat-window {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 8px 0 0 18px;
-        }
-
-        .chat-history {
-            flex: 1;
-            overflow-y: auto;
-            background: #f7f7fa;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            padding: 8px;
-            font-size: 15px;
-        }
-
-        .chat-input {
-            width: 70%;
-            padding: 6px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
-
-        .chat-send {
-            padding: 6px 18px;
-            border-radius: 8px;
-            background: #4e8cff;
-            color: #fff;
-            border: none;
-            margin-left: 8px;
-        }
-
-        #menu-account input[type="text"] {
-            margin-top: 8px;
-            width: 70%;
-            padding: 6px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
-
-        #menu-account button {
-            margin-top: 16px;
-            width: 100%;
-            padding: 8px;
-            border-radius: 12px;
-            background: #4e8cff;
-            color: #fff;
-            border: none;
-        }
-
-        .chart-block {
-            margin-bottom: 18px;
-        }
-
-        .chart-title {
-            font-size: 15px;
-            color: #333;
-            margin-bottom: 2px;
-        }
-
-        /* 分屏吸附提示样式 */
-        .snap-hint {
-            position: fixed;
-            z-index: 9998;
-            width: 120px;
-            height: 120px;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
-            background: rgba(78, 140, 255, 0.9);
-            border-radius: 24px;
-            transition: opacity 0.2s;
-            opacity: 0;
-        }
-
-        .snap-hint.left {
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .snap-hint.right {
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .snap-hint.top {
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .snap-hint.bottom {
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .snap-hint.topleft {
-            left: 10px;
-            top: 10px;
-        }
-
-        .snap-hint.topright {
-            right: 10px;
-            top: 10px;
-        }
-
-        .snap-hint.bottomleft {
-            left: 10px;
-            bottom: 10px;
-        }
-
-        .snap-hint.bottomright {
-            right: 10px;
-            bottom: 10px;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="window-container" id="windowBox">
-        <div class="resize-handle nw"></div>
-        <div class="resize-handle ne"></div>
-        <div class="resize-handle sw"></div>
-        <div class="resize-handle se"></div>
-        <div class="resize-handle n"></div>
-        <div class="resize-handle s"></div>
-        <div class="resize-handle e"></div>
-        <div class="resize-handle w"></div>
-        <!-- 新增圆角矩形div -->
-        <div class="rounded-rect" id="random-component">
-            <span id="hitokoto" class="hitokoto-text">加载中...</span>
-        </div>
-        <!-- 新增圆角矩形div：天气 -->
-        <div class="rounded-rect" id="weather-component" style="visibility:hidden;">
-            <span id="weather-text" class="hitokoto-text">加载中...</span>
-        </div>
-        <div class="close-btn">×</div>
-        <div class="title">SHOOTING STAR</div>
-        <img src="./PIC/cjbox.jpg" style="width:100%;:none;pointer-events:none;">
-        <div class="bottom-nav">
-            <div class="nav-btns">
-                <button class="nav-btn">首页</button>
-                <button class="nav-btn">游戏列表</button>
-                <button class="nav-btn">仪表盘</button>
-                <button class="nav-btn">消息</button>
-                <button class="nav-btn">账户</button>
-            </div>
-            <button class="start-btn">开始 Start</button>
-        </div>
-        <!-- 游戏列表汉堡菜单 -->
-        <div id="menu-game" class="hamburger-menu" style="display:none;">
-            <div class="menu-header">
-                <span>游戏列表</span>
-                <button class="menu-close">×</button>
-            </div>
-            <input type="text" id="game-search" placeholder="搜索游戏..."
-                style="margin:12px 0;width:90%;padding:8px;border-radius:8px;border:1px solid #ccc;">
-            <div id="game-list" class="menu-list">
-                <!-- 示例游戏项 -->
-                <div class="game-item">
-                    <div class="game-icon"></div>
-                    <div class="game-name">原神</div>
-                </div>
-                <div class="game-item">
-                    <div class="game-icon"></div>
-                    <div class="game-name">我的世界</div>
-                </div>
-                <!-- 可继续添加 -->
-            </div>
-        </div>
-        <!-- 仪表盘汉堡菜单 -->
-        <div id="menu-dashboard" class="hamburger-menu" style="display:none;">
-            <div class="menu-header">
-                <span>仪表盘</span>
-                <button class="menu-close">×</button>
-            </div>
-            <div id="device-info" style="margin:12px 0;">
-                <div>设备名：<span id="device-name">本机</span></div>
-                <div>系统：<span id="device-os"></span></div>
-            </div>
-            <div class="chart-block">
-                <div class="chart-title">CPU 频率：<span id="cpu-freq">0 MHz</span></div>
-                <canvas id="chart-cpu" width="320" height="80"></canvas>
-            </div>
-            <div class="chart-block">
-                <div class="chart-title">GPU 频率：<span id="gpu-freq">0 MHz</span></div>
-                <canvas id="chart-gpu" width="320" height="80"></canvas>
-            </div>
-            <div class="chart-block">
-                <div class="chart-title">内存占用：<span id="mem-usage">0%</span></div>
-                <canvas id="chart-mem" width="320" height="80"></canvas>
-            </div>
-        </div>
-        <!-- 消息汉堡菜单 -->
-        <div id="menu-message" class="hamburger-menu" style="display:none;">
-            <div class="menu-header">
-                <span>消息</span>
-                <button class="menu-close">×</button>
-            </div>
-            <div class="message-layout">
-                <div class="contacts">
-                    <div class="contact active">小明</div>
-                    <div class="contact">小红</div>
-                </div>
-                <div class="chat-window">
-                    <div class="chat-history"></div>
-                    <input type="text" class="chat-input" placeholder="输入消息...">
-                    <button class="chat-send">发送</button>
-                </div>
-            </div>
-        </div>
-        <!-- 账户汉堡菜单 -->
-        <div id="menu-account" class="hamburger-menu" style="display:none;">
-            <div class="menu-header">
-                <span>账户</span>
-                <button class="menu-close">×</button>
-            </div>
-            <div style="text-align:center;margin:18px 0;">
-                <img id="avatar-preview" src="默认头像.png"
-                    style="width:64px;height:64px;border-radius:50%;object-fit:cover;">
-                <input type="file" id="avatar-upload" accept="image/*" style="display:block;margin:8px auto;">
-            </div>
-            <div>
-                <label>昵称：</label>
-                <input type="text" id="account-name"
-                    style="width:70%;padding:6px;border-radius:8px;border:1px solid #ccc;">
-            </div>
-            <button id="account-save"
-                style="margin-top:16px;width:100%;padding:8px;border-radius:12px;background:#4e8cff;color:#fff;border:none;">保存</button>
-        </div>
-    </div>
-    <!-- 城市选择弹窗（优化风格） -->
-    <div id="city-modal"
-        style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
-        <div style="
-        background: rgba(255,255,255,0.55);
-        backdrop-filter: blur(18px);
-        border-radius: 24px;
-        box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-        padding: 36px 32px 28px 32px;
-        width: 320px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        ">
-            <button id="city-modal-close" style="
-            position: absolute;
-            top: 18px;
-            right: 22px;
-            font-size: 28px;
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0);
-            cursor: pointer;
-            transition: color 0.2s;
-        " onmouseover="this.style.color='#333'" onmouseout="this.style.color='#888'">×</button>
-            <div style="font-size: 22px; font-weight: bold; color: #222; margin-bottom: 18px; letter-spacing: 2px;">
-                选择城市
-            </div>
-            <select id="city-select" style="
-            font-size: 20px;
-            padding: 10px 18px;
-            border-radius: 12px;
-            border: 1px solid #e0e0e0;
-            width: 220px;
-            background: rgba(255,255,255,0.7);
-            margin-bottom: 22px;
-            outline: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            color: #333;
-        ">
-                <option value="武汉">武汉</option>
-                <option value="北京">北京</option>
-                <option value="上海">上海</option>
-                <option value="广州">广州</option>
-                <option value="深圳">深圳</option>
-                <option value="成都">成都</option>
-                <option value="杭州">杭州</option>
-                <option value="南京">南京</option>
-                <option value="重庆">重庆</option>
-                <option value="西安">西安</option>
-                <option value="长沙">长沙</option>
-                <option value="苏州">苏州</option>
-                <option value="天津">天津</option>
-                <option value="郑州">郑州</option>
-                <option value="青岛">青岛</option>
-                <option value="合肥">合肥</option>
-                <option value="福州">福州</option>
-                <option value="厦门">厦门</option>
-                <option value="济南">济南</option>
-                <option value="大连">大连</option>
-            </select>
-            <button id="city-save-btn" style="
-            font-size: 20px;
-            padding: 8px 38px;
-            border-radius: 14px;
-            border: none;
-            background: linear-gradient(90deg, #4e8cff 0%, #6ad1ff 100%);
-            color: #fff;
-            font-weight: bold;
-            letter-spacing: 2px;
-            box-shadow: 0 2px 8px rgba(78,140,255,0.08);
-            cursor: pointer;
-            transition: background 0.2s;
-        " onmouseover="this.style.background='linear-gradient(90deg,#6ad1ff 0%,#4e8cff 100%)'"
-                onmouseout="this.style.background='linear-gradient(90deg,#4e8cff 0%,#6ad1ff 100%)'">
-                保存
-            </button>
-        </div>
-    </div>
-    <script>
-        const box = document.getElementById('windowBox');
-        const minWidth = 400,
-            minHeight = 250;
-        const aspectRatio = 900 / 510; // 宽高比
-        let startX, startY, startW, startH, startL, startT, dir;
-
-        function onMouseMove(e) {
-            let dx = e.clientX - startX;
-            let dy = e.clientY - startY;
-            let newW = startW,
-                newH = startH,
-                newL = startL,
-                newT = startT;
-
-            if (dir === 'e' || dir === 'w') {
-                if (dir === 'e') newW = Math.max(minWidth, startW + dx);
-                if (dir === 'w') {
-                    newW = Math.max(minWidth, startW - dx);
-                    newL = startL + dx;
-                }
-                newH = newW / aspectRatio;
-                if (newH < minHeight) {
-                    newH = minHeight;
-                    newW = newH * aspectRatio;
-                }
-            } else if (dir === 'n' || dir === 's') {
-                if (dir === 's') newH = Math.max(minHeight, startH + dy);
-                if (dir === 'n') {
-                    newH = Math.max(minHeight, startH - dy);
-                    newT = startT + dy;
-                }
-                newW = newH * aspectRatio;
-                if (newW < minWidth) {
-                    newW = minWidth;
-                    newH = newW / aspectRatio;
-                }
-            } else {
-                let delta = 0;
-                if (dir === 'se') delta = Math.max(dx, dy);
-                if (dir === 'sw') delta = Math.max(-dx, dy);
-                if (dir === 'ne') delta = Math.max(dx, -dy);
-                if (dir === 'nw') delta = Math.max(-dx, -dy);
-
-                if (dir === 'se' || dir === 'ne') {
-                    newW = Math.max(minWidth, startW + delta);
-                    newH = newW / aspectRatio;
-                } else if (dir === 'sw' || dir === 'nw') {
-                    newW = Math.max(minWidth, startW - delta);
-                    newL = startL + delta;
-                    newH = newW / aspectRatio;
-                }
-
-                if (dir === 'ne' || dir === 'nw') {
-                    newT = startT - (newH - startH);
-                }
-                if (newH < minHeight) {
-                    newH = minHeight;
-                    newW = newH * aspectRatio;
-                }
-                if (newW < minWidth) {
-                    newW = minWidth;
-                    newH = newW / aspectRatio;
-                }
-            }
-
-            box.style.width = newW + 'px';
-            box.style.height = newH + 'px';
-            box.style.left = newL + 'px';
-            box.style.top = newT + 'px';
-        }
-
-        function onMouseUp() {
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-
-            // 拉伸结束后重新调整两个圆角矩形的位置和大小，确保内容适配
-            adjustRoundedRectPositionById('weather-component', 'weather-text', []);
-            const weatherRect = getRoundedRectInfo('weather-component');
-            adjustRoundedRectPositionById('random-component', 'hitokoto', weatherRect ? [weatherRect] : []);
-        }
-
-        document.querySelectorAll('.resize-handle').forEach(handle => {
-            handle.addEventListener('mousedown', function (e) {
-                e.preventDefault();
-                dir = this.className.split(' ')[1];
-                const rect = box.getBoundingClientRect();
-                startX = e.clientX;
-                startY = e.clientY;
-                startW = rect.width;
-                startH = rect.height;
-                startL = box.offsetLeft;
-                startT = box.offsetTop;
-                box.style.position = 'absolute';
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
-            });
-        });
-
-        // 判断两个矩形是否重叠
-        function isRectOverlap(r1, r2) {
-            return !(r1.left + r1.width <= r2.left ||
-                r2.left + r2.width <= r1.left ||
-                r1.top + r1.height <= r2.top ||
-                r2.top + r2.height <= r1.top);
-        }
-
-        // 动态避让的通用位置调整函数
-        function adjustRoundedRectPositionById(componentId, textId, avoidRects = []) {
-            const textElement = document.getElementById(textId);
-            const componentElement = document.getElementById(componentId);
-            const windowBox = document.getElementById('windowBox');
-
-            // 先重置样式
-            textElement.style.fontSize = '22px';
-            textElement.style.whiteSpace = 'nowrap';
-            componentElement.style.width = 'auto';
-            componentElement.style.height = 'auto';
-
-            setTimeout(() => {
-                const maxWidth = 400;
-                const minWidth = 120;
-                const maxHeight = windowBox.offsetHeight - 40; // 预留边距
-                let width = textElement.scrollWidth + 48;
-                let height = textElement.scrollHeight + 36;
-
-                // 先调整字号
-                if (width > maxWidth) {
-                    textElement.style.fontSize = '18px';
-                    width = textElement.scrollWidth + 48;
-                    height = textElement.scrollHeight + 36;
-                }
-                // 再判断是否需要换行
-                if (width > maxWidth) {
-                    width = maxWidth;
-                    textElement.style.whiteSpace = 'pre-line';
-                    textElement.style.wordBreak = 'break-all';
-                    // 重新计算高度
-                    componentElement.style.width = width + 'px';
-                    setTimeout(() => {
-                        height = textElement.scrollHeight + 36;
-                        if (height > maxHeight) height = maxHeight;
-                        componentElement.style.height = height + 'px';
-                        // 修正：同步max-width，防止文字溢出
-                        textElement.style.maxWidth = width - 24 + 'px';
-                    }, 0);
-                } else {
-                    textElement.style.whiteSpace = 'nowrap';
-                    componentElement.style.height = 'auto';
-                    // 修正：同步max-width，防止文字溢出
-                    textElement.style.maxWidth = width - 24 + 'px';
-                }
-                if (width < minWidth) width = minWidth;
-                if (height > maxHeight) height = maxHeight;
-                componentElement.style.width = width + 'px';
-                componentElement.style.height = height + 'px';
-                // 修正：同步max-width，防止文字溢出
-                textElement.style.maxWidth = width - 24 + 'px';
-
-                // 定位逻辑
-                const boxRect = windowBox.getBoundingClientRect();
-                const rectWidth = width;
-                const rectHeight = componentElement.offsetHeight;
-
-                const centerWidth = boxRect.width * 0.6;
-                const centerHeight = boxRect.height * 0.6;
-                const minLeft = (boxRect.width - centerWidth) / 2;
-                const minTop = (boxRect.height - centerHeight) / 2;
-                const maxLeft = minLeft + centerWidth - rectWidth;
-                const maxTop = minTop + centerHeight - rectHeight;
-
-                let left, top, tryCount = 0, maxTry = 30, found = false;
-                do {
-                    left = Math.random() * (maxLeft - minLeft) + minLeft;
-                    top = Math.random() * (maxTop - minTop) + minTop;
-                    const thisRect = { left, top, width: rectWidth, height: rectHeight };
-                    found = avoidRects.every(r => !isRectOverlap(thisRect, r));
-                    tryCount++;
-                } while (
-                    (!found || left < 0 || top < 0 || left + rectWidth > boxRect.width || top + rectHeight > boxRect.height)
-                    && tryCount < maxTry
-                );
-                left = Math.max(0, Math.min(left, boxRect.width - rectWidth));
-                top = Math.max(0, Math.min(top, boxRect.height - rectHeight));
-
-                componentElement.style.left = left + 'px';
-                componentElement.style.top = top + 'px';
-                componentElement.style.visibility = 'visible';
-            }, 50);
-        }
-
-        // 获取某个圆角矩形的相对windowBox的矩形信息
-        function getRoundedRectInfo(componentId) {
-            const el = document.getElementById(componentId);
-            const box = document.getElementById('windowBox');
-            if (!el || el.style.visibility === 'hidden') return null;
-            const boxRect = box.getBoundingClientRect();
-            const elRect = el.getBoundingClientRect();
-            return {
-                left: elRect.left - boxRect.left,
-                top: elRect.top - boxRect.top,
-                width: el.offsetWidth,
-                height: el.offsetHeight
-            };
-        }
-
-        // 一言加载与避让天气
-        fetch('https://v1.hitokoto.cn/?c=b')
-            .then(response => response.json())
-            .then(data => {
-                const hitokotoElement = document.getElementById('hitokoto');
-                const randomComponentElement = document.getElementById('random-component');
-                randomComponentElement.style.visibility = 'hidden';
-                hitokotoElement.textContent = data.hitokoto;
-                // 避让天气组件
-                const weatherRect = getRoundedRectInfo('weather-component');
-                adjustRoundedRectPositionById('random-component', 'hitokoto', weatherRect ? [weatherRect] : []);
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                document.getElementById('hitokoto').textContent = '获取一言失败';
-                document.getElementById('random-component').style.visibility = 'visible';
-            });
-
-        // 获取本地存储的城市名，没有则默认武汉
-        function getWeatherCity() {
-            return localStorage.getItem('weather_city') || '武汉';
-        }
-
-        function setWeatherCity(city) {
-            localStorage.setItem('weather_city', city);
-        }
-
-        // 封装天气加载
-        function loadWeather() {
-            const city = getWeatherCity();
-            fetch(`https://api.vvhan.com/api/weather?type=now&city=${encodeURIComponent(city)}`)
-                .then(response => response.json())
-                .then(data => {
-                    const weatherText = document.getElementById('weather-text');
-                    const weatherComponent = document.getElementById('weather-component');
-                    weatherComponent.style.visibility = 'hidden';
-                    if (data && data.success && data.data && data.data.type && data.data.high) {
-                        const temp = data.data.high.replace('°C', '°C').replace('℃', '°C');
-                        weatherText.textContent = `${data.data.type} ${temp}`;
-                    } else {
-                        weatherText.textContent = '晴 25°C'; // 默认内容
-                    }
-                    const hitokotoRect = getRoundedRectInfo('random-component');
-                    adjustRoundedRectPositionById('weather-component', 'weather-text', hitokotoRect ? [hitokotoRect] : []);
-                })
-                .catch(error => {
-                    console.error('Error fetching weather:', error);
-                    const weatherText = document.getElementById('weather-text');
-                    weatherText.textContent = '晴 25°C'; // 默认内容
-                    document.getElementById('weather-component').style.visibility = 'visible';
-                    const hitokotoRect = getRoundedRectInfo('random-component');
-                    adjustRoundedRectPositionById('weather-component', 'weather-text', hitokotoRect ? [hitokotoRect] : []);
-                });
-        }
-
-        // 初始加载
-        loadWeather();
-
-        // 点击天气控件弹出城市选择弹窗
-        document.getElementById('weather-component').onclick = function () {
-            document.getElementById('city-modal').style.display = 'flex';
-            document.getElementById('city-select').value = getWeatherCity();
-        };
-        // 关闭弹窗
-        document.getElementById('city-modal-close').onclick = function () {
-            document.getElementById('city-modal').style.display = 'none';
-        };
-        // 点击遮罩关闭
-        document.getElementById('city-modal').onclick = function (e) {
-            if (e.target === this) this.style.display = 'none';
-        };
-        // 保存城市
-        document.getElementById('city-save-btn').onclick = function () {
-            const city = document.getElementById('city-select').value;
-            setWeatherCity(city);
-            document.getElementById('city-modal').style.display = 'none';
-            loadWeather();
-        };
-
-        // 拉伸时两个都自适应且动态避让
-        const resizeObserver = new ResizeObserver(() => {
-            // 先天气，后避让一言
-            adjustRoundedRectPositionById('weather-component', 'weather-text', []);
-            const weatherRect = getRoundedRectInfo('weather-component');
-            adjustRoundedRectPositionById('random-component', 'hitokoto', weatherRect ? [weatherRect] : []);
-        });
-        resizeObserver.observe(document.getElementById('windowBox'));
-
-        // 折叠菜单功能
-        function handleNavCollapse() {
-            const navBtns = document.querySelector('.nav-btns');
-            const navBtnsArray = Array.from(navBtns.children);
-            const windowBox = document.getElementById('windowBox');
-            const minNavWidth = 600; // 触发折叠的宽度阈值，可根据实际调整
-
-            // 检查是否已存在折叠菜单
-            let collapseMenu = document.getElementById('collapse-menu');
-            if (!collapseMenu) {
-                collapseMenu = document.createElement('div');
-                collapseMenu.id = 'collapse-menu';
-                collapseMenu.style.display = 'none';
-                collapseMenu.style.position = 'relative';
-                collapseMenu.innerHTML = `
-            <button id="collapse-toggle" style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.7);border:none;cursor:pointer;font-size:24px;">☰</button>
-            <div id="collapse-list" style="display:none;position:absolute;top:50px;left:0;z-index:99;background:rgba(255,255,255,0.95);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-            </div>
-        `;
-                navBtns.parentNode.insertBefore(collapseMenu, navBtns);
-                // 事件
-                collapseMenu.querySelector('#collapse-toggle').onclick = function () {
-                    const list = collapseMenu.querySelector('#collapse-list');
-                    list.style.display = list.style.display === 'block' ? 'none' : 'block';
-                };
-                document.addEventListener('click', function (e) {
-                    if (!collapseMenu.contains(e.target)) {
-                        collapseMenu.querySelector('#collapse-list').style.display = 'none';
-                    }
-                });
-            }
-
-            if (windowBox.offsetWidth < minNavWidth) {
-                // 折叠
-                collapseMenu.style.display = 'block';
-                navBtns.style.display = 'none';
-                // 填充折叠菜单
-                const list = collapseMenu.querySelector('#collapse-list');
-                list.innerHTML = '';
-                navBtnsArray.forEach(btn => {
-                    const clone = btn.cloneNode(true);
-                    clone.style.width = '100%';
-                    clone.style.margin = '0';
-                    list.appendChild(clone);
-                });
-            } else {
-                // 展开
-                collapseMenu.style.display = 'none';
-                navBtns.style.display = 'flex';
-            }
-        }
-
-        // 初始化和监听窗口变化
-        window.addEventListener('resize', handleNavCollapse);
-        document.addEventListener('DOMContentLoaded', handleNavCollapse);
-        const resizeObserverNav = new ResizeObserver(handleNavCollapse);
-        resizeObserverNav.observe(document.getElementById('windowBox'));
-
-        // 城市选择相关
-        const cityModal = document.getElementById('city-modal');
-        const citySelect = document.getElementById('city-select');
-        const citySaveBtn = document.getElementById('city-save-btn');
-
-        // 打开城市选择弹窗
-        function openCityModal() {
-            cityModal.style.display = 'flex';
-        }
-
-        // 关闭城市选择弹窗
-        function closeCityModal() {
-            cityModal.style.display = 'none';
-        }
-
-        // 保存选择的城市并刷新天气
-        function saveSelectedCity() {
-            const selectedCity = citySelect.value;
-            setWeatherCity(selectedCity); // 保存到本地
-            loadWeather();                // 刷新天气控件
-            closeCityModal();
-        }
-
-        // 绑定事件
-        document.getElementById('city-modal-close').onclick = closeCityModal;
-        citySaveBtn.onclick = saveSelectedCity;
-
-        // 菜单显示/隐藏控制
-        const menuIds = ['menu-game', 'menu-dashboard', 'menu-message', 'menu-account'];
-        function closeAllMenus() {
-            menuIds.forEach(id => document.getElementById(id).style.display = 'none');
-        }
-        document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
-            btn.onclick = function () {
-                closeAllMenus();
-                if (idx === 0) return; // 首页，关闭所有菜单
-                if (idx === 1) document.getElementById('menu-game').style.display = 'block';
-                if (idx === 2) document.getElementById('menu-dashboard').style.display = 'block';
-                if (idx === 3) document.getElementById('menu-message').style.display = 'block';
-                if (idx === 4) document.getElementById('menu-account').style.display = 'block';
-            };
-        });
-        // 菜单内关闭按钮
-        document.querySelectorAll('.menu-close').forEach(btn => {
-            btn.onclick = closeAllMenus;
-        });
-
-        // 游戏搜索功能
-        document.getElementById('game-search').oninput = function () {
-            const kw = this.value.trim();
-            document.querySelectorAll('#game-list .game-item').forEach(item => {
-                const name = item.querySelector('.game-name').textContent;
-                item.style.display = name.includes(kw) ? '' : 'none';
-            });
-        };
-
-        // 仪表盘设备信息与折线图（仅演示，需引入Chart.js或自绘）
-        document.getElementById('device-os').textContent = navigator.userAgent;
-        // 简单CPU等数据模拟
-        function drawLineChart(canvasId, label, color) {
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            ctx.clearRect(0, 0, 320, 80);
-            ctx.strokeStyle = color;
-            ctx.beginPath();
-            for (let i = 0; i < 32; i++) {
-                const y = 60 - Math.random() * 50;
-                ctx.lineTo(10 + i * 9, y);
-            }
-            ctx.stroke();
-        }
-        setInterval(() => {
-            drawLineChart('chart-cpu', 'CPU', '#4e8cff');
-            drawLineChart('chart-gpu', 'GPU', '#6ad1ff');
-            drawLineChart('chart-mem', '内存', '#ffb84e');
-        }, 1500);
-
-        // 消息功能（本地演示，局域网需WebSocket等）
-        document.querySelectorAll('.contact').forEach(c => {
-            c.onclick = function () {
-                document.querySelectorAll('.contact').forEach(x => x.classList.remove('active'));
-                this.classList.add('active');
-                document.querySelector('.chat-history').textContent = '';
-            }
-        });
-        document.querySelector('.chat-send').onclick = function () {
-            const input = document.querySelector('.chat-input');
-            if (input.value.trim()) {
-                const history = document.querySelector('.chat-history');
-                history.innerHTML += `<div style="text-align:right;color:#4e8cff;">我: ${input.value}</div>`;
-                input.value = '';
-                history.scrollTop = history.scrollHeight;
-            }
-        };
-
-        // 账户头像与昵称
-        document.getElementById('avatar-upload').onchange = function (e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (ev) {
-                    document.getElementById('avatar-preview').src = ev.target.result;
-                    localStorage.setItem('user_avatar', ev.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-        document.getElementById('account-save').onclick = function () {
-            const name = document.getElementById('account-name').value;
-            localStorage.setItem('user_name', name);
-            alert('保存成功');
-            // 首页右下角显示
-            showCreatorInfo();
-        };
-        function showCreatorInfo() {
-            let creator = document.querySelector('.creator');
-            if (!creator) {
-                creator = document.createElement('div');
-                creator.className = 'creator';
-                document.getElementById('windowBox').appendChild(creator);
-            }
-            const avatar = localStorage.getItem('user_avatar') || '默认头像.png';
-            const name = localStorage.getItem('user_name') || '未命名';
-            creator.innerHTML = `<img src="${avatar}"><span>${name}</span>`;
-            // 不再需要动态调整 right
-        }
-        showCreatorInfo();
-
-        // 获取真实数据的函数（请根据实际接口替换实现）
-        async function fetchRealStats() {
-            // 示例：假设有本地API /api/stats 返回 {cpu: 3200, gpu: 1200, mem: 56}
-            // const res = await fetch('/api/stats');
-            // return await res.json();
-
-            // 没有真实接口时，仍用模拟数据
-            return {
-                cpu: Math.round(Math.random() * 2000 + 2000), // 2000~4000 MHz
-                gpu: Math.round(Math.random() * 800 + 800),   // 800~1600 MHz
-                mem: Math.round(Math.random() * 60 + 30)      // 30~90 %
-            };
-        }
-
-        function drawLineChart(canvasId, label, color, value, min, max, unit, freqId) {
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            ctx.clearRect(0, 0, 320, 80);
-
-            // 绘制Y轴
-            ctx.strokeStyle = "#bbb";
-            ctx.beginPath();
-            ctx.moveTo(30, 10);
-            ctx.lineTo(30, 70);
-            ctx.stroke();
-
-            // 绘制X轴
-            ctx.beginPath();
-            ctx.moveTo(30, 70);
-            ctx.lineTo(310, 70);
-            ctx.stroke();
-
-            // Y轴刻度
-            ctx.fillStyle = "#888";
-            ctx.font = "12px Arial";
-            ctx.fillText(max + unit, 2, 18);
-            ctx.fillText(min + unit, 2, 72);
-
-            // 绘制折线
-            ctx.strokeStyle = color;
-            ctx.beginPath();
-            for (let i = 0; i < 32; i++) {
-                // 模拟数据
-                let v = Math.random() * (max - min) + min;
-                let y = 70 - ((v - min) / (max - min)) * 60;
-                let x = 30 + i * 9;
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-
-            // 当前值显示
-            if (freqId) {
-                document.getElementById(freqId).textContent = value + unit;
-            }
-        }
-
-        // 每5秒获取一次真实数据并绘图
-        setInterval(async () => {
-            const stats = await fetchRealStats();
-            drawLineChart('chart-cpu', 'CPU', '#4e8cff', stats.cpu, 2000, 4000, ' MHz', 'cpu-freq');
-            drawLineChart('chart-gpu', 'GPU', '#6ad1ff', stats.gpu, 800, 1600, ' MHz', 'gpu-freq');
-            drawLineChart('chart-mem', '内存', '#ffb84e', stats.mem, 0, 100, '%', 'mem-usage');
-        }, 5000);
-
-        // 页面加载时先画一次
-        (async () => {
-            const stats = await fetchRealStats();
-            drawLineChart('chart-cpu', 'CPU', '#4e8cff', stats.cpu, 2000, 4000, ' MHz', 'cpu-freq');
-            drawLineChart('chart-gpu', 'GPU', '#6ad1ff', stats.gpu, 800, 1600, ' MHz', 'gpu-freq');
-            drawLineChart('chart-mem', '内存', '#ffb84e', stats.mem, 0, 100, '%', 'mem-usage');
-        })();
-
-        // ==== 超级盒子窗口拖动、分屏吸附，且保持比例缩放 ====
-        (function () {
-            const box = document.getElementById('windowBox');
-            let isDragging = false, dragOffsetX = 0, dragOffsetY = 0;
-            let dragStartW = 0, dragStartH = 0;
-            let dragStartL = 0, dragStartT = 0;
-            let prevTransition = '';
-            const minWidth = 400, minHeight = 250;
-            const aspectRatio = 900 / 510;
-
-            // 分屏吸附提示
-            let snapHint = null;
-            function showSnapHint(type) {
-                if (!snapHint) {
-                    snapHint = document.createElement('div');
-                    snapHint.className = 'snap-hint';
-                    document.body.appendChild(snapHint);
-                }
-                snapHint.className = 'snap-hint ' + type;
-            }
-            function hideSnapHint() {
-                if (snapHint) {
-                    snapHint.remove();
-                    snapHint = null;
-                }
-            }
-            function getSnapType(e) {
-                const margin = 20, w = window.innerWidth, h = window.innerHeight;
-                const nearLeft = e.clientX < margin;
-                const nearRight = e.clientX > w - margin;
-                const nearTop = e.clientY < margin;
-                const nearBottom = e.clientY > h - margin;
-
-                if (nearLeft && nearTop) return "topleft";
-                if (nearRight && nearTop) return "topright";
-                if (nearLeft && nearBottom) return "bottomleft";
-                if (nearRight && nearBottom) return "bottomright";
-                if (nearLeft) return "left";
-                if (nearRight) return "right";
-                if (nearTop) return "top";
-                return "";
-            }
-
-            // 鼠标按下拖动
-            box.addEventListener('mousedown', function (e) {
-                // 排除拉伸手柄、菜单、按钮等
-                if (
-                    e.target.classList.contains('resize-handle') ||
-                    e.target.classList.contains('close-btn') ||
-                    e.target.classList.contains('nav-btn') ||
-                    e.target.classList.contains('start-btn') ||
-                    e.target.closest('.hamburger-menu')
-                ) return;
-
-                isDragging = true;
-                dragOffsetX = e.clientX - box.offsetLeft;
-                dragOffsetY = e.clientY - box.offsetTop;
-                dragStartW = box.offsetWidth;
-                dragStartH = box.offsetHeight;
-                dragStartL = box.offsetLeft;
-                dragStartT = box.offsetTop;
-                prevTransition = box.style.transition;
-                box.style.transition = 'none';
-                box.style.position = 'absolute';
-
-                function onMove(ev) {
-                    if (!isDragging) return;
-                    let newL = ev.clientX - dragOffsetX;
-                    let newT = ev.clientY - dragOffsetY;
-                    // 限制不超出视口
-                    newL = Math.max(0, Math.min(newL, window.innerWidth - box.offsetWidth));
-                    newT = Math.max(0, Math.min(newT, window.innerHeight - box.offsetHeight));
-                    box.style.left = newL + 'px';
-                    box.style.top = newT + 'px';
-
-                    // 分屏吸附提示
-                    const snapType = getSnapType(ev);
-                    if (snapType) showSnapHint(snapType);
-                    else hideSnapHint();
-                }
-                function onUp(ev) {
-                    if (!isDragging) return;
-                    const snapType = getSnapType(ev);
-                    let winW = window.innerWidth, winH = window.innerHeight;
-                    let newW = dragStartW, newH = dragStartH, newL = dragStartL, newT = dragStartT;
-                    switch (snapType) {
-                        case "top":
-                            newW = winW;
-                            newH = winW / aspectRatio;
-                            if (newH > winH) {
-                                newH = winH;
-                                newW = newH * aspectRatio;
-                            }
-                            newL = (winW - newW) / 2;
-                            newT = 0;
-                            break;
-                        case "left":
-                            newW = winW / 2;
-                            newH = newW / aspectRatio;
-                            if (newH > winH) {
-                                newH = winH;
-                                newW = newH * aspectRatio;
-                            }
-                            newL = 0;
-                            newT = (winH - newH) / 2;
-                            break;
-                        case "right":
-                            newW = winW / 2;
-                            newH = newW / aspectRatio;
-                            if (newH > winH) {
-                                newH = winH;
-                                newW = newH * aspectRatio;
-                            }
-                            newL = winW - newW;
-                            newT = (winH - newH) / 2;
-                            break;
-                        case "topleft":
-                            newW = winW / 2;
-                            newH = newW / aspectRatio;
-                            if (newH > winH / 2) {
-                                newH = winH / 2;
-                                newW = newH * aspectRatio;
-                            }
-                            newL = 0;
-                            newT = 0;
-                            break;
-                        case "topright":
-                            newW = winW / 2;
-                            newH = newW / aspectRatio;
-                            if (newH > winH / 2) {
-                                newH = winH / 2;
-                                newW = newH * aspectRatio;
-                            }
-                            newL = winW - newW;
-                            newT = 0;
-                            break;
-                        case "bottomleft":
-                            newW = winW / 2;
-                            newH = newW / aspectRatio;
-                            if (newH > winH / 2) {
-                                newH = winH / 2;
-                                newW = newH * aspectRatio;
-                            }
-                            newL = 0;
-                            newT = winH - newH;
-                            break;
-                        case "bottomright":
-                            newW = winW / 2;
-                            newH = newW / aspectRatio;
-                            if (newH > winH / 2) {
-                                newH = winH / 2;
-                                newW = newH * aspectRatio;
-                            }
-                            newL = winW - newW;
-                            newT = winH - newH;
-                            break;
-                    }
-                    if (snapType) {
-                        box.style.width = newW + 'px';
-                        box.style.height = newH + 'px';
-                        box.style.left = newL + 'px';
-                        box.style.top = newT + 'px';
-                    }
-                    hideSnapHint();
-                    isDragging = false;
-                    box.style.transition = prevTransition;
-                    document.removeEventListener('mousemove', onMove);
-                    document.removeEventListener('mouseup', onUp);
-
-                    // 拉伸结束后重新调整两个圆角矩形的位置和大小，确保内容适配
-                    adjustRoundedRectPositionById('weather-component', 'weather-text', []);
-                    const weatherRect = getRoundedRectInfo('weather-component');
-                    adjustRoundedRectPositionById('random-component', 'hitokoto', weatherRect ? [weatherRect] : []);
-                }
-                document.addEventListener('mousemove', onMove);
-                document.addEventListener('mouseup', onUp);
-            });
-        })();
-    </script>
-</body>
-<head>
-  <style>
-    body {
-      height: 100vh;
-      margin: 0;
-      background: #f5f5f5;
-    }
-    .context-menu {
-      position: absolute;
-      top: 0;
-      left: 0;
-      min-width: 150px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(0.95);
-      transition: opacity 0.2s cubic-bezier(.4,0,.2,1), transform 0.2s cubic-bezier(.4,0,.2,1);
-      z-index: 1000;
-    }
-    .context-menu.show {
-      opacity: 1;
-      pointer-events: auto;
-      transform: scale(1);
-    }
-    .context-menu ul {
-      list-style: none;
-      margin: 0;
-      padding: 8px 0;
-    }
-    .context-menu li {
-      padding: 10px 24px;
-      cursor: pointer;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-    }
-    .context-menu li:hover {
-      background: #f0f0f0;
-    }
-  </style>
-</head>
-<body>
-  <div id="menu" class="context-menu">
-    <ul>
-      <li>
-        <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:8px;" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="8" cy="8" r="7" stroke="#888" stroke-width="2"/>
-        </svg>
-        菜单项 1
-      </li>
-      <li>
-        <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:8px;" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="3" y="3" width="10" height="10" stroke="#888" stroke-width="2"/>
-        </svg>
-        菜单项 2
-      </li>
-      <li>
-        <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:8px;" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="8,3 13,13 3,13" stroke="#888" stroke-width="2" fill="none"/>
-        </svg>
-        菜单项 3
-      </li>
-    </ul>
-  </div>
-  <script>
-    const menu = document.getElementById('menu');
-    let hideTimeout = null;
-
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-      clearTimeout(hideTimeout);
-      menu.style.top = e.clientY + 'px';
-      menu.style.left = e.clientX + 'px';
-      menu.classList.add('show');
-    });
-
-    document.addEventListener('click', function() {
-      menu.classList.remove('show');
-      // 动画结束后 pointer-events: none
-      hideTimeout = setTimeout(() => {
-        menu.style.pointerEvents = 'none';
-      }, 200); // 与CSS动画时间一致
-    });
-
-    window.addEventListener('resize', function() {
-      menu.classList.remove('show');
-      hideTimeout = setTimeout(() => {
-        menu.style.pointerEvents = 'none';
-      }, 200);
-    });
-
-    // 防止菜单溢出屏幕
-    menu.addEventListener('transitionend', function() {
-      const rect = menu.getBoundingClientRect();
-      if (rect.right > window.innerWidth) {
-        menu.style.left = (window.innerWidth - rect.width - 10) + 'px';
-      }
-      if (rect.bottom > window.innerHeight) {
-        menu.style.top = (window.innerHeight - rect.height - 10) + 'px';
-      }
-    });
-
-    // 保证每次弹出都能点击
-    menu.addEventListener('transitionstart', function(e) {
-      if (menu.classList.contains('show')) {
-        menu.style.pointerEvents = 'auto';
-      }
-    });
-  </script>
-</body>
 </html>
