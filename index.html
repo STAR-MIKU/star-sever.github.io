@@ -117,16 +117,17 @@
       width: 36px;
       padding: 0;
       justify-content: center;
-      background: #fff;
-      border-radius: 8px;
+      background: rgb(255 255 255 / 60%);
+      /* backdrop-filter: blur(20px); */
+      border-radius: 10px;
       display: flex;
       align-items: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07); */
       cursor: pointer;
       font-size: 14px;
       color: #333;
       border: 1px solid #ddd;
-      transition: background 0.15s;
+      transition: background 0.3s;
       z-index: 1200;
       margin: 0 8px;
       /* 两侧间距8px，可根据需要调整 */
@@ -306,6 +307,10 @@
       background: rgba(136, 177, 241, 0.12);
       border-radius: 8px;
       transition: all 0.2s;
+      opacity: 0.92 !important;
+      border: 3px solid #4e8cff;
+      box-shadow: 0 0 24px #4e8cff66;
+      transition: opacity 0.18s, box-shadow 0.18s;
     }
 
     .snap-hint.left {
@@ -433,13 +438,19 @@
 
     .desktop-shortcut {
       position: absolute;
-      top: 80px;
-      left: 32px;
-      width: 64px;
+      top: 32px;
+      left: 20px;
+      width: 80px;
+      height: 80px;
+      bottom: 20px;
       text-align: center;
       pointer-events: auto;
       cursor: pointer;
       user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     .desktop-shortcut img {
@@ -451,7 +462,7 @@
       display: block;
       color: #fff;
       font-size: 14px;
-      margin-top: 6px;
+      /*margin-top: 6px;*/
     }
 
     /* 启动台样式 */
@@ -476,7 +487,7 @@
       top: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(32, 32, 32, 0.88);
+      background: rgb(255 255 255 / 12%);
       z-index: 4000;
       display: flex;
       justify-content: center;
@@ -507,7 +518,7 @@
     }
 
     .launchpad-app {
-      width: 90px;
+      width: 100px;
       text-align: center;
       cursor: pointer;
       user-select: none;
@@ -535,7 +546,6 @@
     .launchpad-app img {
       width: 64px;
       height: 64px;
-      border-radius: 18px;
     }
 
     .launchpad-app span {
@@ -687,14 +697,12 @@
       background: rgba(30, 32, 38, 0.92);
       border-radius: 16px;
       box-shadow: 0 4px 24px rgba(136, 177, 241, 0.10);
-      padding: 0 10px 0 18px;
+      padding: 0 6px 0 6px;
       height: 48px;
-      border: 2.5px solid transparent;
+      border: 3px solid transparent;
       background-clip: padding-box, border-box;
       background-origin: padding-box, border-box;
-      /* 与STAR+一致的流动渐变色 */
-      background-image:
-        linear-gradient(rgba(30, 32, 38, 0.92), rgba(30, 32, 38, 0.92)),
+      background-image: linear-gradient(rgba(30, 32, 38, 0.92), rgba(30, 32, 38, 0.92)),
         linear-gradient(90deg, #88B1F1, #9AF0FD, #F0C4E5, #F9F871, #F0C4E5, #88B1F1);
       animation: gradient-move 2.5s linear infinite;
       background-size: 1000% 1000%;
@@ -707,17 +715,17 @@
     }
 
     #launchpad-search-input {
-      flex: 1;
+      flex: auto;
       height: 38px;
       border: none;
       outline: none;
       background: transparent;
       color: #fff;
-      font-size: 18px;
+      /* font-size: 18px; */
       font-family: 'Chillax', Arial, sans-serif;
       font-weight: 800;
       letter-spacing: 1px;
-      padding: 0 8px;
+      /* padding: 0 8px; */
     }
 
     #launchpad-search-input::placeholder {
@@ -752,7 +760,7 @@
       }
     }
 
-    #bilibiliWindow .window-content {
+    #flyme-linkpc .window-content {
       padding: 0;
       margin: 0;
       width: 100%;
@@ -761,7 +769,7 @@
       display: flex;
     }
 
-    #bilibiliWindow .window-content iframe {
+    #flyme-linkpc .window-content iframe {
       width: 100%;
       height: 100%;
       border: none;
@@ -951,7 +959,7 @@
     .creator {
       position: absolute;
       bottom: 100px;
-      /* right: -82px; */
+      right: 6px;
       display: flex;
       align-items: center;
       gap: 5px;
@@ -961,13 +969,13 @@
     }
 
     .creator img {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
     }
 
     .creator span {
-      max-width: 180px;
+      max-width: 160px;
       width: auto;
       padding: 0 26px 0 0;
       display: inline-block;
@@ -1312,69 +1320,6 @@
       margin-bottom: 2px;
     }
 
-    /* 分屏吸附提示样式 */
-    .snap-hint {
-      position: fixed;
-      z-index: 9998;
-      width: 120px;
-      height: 120px;
-      pointer-events: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: bold;
-      color: #fff;
-      background: rgba(78, 140, 255, 0.9);
-      border-radius: 24px;
-      transition: opacity 0.2s;
-      opacity: 0;
-    }
-
-    .snap-hint.left {
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-
-    .snap-hint.right {
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-
-    .snap-hint.top {
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .snap-hint.bottom {
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .snap-hint.topleft {
-      left: 10px;
-      top: 10px;
-    }
-
-    .snap-hint.topright {
-      right: 10px;
-      top: 10px;
-    }
-
-    .snap-hint.bottomleft {
-      left: 10px;
-      bottom: 10px;
-    }
-
-    .snap-hint.bottomright {
-      right: 10px;
-      bottom: 10px;
-    }
-
     body {
       height: 100vh;
       margin: 0;
@@ -1421,11 +1366,222 @@
     .context-menu li:hover {
       background: #f0f0f0;
     }
+
+    .tz-notification {
+      position: relative;
+      min-width: 320px;
+      max-width: 360px;
+      background: #ffffff3d;
+      border-radius: 18px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      display: flex;
+      align-items: flex-start;
+      padding: 20px 24px 20px 20px;
+      z-index: 99999;
+      animation: tz-fade-in 0.4s;
+      pointer-events: auto;
+      animation: tz-fade-in 0.4s, tz-pop-in 0.38s cubic-bezier(.4, 0, .2, 1);
+      transform: perspective(600px) translateZ(0) scale(1) rotateY(0deg);
+      transition:
+        box-shadow 0.2s,
+        transform 0.28s cubic-bezier(.4, 0, .2, 1),
+        opacity 0.28s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    @keyframes tz-pop-in {
+      0% {
+        opacity: 0;
+        transform: perspective(600px) scale(0.7) rotateY(-25deg) translateY(40px);
+      }
+
+      60% {
+        opacity: 1;
+        transform: perspective(600px) scale(1.08) rotateY(8deg) translateY(-8px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: perspective(600px) scale(1) rotateY(0deg) translateY(0);
+      }
+    }
+
+
+    .tz-notification.tz-leave {
+      animation: tz-pop-out 0.38s cubic-bezier(.4, 0, .2, 1) forwards;
+      pointer-events: none;
+    }
+
+    .tz-notification:hover {
+      box-shadow: 0 12px 48px #4e8cff44, 0 2px 8px #0002;
+      transform: perspective(600px) scale(1.04) rotateY(-10deg) translateY(-2px);
+      z-index: 100000;
+    }
+
+    .tz-notification-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #4f8cff 60%, #6ee7b7 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      color: #fff;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .tz-notification-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .tz-notification-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #222;
+    }
+
+    .tz-notification-message {
+      font-size: 15px;
+      color: #555;
+      word-break: break-all;
+    }
+
+    .tz-notification-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #aaa;
+      cursor: pointer;
+      margin-left: 12px;
+      margin-top: 2px;
+      transition: color 0.2s;
+      align-self: flex-start;
+    }
+
+    .tz-notification-close:hover {
+      color: #4f8cff;
+    }
+
+    .tz-notification-image {
+      width: 100%;
+      max-height: 120px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      margin-top: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .tz-notification-container {
+      position: fixed;
+      top: 32px;
+      right: 32px;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      pointer-events: none;
+    }
+
+    .tz-notification-actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .tz-notification-action {
+      background: #4f8cff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 18px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .tz-notification-action:hover {
+      background: #2563eb;
+    }
+
+    .search-engine-select {
+      position: relative;
+      margin-right: 8px;
+    }
+
+    #search-engine-btn {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.10);
+      border: none;
+      border-radius: 10px;
+      padding: 4px 10px 4px 6px;
+      cursor: pointer;
+      font-size: 15px;
+      color: #fff;
+      transition: background 0.18s;
+      backdrop-filter: blur(10px) saturate(120%);
+      outline: none;
+      margin-right: 2px;
+    }
+
+    #search-engine-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    #search-engine-btn img {
+      margin-right: 5px;
+      border-radius: 4px;
+    }
+
+    .search-engine-list {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 38px;
+      min-width: 120px;
+      background: rgba(30, 32, 38, 0.92);
+      border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(136, 177, 241, 0.13);
+      backdrop-filter: blur(18px) saturate(140%);
+      z-index: 9999;
+      padding: 6px 0;
+      animation: fadeIn .22s;
+    }
+
+    .search-engine-list div {
+      display: flex;
+      align-items: center;
+      padding: 7px 18px 7px 12px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 15px;
+      transition: background 0.18s, color 0.18s;
+    }
+
+    .search-engine-list div:hover {
+      background: #4e8cff22;
+      color: #88B1F1;
+    }
+
+    .search-engine-list img {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      border-radius: 4px;
+      background: #fff2;
+    }
   </style>
 </head>
 <!-- 启动引导视频及跳过按钮 -->
 <video id="intro-video" src="./VF/kjgm.mp4" autoplay muted playsinline></video>
 <button id="skip-btn">跳过</button>
+
+<div class="tz-notification-container" id="tzNotificationContainer" style="z-index:99999;"></div>
 
 <div id="main-content" style="display:none;">
   <video id="video-wallpaper" autoplay loop muted playsinline></video>
@@ -1435,11 +1591,11 @@
       <img src="./PIC/yhmb.svg" alt="窗口" />
       <span>Mac窗口</span>
     </div>
-    <div class="desktop-shortcut" data-app="bilibiliWindow" style="top: 180px; left: 32px;">
-      <img src="./PIC/bilibili.svg" alt="哔哩哔哩" />
-      <span>哔哩哔哩</span>
+    <div class="desktop-shortcut" data-app="flyme-linkpc" style="top:128px;">
+      <img src="https://linkpc.flyme.com/assets/logo2.811cc926.png" alt="Flyme 互联" />
+      <span>Flyme 互联</span>
     </div>
-    <div class="desktop-shortcut" data-app="superBoxWindow" style="top: 282px; left: 32px;">
+    <div class="desktop-shortcut" data-app="superBoxWindow" style="top: 225px;">
       <img src="./PIC/bilibili.svg" alt="超级盒子" id="showWindowBox" style="cursor:pointer;" />
       <span>超级盒子</span>
     </div>
@@ -1458,14 +1614,42 @@
   <div id="launchpad" class="launchpad-overlay hidden">
     <!-- 新增：启动台搜索框 -->
     <div class="launchpad-search-bar">
+      <div class="search-engine-select">
+        <button id="search-engine-btn" title="选择搜索引擎">
+          <img id="search-engine-icon" src="https://www.bing.com/favicon.ico" alt="Bing"
+            style="width:20px;height:20px;">
+          <span id="search-engine-name">Bing</span>
+          <svg width="14" height="14" style="margin-left:2px;" viewBox="0 0 14 14">
+            <path d="M3 5l4 4 4-4" stroke="#bcd" stroke-width="2" fill="none" stroke-linecap="round" />
+          </svg>
+        </button>
+        <div id="search-engine-list" class="search-engine-list">
+          <div data-engine="bing" data-url="https://www.bing.com/search?q="
+            data-icon="https://www.bing.com/favicon.ico">
+            <img src="https://www.bing.com/favicon.ico" alt="Bing"> Bing
+          </div>
+          <div data-engine="baidu" data-url="https://www.baidu.com/s?wd=" data-icon="https://www.baidu.com/favicon.ico">
+            <img src="https://www.baidu.com/favicon.ico" alt="Baidu"> 百度
+          </div>
+          <div data-engine="google" data-url="https://www.google.com/search?q="
+            data-icon="https://www.google.com/favicon.ico">
+            <img src="https://www.google.com/favicon.ico" alt="Google"> Google
+          </div>
+          <div data-engine="duckduckgo" data-url="https://duckduckgo.com/?q="
+            data-icon="https://duckduckgo.com/favicon.ico">
+            <img src="https://duckduckgo.com/favicon.ico" alt="DuckDuckGo"> DuckDuckGo
+          </div>
+        </div>
+      </div>
       <input id="launchpad-search-input" type="text" placeholder="搜索应用或网页..." autocomplete="off" />
-      <button id="launchpad-search-btn" title="Bing搜索">
+      <button id="launchpad-search-btn" title="搜索">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
           <circle cx="10" cy="10" r="8" stroke="#88B1F1" stroke-width="2" />
           <line x1="16.071" y1="16.485" x2="20" y2="20" stroke="#88B1F1" stroke-width="2" stroke-linecap="round" />
         </svg>
       </button>
     </div>
+
     <div class="launchpad-content"></div>
   </div>
   <!-- Mac风格窗口 -->
@@ -1496,10 +1680,10 @@
     <div class="resize-handle resize-handle-sw"></div>
     <div class="resize-handle resize-handle-se"></div>
   </div>
-  <!-- 哔哩哔哩窗口 -->
-  <div class="window hidden" id="bilibiliWindow">
+  <!-- Flyme互联窗口 -->
+  <div class="window hidden" id="flyme-linkpc">
     <div class="title-bar">
-      <span class="title">哔哩哔哩</span>
+      <span class="title">Flyme 互联</span>
       <span class="mac-btns">
         <span class="mac-btn red" title="关闭"></span>
         <span class="mac-btn yellow" title="最大化/还原"></span>
@@ -1507,7 +1691,7 @@
       </span>
     </div>
     <div class="window-content">
-      <iframe src="https://www.wps.cn/" style="width:100%;height:100%;border:none;"></iframe>
+      <iframe src="https://linkpc.flyme.com/" style="width:100%;height:100%;border:none;"></iframe>
     </div>
     <!-- ==== 拉伸手柄 ==== -->
     <div class="resize-handle resize-handle-n"></div>
@@ -1644,6 +1828,7 @@
         style="margin-top:16px;width:100%;padding:8px;border-radius:12px;background:#4e8cff;color:#fff;border:none;">保存</button>
     </div>
   </div>
+
   <!-- 城市选择弹窗（优化风格） -->
   <div id="city-modal"
     style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
@@ -1751,6 +1936,352 @@
   </div>
 
   <script>
+    document.getElementById('random-component').onclick = function () {
+      const text = document.getElementById('hitokoto').innerText;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () {
+          showNotification({ title: '已复制到剪贴板', message: text });
+        }, function () {
+          showNotification({ title: '复制失败', message: '请检查浏览器权限' });
+        });
+      } else {
+        // 兼容旧浏览器
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          showNotification({ title: '已复制到剪贴板', message: text });
+        } catch (err) {
+          showNotification({ title: '复制失败', message: '' });
+        }
+        document.body.removeChild(textarea);
+      }
+    };
+    // 启动台搜索逻辑
+    (function () {
+      const searchInput = document.getElementById('launchpad-search-input');
+      const searchBtn = document.getElementById('launchpad-search-btn');
+      const launchpad = document.getElementById('launchpad');
+      const content = launchpad.querySelector('.launchpad-content');
+
+      // 应用列表（与renderLaunchpad一致）
+      const APPS = [
+        { icon: './PIC/yhmb.svg', name: 'Mac窗口', app: 'macWindow' },
+        { icon: './PIC/https://linkpc.flyme.com/assets/logo2.811cc926.png', name: 'Flyme 互联', app: 'flyme-linkpc' }
+      ];
+
+      function searchApps(keyword) {
+        const kw = keyword.trim().toLowerCase();
+        if (!kw) return APPS;
+        return APPS.filter(app =>
+          app.name.toLowerCase().includes(kw) ||
+          app.app.toLowerCase().includes(kw)
+        );
+      }
+
+      function renderSearchResult(keyword) {
+        const apps = searchApps(keyword);
+        content.innerHTML = '';
+        if (apps.length > 0) {
+          apps.forEach(app => {
+            const el = document.createElement('div');
+            el.className = 'launchpad-app';
+            el.dataset.app = app.app;
+            el.innerHTML = `<img src="${app.icon}" alt="${app.name}" /><span>${app.name}</span>`;
+            el.onclick = function () {
+              openWindow(app.app);
+              closeLaunchpad();
+            };
+            content.appendChild(el);
+          });
+        } else {
+          // 无本地应用，显示网页搜索建议
+          const tip = document.createElement('div');
+          tip.style.cssText = "color:#bcd;text-align:center;font-size:17px;margin:38px auto 0;";
+          tip.innerHTML = `未找到本地应用，可直接网页搜索：<br><span style="color:#88B1F1;">${keyword}</span>`;
+          content.appendChild(tip);
+        }
+      }
+
+      // 输入时本地应用搜索
+      searchInput.addEventListener('input', function () {
+        renderSearchResult(this.value);
+      });
+
+      // 回车或点击按钮网页搜索
+      function doWebSearch() {
+        const kw = searchInput.value.trim();
+        if (kw) {
+          window.open('https://www.bing.com/search?q=' + encodeURIComponent(kw), '_blank');
+        }
+      }
+      searchBtn.onclick = doWebSearch;
+      searchInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          // 若有本地应用则优先打开，否则网页搜索
+          const apps = searchApps(this.value);
+          if (apps.length > 0) {
+            openWindow(apps[0].app);
+            closeLaunchpad();
+          } else {
+            doWebSearch();
+          }
+        }
+      });
+
+      // 启动台每次打开时清空搜索
+      const origOpenLaunchpad = openLaunchpad;
+      window.openLaunchpad = function () {
+        searchInput.value = '';
+        renderLaunchpad(0);
+        content.scrollTop = 0;
+        origOpenLaunchpad();
+        setTimeout(() => searchInput.focus(), 120);
+      };
+    })();
+
+    (function () {
+      const engines = [
+        { name: 'Bing', icon: 'https://www.bing.com/favicon.ico', url: 'https://www.bing.com/search?q=' },
+        { name: '百度', icon: 'https://www.baidu.com/favicon.ico', url: 'https://www.baidu.com/s?wd=' },
+        { name: 'Google', icon: 'https://www.google.com/favicon.ico', url: 'https://www.google.com/search?q=' },
+        { name: 'DuckDuckGo', icon: 'https://duckduckgo.com/favicon.ico', url: 'https://duckduckgo.com/?q=' }
+      ];
+      // 读取本地存储
+      let current = Number(localStorage.getItem('search_engine_index')) || 0;
+      if (current < 0 || current >= engines.length) current = 0;
+      const btn = document.getElementById('search-engine-btn');
+      const icon = document.getElementById('search-engine-icon');
+      const nameSpan = document.getElementById('search-engine-name');
+      const list = document.getElementById('search-engine-list');
+      const input = document.getElementById('launchpad-search-input');
+      const searchBtn = document.getElementById('launchpad-search-btn');
+
+      // 初始化显示
+      icon.src = engines[current].icon;
+      nameSpan.textContent = engines[current].name;
+
+      // 展开/收起下拉
+      btn.onclick = function (e) {
+        e.stopPropagation();
+        list.style.display = list.style.display === 'block' ? 'none' : 'block';
+      };
+      // 选择
+      list.querySelectorAll('div').forEach((item, idx) => {
+        item.onclick = function (e) {
+          e.stopPropagation();
+          current = idx;
+          icon.src = engines[idx].icon;
+          nameSpan.textContent = engines[idx].name;
+          list.style.display = 'none';
+          // 自动保存
+          localStorage.setItem('search_engine_index', idx);
+        };
+      });
+      // 点击外部关闭
+      document.addEventListener('click', () => { list.style.display = 'none'; });
+
+      // 搜索按钮和回车
+      function doSearch() {
+        const kw = input.value.trim();
+        if (kw) {
+          // 根据文本长度动态选择搜索引擎
+          let engineIdx = current;
+          if (kw.length > 40) {
+            // 长文本优先用百度
+            engineIdx = 1; // 百度
+            icon.src = engines[engineIdx].icon;
+            nameSpan.textContent = engines[engineIdx].name;
+            localStorage.setItem('search_engine_index', engineIdx);
+          }
+          window.open(engines[engineIdx].url + encodeURIComponent(kw), '_blank');
+        }
+      }
+      searchBtn.onclick = doSearch;
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') doSearch();
+      });
+    })();
+
+    // 复制
+    document.querySelector('#menu ul li:nth-child(1)').onclick = function () {
+      if (contextTargetInput) {
+        // 针对输入框
+        const input = contextTargetInput;
+        if (input.selectionStart !== input.selectionEnd) {
+          const selected = input.value.substring(input.selectionStart, input.selectionEnd);
+          navigator.clipboard.writeText(selected);
+          showNotification({ title: '已复制', message: selected });
+        } else {
+          showNotification({ title: '提示', message: '请先选中要复制的内容' });
+        }
+      } else {
+        // 原有逻辑
+        const selection = window.getSelection();
+        if (selection && selection.toString()) {
+          navigator.clipboard.writeText(selection.toString());
+          showNotification({ title: '已复制', message: selection.toString() });
+        } else {
+          showNotification({ title: '提示', message: '请先选中要复制的内容' });
+        }
+      }
+    };
+
+    // 粘贴
+    document.querySelector('#menu ul li:nth-child(2)').onclick = async function () {
+      const text = await navigator.clipboard.readText();
+      if (contextTargetInput) {
+        // 针对输入框
+        const input = contextTargetInput;
+        const start = input.selectionStart, end = input.selectionEnd;
+        const value = input.value;
+        input.value = value.slice(0, start) + text + value.slice(end);
+        input.selectionStart = input.selectionEnd = start + text.length;
+        showNotification({ title: '已粘贴', message: text });
+        input.focus();
+      } else {
+        // 原有逻辑
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+          selection.deleteFromDocument();
+          selection.getRangeAt(0).insertNode(document.createTextNode(text));
+          showNotification({ title: '已粘贴', message: text });
+        }
+      }
+      // 恢复菜单文字
+      setTimeout(() => {
+        document.querySelector('#menu ul li:nth-child(2)').innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:middle;margin-right:8px;" fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="10" height="10" stroke="#888" stroke-width="2" />
+      </svg>
+      粘贴
+    `;
+      }, 10);
+    };
+
+    // 剪切
+    document.querySelector('#menu ul li:nth-child(3)').onclick = function () {
+      if (contextTargetInput) {
+        // 针对输入框
+        const input = contextTargetInput;
+        if (input.selectionStart !== input.selectionEnd) {
+          const selected = input.value.substring(input.selectionStart, input.selectionEnd);
+          navigator.clipboard.writeText(selected);
+          // 删除选中内容
+          input.value = input.value.slice(0, input.selectionStart) + input.value.slice(input.selectionEnd);
+          input.selectionEnd = input.selectionStart;
+          showNotification({ title: '已剪切', message: selected });
+          input.focus();
+        } else {
+          showNotification({ title: '提示', message: '请先选中要剪切的内容' });
+        }
+      } else {
+        // 原有逻辑
+        const selection = window.getSelection();
+        if (selection && selection.toString()) {
+          navigator.clipboard.writeText(selection.toString());
+          selection.deleteFromDocument();
+          showNotification({ title: '已剪切', message: selection.toString() });
+        } else {
+          showNotification({ title: '提示', message: '请先选中要剪切的内容' });
+        }
+      }
+    };
+
+    function showNotification({ title, message, image, showImage = false, buttons = [], icon }) {
+      const container = document.getElementById('tzNotificationContainer');
+      const div = document.createElement('div');
+      div.className = 'tz-notification';
+
+      // 构建按钮HTML
+      let buttonsHtml = '';
+      if (Array.isArray(buttons) && buttons.length > 0) {
+        buttons.slice(0, 2).forEach((btn, idx) => {
+          buttonsHtml += `<button class="tz-notification-action" data-btn-idx="${idx}">${btn.text}</button>`;
+        });
+      }
+
+      div.innerHTML = `
+        <div class="tz-notification-icon">
+          ${icon || `<svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" fill="white" fill-opacity="0.2"/>
+            <path d="M12 8v4M12 16h.01" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>`}
+        </div>
+        <div class="tz-notification-content">
+          ${showImage && image ? `<img class="tz-notification-image" src="${image}" alt="通知图片">` : ''}
+          <div class="tz-notification-title">${title || '通知标题'}</div>
+          <div class="tz-notification-message">${message || ''}</div>
+          ${buttonsHtml ? `<div class="tz-notification-actions">${buttonsHtml}</div>` : ''}
+        </div>
+        <button class="tz-notification-close" onclick="this.parentElement.remove()">&times;</button>
+      `;
+      container.appendChild(div);
+
+      // 关闭按钮动画
+      div.querySelector('.tz-notification-close').onclick = function () {
+        div.classList.add('tz-leave');
+        setTimeout(() => div.remove(), 380);
+      };
+
+      // 绑定按钮事件
+      if (Array.isArray(buttons) && buttons.length > 0) {
+        div.querySelectorAll('.tz-notification-action').forEach((btnEl, idx) => {
+          btnEl.onclick = (e) => {
+            e.stopPropagation();
+            if (typeof buttons[idx].onClick === 'function') {
+              buttons[idx].onClick(div);
+            }
+          };
+        });
+      }
+
+      // 自动消失（可选，按钮存在时不自动消失）
+      if (!buttonsHtml) {
+        setTimeout(() => {
+          if (div.parentNode) {
+            div.classList.add('tz-leave');
+            setTimeout(() => div.remove(), 380);
+          }
+        }, 3000);
+      }
+    }
+
+    let snapHint = null;
+    function showSnapHint(type) {
+      if (!snapHint) {
+        snapHint = document.createElement('div');
+        snapHint.className = 'snap-hint';
+        document.body.appendChild(snapHint);
+      }
+      snapHint.className = 'snap-hint ' + type;
+    }
+    function hideSnapHint() {
+      if (snapHint) {
+        snapHint.remove();
+        snapHint = null;
+      }
+    }
+    function getSnapType(e) {
+      const margin = 40;
+      const w = window.innerWidth, h = window.innerHeight;
+      const nearLeft = e.clientX < margin;
+      const nearRight = e.clientX > w - margin;
+      const nearTop = e.clientY < margin;
+      const nearBottom = e.clientY > h - margin;
+
+      if (nearLeft && nearTop) return "topleft";
+      if (nearRight && nearTop) return "topright";
+      if (nearLeft && nearBottom) return "bottomleft";
+      if (nearRight && nearBottom) return "bottomright";
+      if (nearLeft) return "left";
+      if (nearRight) return "right";
+      if (nearTop) return "top";
+      return "";
+    }
     const box = document.getElementById('windowBox');
     const minWidth = 400,
       minHeight = 250;
@@ -1849,13 +2380,14 @@
       });
     });
 
-    document.querySelector('.close-btn').onclick = function () {
-      // 隐藏 windowBox
-      document.getElementById('windowBox').style.display = 'none';
-    };
-
+    // 超级盒子 windowBox 显示/隐藏时也要更新任务栏避让
     document.getElementById('showWindowBox').onclick = function () {
       document.getElementById('windowBox').style.display = '';
+      updateTaskbarVisibility(); // 新增
+    };
+    document.querySelector('.close-btn').onclick = function () {
+      document.getElementById('windowBox').style.display = 'none';
+      updateTaskbarVisibility(); // 新增
     };
 
 
@@ -1965,7 +2497,6 @@
         height: el.offsetHeight
       };
     }
-
     // 一言加载与避让天气
     fetch('https://v1.hitokoto.cn/?c=b')
       .then(response => response.json())
@@ -1982,6 +2513,21 @@
         console.error('Error fetching data:', error);
         document.getElementById('hitokoto').textContent = '获取一言失败';
         document.getElementById('random-component').style.visibility = 'visible';
+        // 同理，失败通知也延后
+        function showHitokotoFailNotification() {
+          showNotification({ title: '一言获取失败', message: '无法获取一言内容' });
+        }
+        if (mainContent && mainContent.style.display === '') {
+          showHitokotoFailNotification();
+        } else {
+          const observer = new MutationObserver(() => {
+            if (mainContent && mainContent.style.display === '') {
+              showHitokotoFailNotification();
+              observer.disconnect();
+            }
+          });
+          observer.observe(mainContent, { attributes: true, attributeFilter: ['style'] });
+        }
       });
 
     // 获取本地存储的城市名，没有则默认武汉
@@ -2218,13 +2764,15 @@
         reader.readAsDataURL(file);
       }
     };
+
+    // 账户保存
     document.getElementById('account-save').onclick = function () {
       const name = document.getElementById('account-name').value;
       localStorage.setItem('user_name', name);
-      alert('保存成功');
-      // 首页右下角显示
+      showNotification({ title: '保存成功', message: '账户信息已保存' });
       showCreatorInfo();
     };
+
     function showCreatorInfo() {
       let creator = document.querySelector('.creator');
       if (!creator) {
@@ -2338,7 +2886,8 @@
         }
       }
       function getSnapType(e) {
-        const margin = 20, w = window.innerWidth, h = window.innerHeight;
+        const margin = 40; // 原为20，改为40，吸附更容易
+        const w = window.innerWidth, h = window.innerHeight;
         const nearLeft = e.clientX < margin;
         const nearRight = e.clientX > w - margin;
         const nearTop = e.clientY < margin;
@@ -2390,89 +2939,71 @@
           const snapType = getSnapType(ev);
           if (snapType) showSnapHint(snapType);
           else hideSnapHint();
+
+          // 实时更新任务栏避让
+          updateTaskbarVisibility();
         }
+
         function onUp(ev) {
           if (!isDragging) return;
           const snapType = getSnapType(ev);
-          let winW = window.innerWidth, winH = window.innerHeight;
-          let newW = dragStartW, newH = dragStartH, newL = dragStartL, newT = dragStartT;
-          switch (snapType) {
-            case "top":
-              newW = winW;
-              newH = winW / aspectRatio;
-              if (newH > winH) {
-                newH = winH;
-                newW = newH * aspectRatio;
-              }
-              newL = (winW - newW) / 2;
-              newT = 0;
-              break;
-            case "left":
-              newW = winW / 2;
-              newH = newW / aspectRatio;
-              if (newH > winH) {
-                newH = winH;
-                newW = newH * aspectRatio;
-              }
-              newL = 0;
-              newT = (winH - newH) / 2;
-              break;
-            case "right":
-              newW = winW / 2;
-              newH = newW / aspectRatio;
-              if (newH > winH) {
-                newH = winH;
-                newW = newH * aspectRatio;
-              }
-              newL = winW - newW;
-              newT = (winH - newH) / 2;
-              break;
-            case "topleft":
-              newW = winW / 2;
-              newH = newW / aspectRatio;
-              if (newH > winH / 2) {
-                newH = winH / 2;
-                newW = newH * aspectRatio;
-              }
-              newL = 0;
-              newT = 0;
-              break;
-            case "topright":
-              newW = winW / 2;
-              newH = newW / aspectRatio;
-              if (newH > winH / 2) {
-                newH = winH / 2;
-                newW = newH * aspectRatio;
-              }
-              newL = winW - newW;
-              newT = 0;
-              break;
-            case "bottomleft":
-              newW = winW / 2;
-              newH = newW / aspectRatio;
-              if (newH > winH / 2) {
-                newH = winH / 2;
-                newW = newH * aspectRatio;
-              }
-              newL = 0;
-              newT = winH - newH;
-              break;
-            case "bottomright":
-              newW = winW / 2;
-              newH = newW / aspectRatio;
-              if (newH > winH / 2) {
-                newH = winH / 2;
-                newW = newH * aspectRatio;
-              }
-              newL = winW - newW;
-              newT = winH - newH;
-              break;
+
+          // 计算分屏区域的宽高
+          function getSnapRect(type) {
+            const winW = window.innerWidth, winH = window.innerHeight;
+            let area = { left: 0, top: 0, width: winW, height: winH };
+            if (type === "left") {
+              area.width = winW / 2;
+            } else if (type === "right") {
+              area.left = winW / 2;
+              area.width = winW / 2;
+            } else if (type === "top") {
+              // 最大化
+              area = { left: 0, top: 0, width: winW, height: winH };
+            } else if (type === "topleft") {
+              area.width = winW / 2;
+              area.height = winH / 2;
+            } else if (type === "topright") {
+              area.left = winW / 2;
+              area.width = winW / 2;
+              area.height = winH / 2;
+            } else if (type === "bottomleft") {
+              area.top = winH / 2;
+              area.width = winW / 2;
+              area.height = winH / 2;
+            } else if (type === "bottomright") {
+              area.left = winW / 2;
+              area.top = winH / 2;
+              area.width = winW / 2;
+              area.height = winH / 2;
+            }
+            return area;
           }
+
           if (snapType) {
-            box.style.width = newW + 'px';
-            box.style.height = newH + 'px';
-            box.style.left = newL + 'px';
-            box.style.top = newT + 'px';
+            const aspect = 900 / 510;
+            const minWidth = 400, minHeight = 250;
+            const area = getSnapRect(snapType);
+
+            // 计算在分屏区域内最大且不超出区域的宽高，且保持比例
+            let w = area.width, h = area.height;
+            if (w / h > aspect) {
+              // 区域太宽，按高度算
+              h = Math.max(minHeight, Math.min(h, area.height));
+              w = h * aspect;
+            } else {
+              // 区域太高，按宽度算
+              w = Math.max(minWidth, Math.min(w, area.width));
+              h = w / aspect;
+            }
+            // 居中
+            const left = area.left + (area.width - w) / 2;
+            const top = area.top + (area.height - h) / 2;
+
+            box.style.left = left + "px";
+            box.style.top = top + "px";
+            box.style.width = w + "px";
+            box.style.height = h + "px";
           }
           hideSnapHint();
           isDragging = false;
@@ -2485,10 +3016,164 @@
           const weatherRect = getRoundedRectInfo('weather-component');
           adjustRoundedRectPositionById('random-component', 'hitokoto', weatherRect ? [weatherRect] : []);
         }
+
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onUp);
       });
-    })();
+    }
+
+    )();
+    // 通用窗口拖动与分屏吸附（支持保持宽高比）
+    function enableWindowDragAndSnap(winEl, aspectRatio = 400 / 340, minWidth = 240, minHeight = 120) {
+      let isDragging = false, dragOffsetX = 0, dragOffsetY = 0;
+      let dragStartW = 0, dragStartH = 0;
+      let dragStartL = 0, dragStartT = 0;
+      let prevTransition = '';
+      let snapHint = null;
+
+      function showSnapHint(type) {
+        if (!snapHint) {
+          snapHint = document.createElement('div');
+          snapHint.className = 'snap-hint';
+          document.body.appendChild(snapHint);
+        }
+        snapHint.className = 'snap-hint ' + type;
+      }
+      function hideSnapHint() {
+        if (snapHint) {
+          snapHint.remove();
+          snapHint = null;
+        }
+      }
+      function getSnapType(e) {
+        const margin = 40;
+        const w = window.innerWidth, h = window.innerHeight;
+        const nearLeft = e.clientX < margin;
+        const nearRight = e.clientX > w - margin;
+        const nearTop = e.clientY < margin;
+        const nearBottom = e.clientY > h - margin;
+
+        if (nearLeft && nearTop) return "topleft";
+        if (nearRight && nearTop) return "topright";
+        if (nearLeft && nearBottom) return "bottomleft";
+        if (nearRight && nearBottom) return "bottomright";
+        if (nearLeft) return "left";
+        if (nearRight) return "right";
+        if (nearTop) return "top";
+        return "";
+      }
+
+      // 只允许在标题栏拖动
+      const titleBar = winEl.querySelector('.title-bar');
+      if (!titleBar) return;
+
+      titleBar.addEventListener('mousedown', function (e) {
+        // 排除按钮
+        if (
+          e.target.classList.contains('mac-btn') ||
+          e.target.closest('.mac-btns')
+        ) return;
+
+        isDragging = true;
+        dragOffsetX = e.clientX - winEl.offsetLeft;
+        dragOffsetY = e.clientY - winEl.offsetTop;
+        dragStartW = winEl.offsetWidth;
+        dragStartH = winEl.offsetHeight;
+        dragStartL = winEl.offsetLeft;
+        dragStartT = winEl.offsetTop;
+        prevTransition = winEl.style.transition;
+        winEl.style.transition = 'none';
+        winEl.style.position = 'absolute';
+
+        function onMove(ev) {
+          if (!isDragging) return;
+          let newL = ev.clientX - dragOffsetX;
+          let newT = ev.clientY - dragOffsetY;
+          // 限制不超出视口
+          newL = Math.max(0, Math.min(newL, window.innerWidth - winEl.offsetWidth));
+          newT = Math.max(0, Math.min(newT, window.innerHeight - winEl.offsetHeight));
+          winEl.style.left = newL + 'px';
+          winEl.style.top = newT + 'px';
+
+          // 分屏吸附提示
+          const snapType = getSnapType(ev);
+          if (snapType) showSnapHint(snapType);
+          else hideSnapHint();
+
+          updateTaskbarVisibility();
+        }
+
+        function onUp(ev) {
+          if (!isDragging) return;
+          const snapType = getSnapType(ev);
+
+          function getSnapRect(type) {
+            const winW = window.innerWidth, winH = window.innerHeight;
+            let area = { left: 0, top: 0, width: winW, height: winH };
+            if (type === "left") {
+              area.width = winW / 2;
+            } else if (type === "right") {
+              area.left = winW / 2;
+              area.width = winW / 2;
+            } else if (type === "top") {
+              area = { left: 0, top: 0, width: winW, height: winH };
+            } else if (type === "topleft") {
+              area.width = winW / 2;
+              area.height = winH / 2;
+            } else if (type === "topright") {
+              area.left = winW / 2;
+              area.width = winW / 2;
+              area.height = winH / 2;
+            } else if (type === "bottomleft") {
+              area.top = winH / 2;
+              area.width = winW / 2;
+              area.height = winH / 2;
+            } else if (type === "bottomright") {
+              area.left = winW / 2;
+              area.top = winH / 2;
+              area.width = winW / 2;
+              area.height = winH / 2;
+            }
+            return area;
+          }
+
+          if (snapType) {
+            let w = getSnapRect(snapType).width, h = getSnapRect(snapType).height;
+            let area = getSnapRect(snapType);
+            // 保持比例
+            if (w / h > aspectRatio) {
+              h = Math.max(minHeight, Math.min(h, area.height));
+              w = h * aspectRatio;
+            } else {
+              w = Math.max(minWidth, Math.min(w, area.width));
+              h = w / aspectRatio;
+            }
+            // 居中
+            const left = area.left + (area.width - w) / 2;
+            const top = area.top + (area.height - h) / 2;
+            winEl.style.left = left + "px";
+            winEl.style.top = top + "px";
+            winEl.style.width = w + "px";
+            winEl.style.height = h + "px";
+          }
+          hideSnapHint();
+          isDragging = false;
+          winEl.style.transition = prevTransition;
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+
+          updateTaskbarVisibility();
+        }
+
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+    }
+
+    // 启用 Mac窗口和 Flyme互联窗口的拖动与分屏吸附
+    enableWindowDragAndSnap(document.getElementById('macWindow'), 400 / 340, 240, 120);
+    enableWindowDragAndSnap(document.getElementById('flyme-linkpc'), 400 / 340, 240, 120);
+
 
     const introVideo = document.getElementById('intro-video');
     const mainContent = document.getElementById('main-content');
@@ -2608,6 +3293,44 @@
       });
     }
 
+    // 窗口对象数组，必须有
+    const windows = [
+      {
+        id: 'macWindow',
+        el: document.getElementById('macWindow'),
+        icon: './PIC/yhmb.svg',
+        title: 'Mac窗口',
+        isOpen: false,
+        isMinimized: false,
+        isMaximized: false,
+        lastPosition: null,
+        taskbarBtn: null
+      },
+      {
+        id: 'flyme-linkpc',
+        el: document.getElementById('flyme-linkpc'),
+        icon: 'https://linkpc.flyme.com/assets/logo2.811cc926.png',
+        title: 'Flyme 互联',
+        isOpen: false,
+        isMinimized: false,
+        isMaximized: false,
+        lastPosition: null,
+        taskbarBtn: null
+      },
+      {
+        id: 'windowBox',
+        el: document.getElementById('windowBox'),
+        icon: './PIC/windowBox.svg',
+        title: '超级盒子',
+        isOpen: true,
+        isMinimized: false,
+        isMaximized: false,
+        lastPosition: null,
+        taskbarBtn: null
+      }
+    ];
+
+
     // 打开窗口
     function openWindow(id) {
       const win = windows.find(w => w.id === id);
@@ -2644,12 +3367,20 @@
     // 判断任意活动窗口是否接触任务栏
     function anyWindowTouchTaskbar() {
       const taskbarHeight = 56;
-      return windows.some(win => {
+      // 1. 先判断普通窗口
+      let hit = windows.some(win => {
         if (!win.isOpen || win.isMinimized || win.el.classList.contains('hidden')) return false;
         if (win.el.classList.contains('maximized')) return true;
         const rect = win.el.getBoundingClientRect();
         return (rect.bottom >= window.innerHeight - taskbarHeight - 1);
       });
+      // 2. 再判断超级盒子 windowBox
+      const box = document.getElementById('windowBox');
+      if (box && box.style.display !== 'none') {
+        const rect = box.getBoundingClientRect();
+        if (rect.bottom >= window.innerHeight - taskbarHeight - 1) hit = true;
+      }
+      return hit;
     }
 
     // 统一任务栏避让
@@ -2677,7 +3408,7 @@
     function renderLaunchpad(page = 0) {
       const APPS = [
         { icon: './PIC/yhmb.svg', name: 'Mac窗口', app: 'macWindow' },
-        { icon: './PIC/bilibili.svg', name: '哔哩哔哩', app: 'bilibiliWindow' }
+        { icon: 'https://linkpc.flyme.com/assets/logo2.811cc926.png', name: 'Flyme 互联', app: 'flyme-linkpc' },
       ];
       const APPS_PER_PAGE = 9;
       const launchpad = document.getElementById('launchpad');
@@ -2748,7 +3479,13 @@
     const menu = document.getElementById('menu');
     let hideTimeout = null;
 
+    let contextTargetInput = null
+
     document.addEventListener('contextmenu', function (e) {
+      contextTargetInput = null;
+      if (e.target.id === 'launchpad-search-input') {
+        contextTargetInput = e.target;
+      }
       e.preventDefault();
       clearTimeout(hideTimeout);
       menu.style.top = e.clientY + 'px';
@@ -2794,7 +3531,7 @@
       win.el.querySelector('.mac-btn.red').onclick = () => closeWindow(win.id);
       win.el.querySelector('.mac-btn.green').onclick = () => minimizeWindow(win.id);
       win.el.querySelector('.mac-btn.yellow').onclick = function () {
-        const isBili = win.id === 'bilibiliWindow';
+        const isBili = win.id === 'flyme-linkpc';
         let biliIframe = null;
         if (isBili) {
           biliIframe = win.el.querySelector('iframe');
@@ -2833,250 +3570,18 @@
       };
     });
 
-    // 拖拽、分屏、拉伸、最大化等行为
-    function initWindowBehavior(winObj) {
-      const win = winObj.el;
-      const titleBar = win.querySelector('.title-bar');
-      let isDragging = false, offsetX = 0, offsetY = 0;
-      let prevTransition = '';
-
-      // 拖拽
-      titleBar.addEventListener('mousedown', function (e) {
-        if (e.target.classList.contains('mac-btn')) return;
-        let wasMaximized = false;
-        let offsetX = 0, offsetY = 0;
-        if (win.classList.contains('maximized')) {
-          // 记录鼠标在窗口中的相对位置（按比例）
-          const percentX = e.clientX / window.innerWidth;
-          const percentY = e.clientY / window.innerHeight;
-          // 还原窗口
-          win.classList.remove('maximized');
-          // 还原到上次最大化前的位置和尺寸
-          let last = winObj.lastPosition;
-          if (!last) {
-            last = {
-              left: window.innerWidth / 2 - win.offsetWidth / 2,
-              top: window.innerHeight / 2 - win.offsetHeight / 2,
-              width: 400,
-              height: 340
-            };
-          }
-          win.style.width = last.width + 'px';
-          win.style.height = last.height + 'px';
-          // 让窗口左上角跟随鼠标
-          win.style.left = (e.clientX - percentX * last.width) + 'px';
-          win.style.top = (e.clientY - percentY * last.height) + 'px';
-          winObj.isMaximized = false;
-          wasMaximized = true;
-          offsetX = percentX * last.width;
-          offsetY = percentY * last.height;
-        } else {
-          offsetX = e.clientX - win.offsetLeft;
-          offsetY = e.clientY - win.offsetTop;
-        }
-        isDragging = true;
-        titleBar.style.cursor = "grabbing";
-        activateWindow(win);
-
-        prevTransition = win.style.transition;
-        win.style.transition = 'none';
-
-        function onMouseMove(e) {
-          if (!isDragging) return;
-          win.style.left = (e.clientX - offsetX) + 'px';
-          win.style.top = (e.clientY - offsetY) + 'px';
-          // 分屏吸附提示
-          const snapType = getSnapType(e);
-          if (snapType) showSnapHint(snapType);
-          else hideSnapHint();
-          updateTaskbarVisibility();
-        }
-        function onMouseUp(e) {
-          if (!isDragging) return;
-          const snapType = getSnapType(e);
-          win.classList.remove('maximized');
-          switch (snapType) {
-            case "top":
-              win.classList.add('maximized');
-              win.style.left = '0';
-              win.style.top = '0';
-              win.style.width = '100vw';
-              win.style.height = '100vh';
-              winObj.isMaximized = true;
-              break;
-            case "topleft":
-              win.style.left = "0";
-              win.style.top = "0";
-              win.style.width = "50vw";
-              win.style.height = "50vh";
-              break;
-            case "topright":
-              win.style.left = (window.innerWidth / 2) + "px";
-              win.style.top = "0";
-              win.style.width = "50vw";
-              win.style.height = "50vh";
-              break;
-            case "bottomleft":
-              win.style.left = "0";
-              win.style.top = (window.innerHeight / 2) + "px";
-              win.style.width = "50vw";
-              win.style.height = "50vh";
-              break;
-            case "bottomright":
-              win.style.left = (window.innerWidth / 2) + "px";
-              win.style.top = (window.innerHeight / 2) + "px";
-              win.style.width = "50vw";
-              win.style.height = "50vh";
-              break;
-            case "left":
-              win.style.left = '0';
-              win.style.top = '0';
-              win.style.width = '50vw';
-              win.style.height = '100vh';
-              break;
-            case "right":
-              win.style.left = (window.innerWidth / 2) + 'px';
-              win.style.top = '0';
-              win.style.width = '50vw';
-              win.style.height = '100vh';
-              break;
-          }
-          hideSnapHint();
-          isDragging = false;
-          titleBar.style.cursor = "grab";
-          win.style.transition = prevTransition;
-          updateTaskbarVisibility();
-          document.removeEventListener('mousemove', onMouseMove);
-          document.removeEventListener('mouseup', onMouseUp);
-        }
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-      });
-
-      // 拉伸（可参考你原来的逻辑，略）
-    }
-
-    function addResizeHandles(winEl) {
-      const directions = ['n', 'e', 's', 'w', 'nw', 'ne', 'sw', 'se'];
-      directions.forEach(dir => {
-        const handle = document.createElement('div');
-        handle.className = `resize-handle resize-handle-${dir}`;
-        winEl.appendChild(handle);
-        handle.addEventListener('mousedown', function (e) {
-          e.stopPropagation();
-          startResizing(winEl, dir, e);
-        });
-      });
-    }
-
-    function startResizing(winEl, dir, e) {
-      e.preventDefault();
-      const startX = e.clientX;
-      const startY = e.clientY;
-      const startRect = winEl.getBoundingClientRect();
-      const minWidth = 320, minHeight = 180;
-      let snapType = "";
-
-      function onMove(ev) {
-        let dx = ev.clientX - startX;
-        let dy = ev.clientY - startY;
-        let newLeft = startRect.left, newTop = startRect.top;
-        let newWidth = startRect.width, newHeight = startRect.height;
-        if (dir.includes('e')) newWidth = Math.max(minWidth, startRect.width + dx);
-        if (dir.includes('s')) newHeight = Math.max(minHeight, startRect.height + dy);
-        if (dir.includes('w')) {
-          newWidth = Math.max(minWidth, startRect.width - dx);
-          newLeft = startRect.left + dx;
-        }
-        if (dir.includes('n')) {
-          newHeight = Math.max(minHeight, startRect.height - dy);
-          newTop = startRect.top + dy;
-        }
-        // 判断是否靠近屏幕边缘，显示分屏吸附提示
-        snapType = getSnapType(ev);
-        if (snapType) {
-          showSnapHint(snapType);
-        } else {
-          hideSnapHint();
-          winEl.style.left = newLeft + 'px';
-          winEl.style.top = newTop + 'px';
-          winEl.style.width = newWidth + 'px';
-          winEl.style.height = newHeight + 'px';
-        }
-        updateTaskbarVisibility();
-      }
-
-      function onUp(ev) {
-        // 如果松开时在分屏吸附区，自动吸附
-        if (snapType) {
-          winEl.classList.remove('maximized');
-          switch (snapType) {
-            case "top":
-              winEl.classList.add('maximized');
-              winEl.style.left = '0';
-              winEl.style.top = '0';
-              winEl.style.width = '100vw';
-              winEl.style.height = '100vh';
-              break;
-            case "topleft":
-              winEl.style.left = "0";
-              winEl.style.height = "50vh";
-              break;
-            case "bottomleft":
-              winEl.style.left = "0";
-              winEl.style.top = (window.innerHeight / 2) + "px";
-              winEl.style.width = "50vw";
-              winEl.style.height = "50vh";
-              break;
-            case "bottomright":
-              winEl.style.left = (window.innerWidth / 2) + "px";
-              winEl.style.top = (window.innerHeight / 2) + "px";
-              winEl.style.width = "50vw";
-              winEl.style.height = "50vh";
-              break;
-            case "left":
-              winEl.style.left = '0';
-              winEl.style.top = '0';
-              winEl.style.width = '50vw';
-              winEl.style.height = '100vh';
-              break;
-            case "right":
-              winEl.style.left = (window.innerWidth / 2) + 'px';
-              winEl.style.top = '0';
-              winEl.style.width = '50vw';
-              winEl.style.height = '100vh';
-              break;
-          }
-        }
-        hideSnapHint();
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-        updateTaskbarVisibility();
-      }
-
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
-    }
-
-    // 初始化所有窗口行为
-    windows.forEach(win => {
-      initWindowBehavior(win);
-      addResizeHandles(win.el);
-    });
-    updateTaskbarWindows();
-    updateTaskbarVisibility();
 
     // Mac窗口演示按钮
     let count = 0;
     document.getElementById('helloBtn').onclick = function () {
-      alert('你好，欢迎使用可交互窗口！');
+      showNotification({ title: '你好', message: '欢迎使用可交互窗口！' });
     };
     document.getElementById('incBtn').onclick = function () {
       count++;
       document.getElementById('counter').textContent = count;
     };
     document.getElementById('alertBtn').onclick = function () {
-      alert('这是一个弹窗按钮的演示。');
+      showNotification({ title: '演示', message: '这是一个弹窗按钮的演示。' });
     };
 
     document.getElementById('show-desktop-btn').onclick = function () {
@@ -3090,144 +3595,7 @@
       updateTaskbarVisibility();
     };
 
-    // 启动台搜索逻辑
-    (function () {
-      const searchInput = document.getElementById('launchpad-search-input');
-      const searchBtn = document.getElementById('launchpad-search-btn');
-      const launchpad = document.getElementById('launchpad');
-      const content = launchpad.querySelector('.launchpad-content');
-      // 应用列表（与renderLaunchpad一致）
-      const APPS = [
-        { icon: './PIC/yhmb.svg', name: 'Mac窗口', app: 'macWindow' },
-        { icon: './PIC/bilibili.svg', name: '哔哩哔哩', app: 'bilibiliWindow' }
-      ];
 
-      function searchApps(keyword) {
-        const kw = keyword.trim().toLowerCase();
-        if (!kw) return APPS;
-        return APPS.filter(app =>
-          app.name.toLowerCase().includes(kw) ||
-          app.app.toLowerCase().includes(kw)
-        );
-      }
-
-      function renderSearchResult(keyword) {
-        const apps = searchApps(keyword);
-        content.innerHTML = '';
-        if (apps.length > 0) {
-          apps.forEach(app => {
-            const el = document.createElement('div');
-            el.className = 'launchpad-app';
-            el.dataset.app = app.app;
-            el.innerHTML = `<img src="${app.icon}" alt="${app.name}" /><span>${app.name}</span>`;
-            el.onclick = function () {
-              openWindow(app.app);
-              closeLaunchpad();
-            };
-            content.appendChild(el);
-          });
-        } else {
-          // 无本地应用，显示网页搜索建议
-          const tip = document.createElement('div');
-          tip.style.cssText = "color:#bcd;text-align:center;font-size:17px;margin:38px auto 0;";
-          tip.innerHTML = `未找到本地应用，可直接网页搜索：<br><span style="color:#88B1F1;">${keyword}</span>`;
-          content.appendChild(tip);
-        }
-      }
-
-      // 输入时本地应用搜索
-      searchInput.addEventListener('input', function () {
-        renderSearchResult(this.value);
-      });
-
-      // 回车或点击按钮网页搜索
-      function doWebSearch() {
-        const kw = searchInput.value.trim();
-        if (kw) {
-          window.open('https://www.bing.com/search?q=' + encodeURIComponent(kw), '_blank');
-        }
-      }
-      searchBtn.onclick = doWebSearch;
-      searchInput.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-          // 若有本地应用则优先打开，否则网页搜索
-          const apps = searchApps(this.value);
-          if (apps.length > 0) {
-            openWindow(apps[0].app);
-            closeLaunchpad();
-          } else {
-            doWebSearch();
-          }
-        }
-      });
-
-      // 启动台每次打开时清空搜索
-      const origOpenLaunchpad = openLaunchpad;
-      window.openLaunchpad = function () {
-        searchInput.value = '';
-        renderLaunchpad(0);
-        content.scrollTop = 0;
-        origOpenLaunchpad();
-        setTimeout(() => searchInput.focus(), 120);
-      };
-    })();
-
-    // 复制
-    document.querySelector('#menu ul li:nth-child(1)').onclick = function () {
-      const selection = window.getSelection();
-      if (selection && selection.toString()) {
-        navigator.clipboard.writeText(selection.toString());
-        alert('已复制: ' + selection.toString());
-      } else {
-        alert('请先选中要复制的内容');
-      }
-    };
-
-    // 粘贴
-    document.querySelector('#menu ul li:nth-child(2)').onclick = async function () {
-      const text = await navigator.clipboard.readText();
-      const selection = window.getSelection();
-      if (selection.rangeCount > 0) {
-        selection.deleteFromDocument();
-        selection.getRangeAt(0).insertNode(document.createTextNode(text));
-      }
-    };
-
-    // 剪切
-    document.querySelector('#menu ul li:nth-child(3)').onclick = function () {
-      const selection = window.getSelection();
-      if (selection && selection.toString()) {
-        navigator.clipboard.writeText(selection.toString());
-        selection.deleteFromDocument();
-        alert('已剪切: ' + selection.toString());
-      } else {
-        alert('请先选中要剪切的内容');
-      }
-    };
-
-    document.getElementById('random-component').onclick = function () {
-      const text = document.getElementById('hitokoto').innerText;
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(function () {
-          alert('已复制到剪贴板');
-        }, function () {
-          alert('复制失败，请检查浏览器权限');
-        });
-      } else {
-        // 兼容旧浏览器
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-          document.execCommand('copy');
-          alert('已复制到剪贴板');
-        } catch (err) {
-          alert('复制失败');
-        }
-        document.body.removeChild(textarea);
-      }
-    };
   </script>
 </body>
 
