@@ -161,9 +161,10 @@
     .window {
       width: 400px;
       height: 340px;
-      background: rgba(30, 32, 38, 0.92);
+      background: rgba(24, 26, 32, 0.459);
+      backdrop-filter: blur(20px);
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
-      border-radius: 12px;
+      border-radius: 16px;
       position: absolute;
       top: 120px;
       left: 100px;
@@ -190,13 +191,14 @@
     }
 
     .title-bar {
-      height: 48px;
-      background: rgba(24, 26, 32, 0.92);
+      height: 42px;
+      /* background: rgba(24, 26, 32, 0.459); */
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 24px 0 16px;
-      border-bottom: 1px solid #23242a;
+      backdrop-filter: blur(20px);
+      padding: 0 0px 0 18px;
+      /* border-bottom: 1px solid #23242a; */
       font-weight: 800;
       font-size: 20px;
       color: #fff;
@@ -204,6 +206,7 @@
       user-select: none;
       position: relative;
       letter-spacing: 1px;
+
     }
 
     .window.maximized .title-bar {
@@ -212,8 +215,8 @@
 
     .mac-btns {
       display: flex;
-      gap: 10px;
-      margin-right: 16px;
+      gap: 2px;
+      margin-right: 12px;
       align-items: center;
       background: none;
       border: none;
@@ -1588,16 +1591,20 @@
   <!-- 桌面快捷方式 -->
   <div id="desktop" class="desktop-area">
     <div class="desktop-shortcut" data-app="macWindow">
-      <img src="./PIC/yhmb.svg" alt="窗口" />
+      <img src="./PIC/Mac.png" alt="窗口" />
       <span>Mac窗口</span>
     </div>
     <div class="desktop-shortcut" data-app="flyme-linkpc" style="top:128px;">
-      <img src="https://linkpc.flyme.com/assets/logo2.811cc926.png" alt="Flyme 互联" />
+      <img src="./PIC/flymelink.svg" alt="Flyme 互联" />
       <span>Flyme 互联</span>
     </div>
-    <div class="desktop-shortcut" data-app="superBoxWindow" style="top: 225px;">
-      <img src="./PIC/bilibili.svg" alt="超级盒子" id="showWindowBox" style="cursor:pointer;" />
+    <div class="desktop-shortcut" data-app="windowBox" style="top: 225px;">
+      <img src="./PIC/windowBox.svg" alt="超级盒子" id="showWindowBox" style="cursor:pointer;" />
       <span>超级盒子</span>
+    </div>
+    <div class="desktop-shortcut" data-app="sudokuBox" style="top:320px;">
+      <img src="./PIC/Sudoku.png" alt="数独" />
+      <span>数独游戏</span>
     </div>
   </div>
   <!-- 任务栏 -->
@@ -1655,7 +1662,8 @@
   <!-- Mac风格窗口 -->
   <div class="window hidden" id="macWindow">
     <div class="title-bar">
-      <span class="title">Mac风格窗口</span>
+      <span class="title"
+        style="position: static;font-size: 16px;user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;cursor: move;">Mac风格窗口</span>
       <span class="mac-btns">
         <span class="mac-btn red" title="关闭"></span>
         <span class="mac-btn yellow" title="最大化/还原"></span>
@@ -1670,20 +1678,13 @@
       </div>
       <button class="btn" id="alertBtn">弹窗</button>
     </div>
-    <!-- ==== 拉伸手柄 ==== -->
-    <div class="resize-handle resize-handle-n"></div>
-    <div class="resize-handle resize-handle-e"></div>
-    <div class="resize-handle resize-handle-s"></div>
-    <div class="resize-handle resize-handle-w"></div>
-    <div class="resize-handle resize-handle-nw"></div>
-    <div class="resize-handle resize-handle-ne"></div>
-    <div class="resize-handle resize-handle-sw"></div>
-    <div class="resize-handle resize-handle-se"></div>
   </div>
   <!-- Flyme互联窗口 -->
-  <div class="window hidden" id="flyme-linkpc">
+  <div class="window hidden" id="flyme-linkpc" style="width: 344px; height: 570px;">
     <div class="title-bar">
-      <span class="title">Flyme 互联</span>
+      <span class="title"
+        style="position: static;font-size: 16px;user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;cursor: move;">Flyme
+        互联</span>
       <span class="mac-btns">
         <span class="mac-btn red" title="关闭"></span>
         <span class="mac-btn yellow" title="最大化/还原"></span>
@@ -1693,15 +1694,6 @@
     <div class="window-content">
       <iframe src="https://linkpc.flyme.com/" style="width:100%;height:100%;border:none;"></iframe>
     </div>
-    <!-- ==== 拉伸手柄 ==== -->
-    <div class="resize-handle resize-handle-n"></div>
-    <div class="resize-handle resize-handle-e"></div>
-    <div class="resize-handle resize-handle-s"></div>
-    <div class="resize-handle resize-handle-w"></div>
-    <div class="resize-handle resize-handle-nw"></div>
-    <div class="resize-handle resize-handle-ne"></div>
-    <div class="resize-handle resize-handle-sw"></div>
-    <div class="resize-handle resize-handle-se"></div>
   </div>
 
 </div>
@@ -1718,7 +1710,7 @@
 </div>
 
 <body>
-  <div class="window-container" id="windowBox" style="z-index:2001;display:none;">
+  <div class="window-container" id="windowBox" style="z-index:3001;display:none;">
     <div class="resize-handle nw"></div>
     <div class="resize-handle ne"></div>
     <div class="resize-handle sw"></div>
@@ -1736,7 +1728,9 @@
       <span id="weather-text" class="hitokoto-text">加载中...</span>
     </div>
     <div class="close-btn">×</div>
-    <div class="title">SHOOTING STAR</div>
+    <div class="title"
+      style="user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;cursor: move;">
+      SHOOTING STAR</div>
     <img src="./PIC/cjbox.jpg" style="width:100%;:none;pointer-events:none;">
     <div class="bottom-nav">
       <div class="nav-btns">
@@ -1909,6 +1903,16 @@
       </button>
     </div>
   </div>
+
+  <div class="window-container" id="sudokuBox" style="z-index:3001;display:none;width:1024px;height:774px;">
+    <div class="close-btn" style="color: #000;">×</div>
+    <div class="title"
+      style="color: #000;user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;cursor: move;height:52px;width:88%;">
+      Sudoku</div>
+    <iframe id="sudoku-iframe" scrolling="no" src="Sudoku.html"
+      style="width:100%;height:100%;border:none;border-radius:18px 18px 0 0;pointer-events:auto;"></iframe>
+  </div>
+
   <div id="menu" class="context-menu">
     <ul>
       <li>
@@ -1936,6 +1940,39 @@
   </div>
 
   <script>
+    // 记录被隐藏的窗口
+    let desktopHiddenWindows = null;
+
+    document.getElementById('show-desktop-btn').onclick = function () {
+      if (desktopHiddenWindows) {
+        desktopHiddenWindows.forEach(id => {
+          const win = windows.find(w => w.id === id);
+          if (win) {
+            if (win.id === 'windowBox') {
+              win.el.style.display = '';
+            }
+            win.el.classList.remove('hidden');
+            win.isOpen = true;
+            win.isMinimized = false;
+          }
+        });
+        desktopHiddenWindows = null;
+      } else {
+        desktopHiddenWindows = windows.filter(win => win.isOpen && !win.isMinimized && (win.el.style.display !== 'none' && !win.el.classList.contains('hidden'))).map(win => win.id);
+        windows.forEach(win => {
+          if (win.isOpen && !win.isMinimized) {
+            if (win.id === 'windowBox') {
+              win.el.style.display = 'none';
+            }
+            win.el.classList.add('hidden');
+            win.isMinimized = true;
+          }
+        });
+      }
+      updateTaskbarWindows();
+      updateTaskbarVisibility();
+    };
+
     document.getElementById('random-component').onclick = function () {
       const text = document.getElementById('hitokoto').innerText;
       if (navigator.clipboard) {
@@ -1968,8 +2005,10 @@
 
       // 应用列表（与renderLaunchpad一致）
       const APPS = [
-        { icon: './PIC/yhmb.svg', name: 'Mac窗口', app: 'macWindow' },
-        { icon: './PIC/https://linkpc.flyme.com/assets/logo2.811cc926.png', name: 'Flyme 互联', app: 'flyme-linkpc' }
+        { icon: './PIC/Mac.png', name: 'Mac窗口', app: 'macWindow' },
+        { icon: './PIC/flymelink.svg', name: 'Flyme 互联', app: 'flyme-linkpc' },
+        { icon: './PIC/windowBox.svg', name: '超级盒子', app: 'windowBox' },
+        { icon: './PIC/Sudoku.png', name: '数独游戏', app: 'sudokuBox' }
       ];
 
       function searchApps(keyword) {
@@ -2382,12 +2421,19 @@
 
     // 超级盒子 windowBox 显示/隐藏时也要更新任务栏避让
     document.getElementById('showWindowBox').onclick = function () {
-      document.getElementById('windowBox').style.display = '';
+      openWindow('windowBox');
       updateTaskbarVisibility(); // 新增
     };
     document.querySelector('.close-btn').onclick = function () {
-      document.getElementById('windowBox').style.display = 'none';
-      updateTaskbarVisibility(); // 新增
+      closeWindow('windowBox');
+      // 修复：同步关闭状态，移除任务栏图标
+      const win = windows.find(w => w.id === 'windowBox');
+      if (win) {
+        win.isOpen = false;
+        win.isMinimized = false;
+        updateTaskbarWindows();
+        updateTaskbarVisibility();
+      }
     };
 
 
@@ -3172,7 +3218,9 @@
 
     // 启用 Mac窗口和 Flyme互联窗口的拖动与分屏吸附
     enableWindowDragAndSnap(document.getElementById('macWindow'), 400 / 340, 240, 120);
-    enableWindowDragAndSnap(document.getElementById('flyme-linkpc'), 400 / 340, 240, 120);
+    // 启用 Flyme互联窗口的拖动与分屏吸附
+    // 比例为 16 / 9，最小宽高为 240 / 135
+    enableWindowDragAndSnap(document.getElementById('flyme-linkpc'), 16 / 9, 240, 135);
 
 
     const introVideo = document.getElementById('intro-video');
@@ -3194,6 +3242,18 @@
               taskbar.classList.remove('taskbar-hidden');
             }, 480);
           }
+          // === 绑定Mac窗口演示按钮事件 ===
+          let count = 0;
+          document.getElementById('helloBtn').onclick = function () {
+            showNotification({ title: '你好', message: '欢迎使用可交互窗口！' });
+          };
+          document.getElementById('incBtn').onclick = function () {
+            count++;
+            document.getElementById('counter').textContent = count;
+          };
+          document.getElementById('alertBtn').onclick = function () {
+            showNotification({ title: '演示', message: '这是一个弹窗按钮的演示。' });
+          };
         }, 800);
       }
       introVideo.onended = showMain;
@@ -3272,19 +3332,36 @@
           btn.appendChild(img);
           // 修复：点击任务栏图标，最小化/还原窗口
           btn.onclick = () => {
-            if (!win.isMinimized && !win.el.classList.contains('hidden')) {
-              // 已激活则最小化
-              win.el.classList.add('hidden');
-              win.isMinimized = true;
+            if (win.id === 'windowBox') {
+              // 判断是否需要还原显示
+              if (box.style.display === 'none' || box.classList.contains('hidden') || win.isMinimized) {
+                // 还原显示
+                box.style.display = '';
+                box.classList.remove('hidden');
+                win.isMinimized = false;
+                win.isOpen = true;
+                activateWindow(box);
+              } else {
+                // 最小化/隐藏
+                box.style.display = 'none';
+                box.classList.add('hidden');
+                win.isMinimized = true;
+              }
             } else {
-              // 已最小化则还原并置顶
-              win.el.classList.remove('hidden');
-              win.isMinimized = false;
-              activateWindow(win.el);
+              if (!win.isMinimized && !win.el.classList.contains('hidden')) {
+                win.el.classList.add('hidden');
+                win.isMinimized = true;
+              } else {
+                win.el.classList.remove('hidden');
+                win.isMinimized = false;
+                win.isOpen = true;
+                activateWindow(win.el);
+              }
             }
             updateTaskbarWindows();
             updateTaskbarVisibility();
           };
+
           center.appendChild(btn);
           win.taskbarBtn = btn;
         } else {
@@ -3298,7 +3375,7 @@
       {
         id: 'macWindow',
         el: document.getElementById('macWindow'),
-        icon: './PIC/yhmb.svg',
+        icon: './PIC/Mac.png',
         title: 'Mac窗口',
         isOpen: false,
         isMinimized: false,
@@ -3309,7 +3386,7 @@
       {
         id: 'flyme-linkpc',
         el: document.getElementById('flyme-linkpc'),
-        icon: 'https://linkpc.flyme.com/assets/logo2.811cc926.png',
+        icon: './PIC/flymelink.svg',
         title: 'Flyme 互联',
         isOpen: false,
         isMinimized: false,
@@ -3327,14 +3404,145 @@
         isMaximized: false,
         lastPosition: null,
         taskbarBtn: null
+      },
+      {
+        id: 'sudokuBox',
+        el: document.getElementById('sudokuBox'),
+        icon: './PIC/Sudoku.png',
+        title: '数独游戏',
+        isOpen: false,
+        isMinimized: false,
+        isMaximized: false,
+        lastPosition: null,
+        taskbarBtn: null
       }
     ];
 
+    (function () {
+      const box = document.getElementById('sudokuBox');
+      if (!box) return;
+      const minWidth = 400, minHeight = 250;
+      let startX, startY, startW, startH, startL, startT, dir;
+
+      function onMouseMove(e) {
+        let dx = e.clientX - startX;
+        let dy = e.clientY - startY;
+        let newW = startW, newH = startH, newL = startL, newT = startT;
+
+        if (dir === 'e') newW = Math.max(minWidth, startW + dx);
+        if (dir === 'w') {
+          newW = Math.max(minWidth, startW - dx);
+          newL = startL + dx;
+        }
+        if (dir === 's') newH = Math.max(minHeight, startH + dy);
+        if (dir === 'n') {
+          newH = Math.max(minHeight, startH - dy);
+          newT = startT + dy;
+        }
+        if (dir === 'se') {
+          newW = Math.max(minWidth, startW + dx);
+          newH = Math.max(minHeight, startH + dy);
+        }
+        if (dir === 'sw') {
+          newW = Math.max(minWidth, startW - dx);
+          newL = startL + dx;
+          newH = Math.max(minHeight, startH + dy);
+        }
+        if (dir === 'ne') {
+          newW = Math.max(minWidth, startW + dx);
+          newH = Math.max(minHeight, startH - dy);
+          newT = startT + dy;
+        }
+        if (dir === 'nw') {
+          newW = Math.max(minWidth, startW - dx);
+          newL = startL + dx;
+          newH = Math.max(minHeight, startH - dy);
+          newT = startT + dy;
+        }
+
+        box.style.width = newW + 'px';
+        box.style.height = newH + 'px';
+        box.style.left = newL + 'px';
+        box.style.top = newT + 'px';
+      }
+
+      function onMouseUp() {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+
+      box.querySelectorAll('.resize-handle').forEach(handle => {
+        handle.addEventListener('mousedown', function (e) {
+          e.preventDefault();
+          dir = this.className.split(' ')[1];
+          const rect = box.getBoundingClientRect();
+          startX = e.clientX;
+          startY = e.clientY;
+          startW = rect.width;
+          startH = rect.height;
+          startL = box.offsetLeft;
+          startT = box.offsetTop;
+          box.style.position = 'absolute';
+          document.addEventListener('mousemove', onMouseMove);
+          document.addEventListener('mouseup', onMouseUp);
+        });
+      });
+
+      // 拖动
+      box.addEventListener('mousedown', function (e) {
+        if (
+          e.target.classList.contains('resize-handle') ||
+          e.target.classList.contains('close-btn') ||
+          e.target.classList.contains('nav-btn') ||
+          e.target.classList.contains('start-btn')
+        ) return;
+        let isDragging = true;
+        let dragOffsetX = e.clientX - box.offsetLeft;
+        let dragOffsetY = e.clientY - box.offsetTop;
+        let prevTransition = box.style.transition;
+        box.style.transition = 'none';
+        box.style.position = 'absolute';
+
+        function onMove(ev) {
+          if (!isDragging) return;
+          let newL = ev.clientX - dragOffsetX;
+          let newT = ev.clientY - dragOffsetY;
+          newL = Math.max(0, Math.min(newL, window.innerWidth - box.offsetWidth));
+          newT = Math.max(0, Math.min(newT, window.innerHeight - box.offsetHeight));
+          box.style.left = newL + 'px';
+          box.style.top = newT + 'px';
+        }
+        function onUp() {
+          isDragging = false;
+          box.style.transition = prevTransition;
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+
+      // 关闭按钮
+      box.querySelector('.close-btn').onclick = function () {
+        closeWindow('sudokuBox');
+        const win = windows.find(w => w.id === 'sudokuBox');
+        if (win) {
+          win.isOpen = false;
+          win.isMinimized = false;
+          updateTaskbarWindows();
+          updateTaskbarVisibility();
+        }
+      };
+    })();
 
     // 打开窗口
     function openWindow(id) {
       const win = windows.find(w => w.id === id);
       if (!win) return;
+      // 针对 windowBox 和 sudokuBox 都要移除 display:none
+      if (id === 'windowBox' || id === 'sudokuBox') {
+        win.el.style.display = '';
+      }
       win.el.classList.remove('hidden');
       win.isOpen = true;
       win.isMinimized = false;
@@ -3357,6 +3565,9 @@
     function closeWindow(id) {
       const win = windows.find(w => w.id === id);
       if (!win) return;
+      if (id === 'windowBox' || id === 'sudokuBox') {
+        win.el.style.display = 'none';
+      }
       win.el.classList.add('hidden');
       win.isOpen = false;
       win.isMinimized = false;
@@ -3407,8 +3618,10 @@
     // 启动台应用点击
     function renderLaunchpad(page = 0) {
       const APPS = [
-        { icon: './PIC/yhmb.svg', name: 'Mac窗口', app: 'macWindow' },
-        { icon: 'https://linkpc.flyme.com/assets/logo2.811cc926.png', name: 'Flyme 互联', app: 'flyme-linkpc' },
+        { icon: './PIC/Mac.png', name: 'Mac窗口', app: 'macWindow' },
+        { icon: './PIC/flymelink.svg', name: 'Flyme 互联', app: 'flyme-linkpc' },
+        { icon: './PIC/windowBox.svg', name: '超级盒子', app: 'windowBox' },
+        { icon: './PIC/Sudoku.png', name: '数独游戏', app: 'sudokuBox' }
       ];
       const APPS_PER_PAGE = 9;
       const launchpad = document.getElementById('launchpad');
@@ -3569,33 +3782,6 @@
         updateTaskbarVisibility();
       };
     });
-
-
-    // Mac窗口演示按钮
-    let count = 0;
-    document.getElementById('helloBtn').onclick = function () {
-      showNotification({ title: '你好', message: '欢迎使用可交互窗口！' });
-    };
-    document.getElementById('incBtn').onclick = function () {
-      count++;
-      document.getElementById('counter').textContent = count;
-    };
-    document.getElementById('alertBtn').onclick = function () {
-      showNotification({ title: '演示', message: '这是一个弹窗按钮的演示。' });
-    };
-
-    document.getElementById('show-desktop-btn').onclick = function () {
-      windows.forEach(win => {
-        if (win.isOpen && !win.isMinimized) {
-          win.el.classList.add('hidden');
-          win.isMinimized = true;
-        }
-      });
-      updateTaskbarWindows();
-      updateTaskbarVisibility();
-    };
-
-
   </script>
 </body>
 
