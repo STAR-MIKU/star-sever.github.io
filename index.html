@@ -1638,12 +1638,10 @@
           <div data-engine="baidu" data-url="https://www.baidu.com/s?wd=" data-icon="https://www.baidu.com/favicon.ico">
             <img src="https://www.baidu.com/favicon.ico" alt="Baidu"> 百度
           </div>
-          <div data-engine="google" data-url="https://www.google.com/search?q="
-            data-icon="./PIC/google.ico">
+          <div data-engine="google" data-url="https://www.google.com/search?q=" data-icon="./PIC/google.ico">
             <img src="./PIC/google.ico" alt="Google"> Google
           </div>
-          <div data-engine="duckduckgo" data-url="https://duckduckgo.com/?q="
-            data-icon="./PIC/DuckDuckGo.svg">
+          <div data-engine="duckduckgo" data-url="https://duckduckgo.com/?q=" data-icon="./PIC/DuckDuckGo.svg">
             <img src="./PIC/DuckDuckGo.svg" alt="DuckDuckGo"> DuckDuckGo
           </div>
         </div>
@@ -1913,6 +1911,16 @@
       style="width:100%;height:100%;border:none;border-radius:18px 18px 0 0;pointer-events:auto;"></iframe>
   </div>
 
+  <div class="window-container" id="fanbook" style="z-index:3001;width:1024px;height:774px;">
+    <div class="close-btn" style="color:#000;z-index:9856;">×</div>
+    <div class="title"
+      style="color: #000;z-index:9856;user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;cursor: move;height:52px;width:88%;">
+    </div>
+    <iframe id="fanbook-iframe" scrolling="no"
+      src="https://web.fanbook.cn/channels/465873163319095296/481778858375626752"
+      style="width:100%;height:100%;border:none;border-radius:18px 18px 0 0;pointer-events:auto;"></iframe>
+  </div>
+
   <div id="menu" class="context-menu">
     <ul>
       <li>
@@ -1940,6 +1948,16 @@
   </div>
 
   <script>
+    showNotification({
+      title: '版本号',
+      message: 'v0.2.11.5',
+      image: 'https://i0.hdslb.com/bfs/new_dyn/a8ccd60f0c16104e779aaabf3f7baad21435113223.png@324w_324h.avif',
+      showImage: true,
+      buttons: [
+        { text: '确定', onClick: (el) => { showNotification({ title: '提示', message: '你点了确定喵' }); window.location.href = "https://www.bilibili.com/video/BV1sK41137i5?t=18.1"; el.remove(); } },
+        { text: '取消', onClick: (el) => { showNotification({ title: '提示', message: '你点了拒绝喵' }); el.remove(); } }
+      ]
+    });
     // 记录被隐藏的窗口
     let desktopHiddenWindows = null;
 
