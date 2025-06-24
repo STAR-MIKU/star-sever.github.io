@@ -1,0 +1,506 @@
+<html lang="zh-cn">
+
+<head>
+    <style>
+        /*全局字体*/
+        @font-face {
+            font-family: 'Chillax';
+            src: url('/fonts/Chillax-Bold.otf') format('opentype');
+            font-weight: 800;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        html,
+        body,
+        * {
+            font-family: 'Chillax', Arial, sans-serif !important;
+            font-weight: 800;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        #sudoku-container {
+            width: 390px;
+            height: 310px;
+            margin-top: 34px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1.5px solid rgba(255, 255, 255, 0.18);
+            padding: 16px 10px 10px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            transition: box-shadow 0.3s;
+            overflow: hidden;
+        }
+
+        .sudoku-flex-row {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            width: 100%;
+        }
+
+        #controls-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-right: 8px;
+            margin-top: 0;
+            margin-bottom: 0;
+            width: 54px;
+            flex-shrink: 0;
+        }
+
+        #controls-col select,
+        #controls-col button,
+        #controls-col span {
+            width: 54px;
+            box-sizing: border-box;
+        }
+
+        #difficulty {
+            border-radius: 6px;
+            border: none;
+            padding: 4px 0;
+            background: rgba(144, 202, 249, 0.3);
+            font-size: 13px;
+            color: #1976d2;
+            outline: none;
+            box-shadow: 0 1px 4px rgba(31, 38, 135, 0.08);
+            width: 100%;
+        }
+
+        #hint-btn {
+            padding: 4px 0;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 193, 7, 0.75);
+            color: #fff;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(31, 38, 135, 0.10);
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+        }
+
+        #hint-btn:active {
+            background: #ffa000;
+            transform: scale(0.97);
+        }
+
+        #reset-btn {
+            padding: 4px 0;
+            border: none;
+            border-radius: 6px;
+            background: rgba(76, 175, 80, 0.75);
+            color: #fff;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(31, 38, 135, 0.10);
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+        }
+
+        #reset-btn:active {
+            background: #388e3c;
+            transform: scale(0.97);
+        }
+
+        #timer {
+            font-size: 13px;
+            color: #1976d2;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            padding: 4px 0;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 1px 4px rgba(31, 38, 135, 0.08);
+            width: 100%;
+            text-align: center;
+            display: block;
+        }
+
+        #sudoku-board {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(9, 1fr);
+            gap: 2px;
+            width: 270px;
+            height: 270px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 3px;
+            box-shadow: 0 2px 8px rgba(31, 38, 135, 0.10);
+            margin-bottom: 8px;
+        }
+
+        #number-pad {
+            display: flex;
+            flex-direction: column;
+            gap: 5.4px;
+            margin-left: 8px;
+            margin-bottom: 0;
+            justify-content: flex-start;
+            width: 32px;
+        }
+
+        .num-btn {
+            width: 26px;
+            height: 26px;
+            font-size: 15px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(144, 202, 249, 0.7);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(31, 38, 135, 0.10);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .num-btn:active {
+            background: #1976d2;
+            transform: scale(0.96);
+        }
+
+        .cell {
+            width: 26px;
+            height: 26px;
+            text-align: center;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.45);
+            color: #222;
+            outline: none;
+            box-shadow: 0 1px 2px rgba(31, 38, 135, 0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .cell:focus {
+            background: rgba(173, 216, 230, 0.45);
+            box-shadow: 0 0 0 2px #90caf9;
+        }
+
+        .cell.fixed {
+            background: rgba(144, 202, 249, 0.65);
+            color: #0d47a1;
+            font-weight: bold;
+            cursor: not-allowed;
+        }
+
+        .cell.invalid {
+            background: rgba(255, 99, 132, 0.35);
+            color: #b71c1c;
+            animation: shake 0.2s;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-2px);
+            }
+
+            50% {
+                transform: translateX(2px);
+            }
+
+            75% {
+                transform: translateX(-2px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 340px) {
+            #sudoku-container {
+                width: 98vw;
+                min-width: 0;
+                padding: 2vw;
+            }
+
+            #sudoku-board {
+                width: 60vw;
+                height: 60vw;
+                min-width: 0;
+            }
+
+            #number-pad {
+                width: 8vw;
+                min-width: 0;
+            }
+
+            #controls-col {
+                width: 18vw;
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sudoku-container">
+        <div class="sudoku-flex-row">
+            <div id="controls-col">
+                <select id="difficulty">
+                    <option value="easy">简单</option>
+                    <option value="medium">中等</option>
+                    <option value="hard">困难</option>
+                </select>
+                <button id="hint-btn">提示</button>
+                <button id="reset-btn">重置</button>
+                <span id="timer">00:00</span>
+            </div>
+            <div id="sudoku-board"></div>
+            <div id="number-pad"></div>
+        </div>
+    </div>
+    <script>
+        // 数独生成器工具函数
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 递归生成完整数独解
+        function generateSolution(board = Array.from({ length: 9 }, () => Array(9).fill(0)), row = 0, col = 0) {
+            if (row === 9) return true;
+            if (col === 9) return generateSolution(board, row + 1, 0);
+
+            let nums = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            for (let num of nums) {
+                if (isSafe(board, row, col, num)) {
+                    board[row][col] = num;
+                    if (generateSolution(board, row, col + 1)) return true;
+                    board[row][col] = 0;
+                }
+            }
+            return false;
+        }
+
+        function isSafe(board, row, col, num) {
+            for (let x = 0; x < 9; x++) {
+                if (board[row][x] === num || board[x][col] === num) return false;
+            }
+            let startRow = row - row % 3, startCol = col - col % 3;
+            for (let i = 0; i < 3; i++)
+                for (let j = 0; j < 3; j++)
+                    if (board[startRow + i][startCol + j] === num) return false;
+            return true;
+        }
+
+        // 随机挖空生成谜题
+        function generatePuzzle(solution, difficulty) {
+            let puzzle = solution.map(row => row.slice());
+            let holes;
+            if (difficulty === 'easy') holes = 36 + Math.floor(Math.random() * 4); // 36~39
+            else if (difficulty === 'medium') holes = 45 + Math.floor(Math.random() * 4); // 45~48
+            else holes = 54 + Math.floor(Math.random() * 4); // 54~57
+
+            let positions = [];
+            for (let r = 0; r < 9; r++)
+                for (let c = 0; c < 9; c++)
+                    positions.push([r, c]);
+            shuffle(positions);
+
+            for (let i = 0; i < holes; i++) {
+                let [r, c] = positions[i];
+                puzzle[r][c] = 0;
+            }
+            return puzzle;
+        }
+
+        let puzzle = [];
+        let solution = [];
+        let board = [];
+        let selectedCell = null;
+        let timerInterval = null;
+        let seconds = 0;
+
+        function pad(num) {
+            return num < 10 ? '0' + num : num;
+        }
+
+        function updateTimer() {
+            const min = Math.floor(seconds / 60);
+            const sec = seconds % 60;
+            document.getElementById('timer').textContent = `${pad(min)}:${pad(sec)}`;
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            seconds = 0;
+            updateTimer();
+            timerInterval = setInterval(() => {
+                seconds++;
+                updateTimer();
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        function createBoard() {
+            const boardDiv = document.getElementById('sudoku-board');
+            boardDiv.innerHTML = '';
+            board = [];
+            for (let r = 0; r < 9; r++) {
+                board[r] = [];
+                for (let c = 0; c < 9; c++) {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.maxLength = 1;
+                    input.className = 'cell';
+                    if (puzzle[r][c] !== 0) {
+                        input.value = puzzle[r][c];
+                        input.disabled = true;
+                        input.classList.add('fixed');
+                    }
+                    input.dataset.row = r;
+                    input.dataset.col = c;
+                    input.addEventListener('focus', () => selectedCell = input);
+                    input.addEventListener('input', onInput);
+                    boardDiv.appendChild(input);
+                    board[r][c] = input;
+                }
+            }
+        }
+
+        function createNumberPad() {
+            const pad = document.getElementById('number-pad');
+            pad.innerHTML = '';
+            for (let i = 1; i <= 9; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = 'num-btn';
+                btn.onclick = () => {
+                    if (selectedCell && !selectedCell.disabled) {
+                        selectedCell.value = i;
+                        selectedCell.dispatchEvent(new Event('input'));
+                    }
+                };
+                pad.appendChild(btn);
+            }
+        }
+
+        function onInput(e) {
+            const input = e.target;
+            const val = input.value.replace(/[^1-9]/g, '');
+            input.value = val;
+            validateBoard();
+        }
+
+        function validateBoard() {
+            // 清除所有无效标记
+            for (let r = 0; r < 9; r++)
+                for (let c = 0; c < 9; c++)
+                    board[r][c].classList.remove('invalid');
+            // 检查行、列、宫
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    const val = board[r][c].value;
+                    if (!val) continue;
+                    // 行
+                    for (let cc = 0; cc < 9; cc++) {
+                        if (cc !== c && board[r][cc].value === val) {
+                            board[r][c].classList.add('invalid');
+                            board[r][cc].classList.add('invalid');
+                        }
+                    }
+                    // 列
+                    for (let rr = 0; rr < 9; rr++) {
+                        if (rr !== r && board[rr][c].value === val) {
+                            board[r][c].classList.add('invalid');
+                            board[rr][c].classList.add('invalid');
+                        }
+                    }
+                    // 宫
+                    const boxR = Math.floor(r / 3) * 3, boxC = Math.floor(c / 3) * 3;
+                    for (let dr = 0; dr < 3; dr++) {
+                        for (let dc = 0; dc < 3; dc++) {
+                            const rr = boxR + dr, cc = boxC + dc;
+                            if ((rr !== r || cc !== c) && board[rr][cc].value === val) {
+                                board[r][c].classList.add('invalid');
+                                board[rr][cc].classList.add('invalid');
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function setDifficulty(level) {
+            // 生成新解和谜题
+            let sol = Array.from({ length: 9 }, () => Array(9).fill(0));
+            generateSolution(sol);
+            solution = sol.map(row => row.slice());
+            puzzle = generatePuzzle(solution, level);
+            createBoard();
+            createNumberPad();
+            selectedCell = null;
+            startTimer();
+        }
+
+        document.getElementById('difficulty').onchange = function () {
+            setDifficulty(this.value);
+        };
+
+        document.getElementById('reset-btn').onclick = () => {
+            setDifficulty(document.getElementById('difficulty').value);
+        };
+
+        document.getElementById('hint-btn').onclick = () => {
+            // 找到第一个空格并填入正确答案
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (!board[r][c].value || board[r][c].classList.contains('invalid')) {
+                        if (!board[r][c].disabled) {
+                            board[r][c].value = solution[r][c];
+                            board[r][c].classList.add('hinted');
+                            setTimeout(() => board[r][c].classList.remove('hinted'), 1000);
+                            validateBoard();
+                            return;
+                        }
+                    }
+                }
+            }
+        };
+
+        // 初始化
+        setDifficulty('easy');
+        startTimer();
+    </script>
+</body>
+
+</html>
