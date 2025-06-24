@@ -5,6 +5,19 @@
   <meta charset="UTF-8">
   <title>SHOOTING STAR | 工作台</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    // 强制覆盖 UA 为 Windows 桌面浏览器
+    Object.defineProperty(navigator, 'userAgent', {
+      get: function () {
+        return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+      }
+    });
+    Object.defineProperty(navigator, 'platform', {
+      get: function () {
+        return "Win32";
+      }
+    });
+  </script>
   <style>
     /*全局字体*/
     @font-face {
@@ -1024,6 +1037,7 @@
     }
 
     .resize-handle.n {
+      width: 80%;
       top: -8px;
       left: 50%;
       transform: translateX(-50%);
@@ -1031,6 +1045,7 @@
     }
 
     .resize-handle.s {
+      width: 80%;
       bottom: -8px;
       left: 50%;
       transform: translateX(-50%);
@@ -1038,6 +1053,7 @@
     }
 
     .resize-handle.e {
+      height: 80%;
       right: -8px;
       top: 50%;
       transform: translateY(-50%);
@@ -1045,6 +1061,7 @@
     }
 
     .resize-handle.w {
+      height: 80%;
       left: -8px;
       top: 50%;
       transform: translateY(-50%);
@@ -1425,7 +1442,7 @@
       width: 36px;
       height: 36px;
       border-radius: 12px;
-      background: linear-gradient(135deg, #4f8cff 60%, #6ee7b7 100%);
+      background: linear-gradient(135deg, #ffffff 60%, #5effbf 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1578,6 +1595,85 @@
       border-radius: 4px;
       background: #fff2;
     }
+
+    #menu-account.hamburger-menu,
+    #menu-game.hamburger-menu,
+    #menu-dashboard.hamburger-menu,
+    #menu-message.hamburger-menu {
+      overflow-y: auto;
+      max-height: 90%;
+      padding-bottom: 70px;
+      /* 给底部菜单栏预留空间，避免内容被tab遮挡 */
+      /* 美化滚动条 */
+      scrollbar-width: thin;
+      scrollbar-color: #4e8cff #ffffff22;
+    }
+
+    #menu-account.hamburger-menu::-webkit-scrollbar,
+    #menu-game.hamburger-menu::-webkit-scrollbar,
+    #menu-dashboard.hamburger-menu::-webkit-scrollbar,
+    #menu-message.hamburger-menu::-webkit-scrollbar {
+      width: 8px;
+      background: #ffffff22;
+    }
+
+    #menu-account.hamburger-menu::-webkit-scrollbar-thumb,
+    #menu-game.hamburger-menu::-webkit-scrollbar-thumb,
+    #menu-dashboard.hamburger-menu::-webkit-scrollbar-thumb,
+    #menu-message.hamburger-menu::-webkit-scrollbar-thumb {
+      background: #4e8cff;
+      border-radius: 8px;
+    }
+
+    /* 折叠菜单弹窗优化样式 */
+    #collapse-modal {
+      position: fixed;
+      z-index: 9999;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: none;
+    }
+
+    #collapse-modal .collapse-modal-mask {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #collapse-modal .collapse-modal-content {
+      min-width: 220px;
+      background: rgba(255, 255, 255, 0.55);
+      border-radius: 24px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+      padding: 36px 32px 28px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    #collapse-modal-list button.nav-btn {
+      width: 180px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.85);
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #333;
+      margin: 0 auto;
+      margin-bottom: 8px;
+      transition: background 0.18s;
+    }
+
+    #collapse-modal-list button.nav-btn:hover {
+      background: #e6f0ff;
+      color: #4e8cff;
+    }
   </style>
 </head>
 <!-- 启动引导视频及跳过按钮 -->
@@ -1594,17 +1690,21 @@
       <img src="./PIC/Mac.png" alt="窗口" />
       <span>Mac窗口</span>
     </div>
-    <div class="desktop-shortcut" data-app="flyme-linkpc" style="top:128px;">
+    <div class="desktop-shortcut" data-app="flyme-linkpc">
       <img src="./PIC/flymelink.svg" alt="Flyme 互联" />
       <span>Flyme 互联</span>
     </div>
-    <div class="desktop-shortcut" data-app="windowBox" style="top: 225px;">
+    <div class="desktop-shortcut" data-app="windowBox">
       <img src="./PIC/windowBox.svg" alt="超级盒子" id="showWindowBox" style="cursor:pointer;" />
       <span>超级盒子</span>
     </div>
-    <div class="desktop-shortcut" data-app="sudokuBox" style="top:320px;">
+    <div class="desktop-shortcut" data-app="sudokuBox">
       <img src="./PIC/Sudoku.png" alt="数独" />
       <span>数独游戏</span>
+    </div>
+    <div class="desktop-shortcut" data-app="fanbook">
+      <img src="./PIC/fanbook.png" alt="Fanbook" />
+      <span>Fanbook</span>
     </div>
   </div>
   <!-- 任务栏 -->
@@ -1659,6 +1759,14 @@
   </div>
   <!-- Mac风格窗口 -->
   <div class="window hidden" id="macWindow">
+    <div class="resize-handle nw"></div> <!--方向 西北-->
+    <div class="resize-handle ne"></div> <!--方向 东北-->
+    <!--<div class="resize-handle sw"></div> 方向 西南-->
+    <div class="resize-handle se"></div> <!--方向 东南-->
+    <div class="resize-handle n"></div> <!--方向 北-->
+    <div class="resize-handle s"></div> <!--方向 南-->
+    <div class="resize-handle e"></div> <!--方向 东-->
+    <div class="resize-handle w"></div> <!--方向 西-->
     <div class="title-bar">
       <span class="title"
         style="position: static;font-size: 16px;user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;cursor: move;">Mac风格窗口</span>
@@ -1679,6 +1787,14 @@
   </div>
   <!-- Flyme互联窗口 -->
   <div class="window hidden" id="flyme-linkpc" style="width: 344px; height: 570px;">
+    <div class="resize-handle nw"></div> <!--方向 西北-->
+    <div class="resize-handle ne"></div> <!--方向 东北-->
+    <!--<div class="resize-handle sw"></div> 方向 西南-->
+    <div class="resize-handle se"></div> <!--方向 东南-->
+    <div class="resize-handle n"></div> <!--方向 北-->
+    <div class="resize-handle s"></div> <!--方向 南-->
+    <div class="resize-handle e"></div> <!--方向 东-->
+    <div class="resize-handle w"></div> <!--方向 西-->
     <div class="title-bar">
       <span class="title"
         style="position: static;font-size: 16px;user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;cursor: move;">Flyme
@@ -1709,14 +1825,14 @@
 
 <body>
   <div class="window-container" id="windowBox" style="z-index:3001;display:none;">
-    <div class="resize-handle nw"></div>
-    <div class="resize-handle ne"></div>
-    <div class="resize-handle sw"></div>
-    <div class="resize-handle se"></div>
-    <div class="resize-handle n"></div>
-    <div class="resize-handle s"></div>
-    <div class="resize-handle e"></div>
-    <div class="resize-handle w"></div>
+    <div class="resize-handle nw"></div> <!--方向 西北-->
+    <div class="resize-handle ne"></div> <!--方向 东北-->
+    <!--<div class="resize-handle sw"></div> 方向 西南-->
+    <div class="resize-handle se"></div> <!--方向 东南-->
+    <div class="resize-handle n"></div> <!--方向 北-->
+    <div class="resize-handle s"></div> <!--方向 南-->
+    <div class="resize-handle e"></div> <!--方向 东-->
+    <div class="resize-handle w"></div> <!--方向 西-->
     <!-- 新增圆角矩形div -->
     <div class="rounded-rect" id="random-component">
       <span id="hitokoto" class="hitokoto-text">加载中...</span>
@@ -1729,7 +1845,7 @@
     <div class="title"
       style="user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;cursor: move;">
       SHOOTING STAR</div>
-    <img src="./PIC/cjbox.jpg" style="width:100%;:none;pointer-events:none;">
+    <img src="./PIC/cjbox.jpg" style="width:100%;height:100%;pointer-events:none;">
     <div class="bottom-nav">
       <div class="nav-btns">
         <button class="nav-btn">首页</button>
@@ -1902,22 +2018,32 @@
     </div>
   </div>
 
-  <div class="window-container" id="sudokuBox" style="z-index:3001;display:none;width:1024px;height:774px;">
-    <div class="close-btn" style="color: #000;">×</div>
+  <div class="window-container" id="sudokuBox"
+    style="border-radius: 22px; z-index:3001;display:none;width:400px;height:348px;backdrop-filter:blur(20px);">
+    <!--窗口禁止拉伸-->
+    <div class="close-btn" style="color: #000;font-size:30px;top:6px;right:6px;">×</div>
     <div class="title"
-      style="color: #000;user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;cursor: move;height:52px;width:88%;">
+      style="color: #000;user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;cursor: move;height:52px;width:76%;font-size:20px;top:6px;left:14px;">
       Sudoku</div>
-    <iframe id="sudoku-iframe" scrolling="no" src="Sudoku.html"
+    <iframe id="sudoku-iframe" scrolling="no" src="./Games/Sudoku.html"
       style="width:100%;height:100%;border:none;border-radius:18px 18px 0 0;pointer-events:auto;"></iframe>
   </div>
 
-  <div class="window-container" id="fanbook" style="z-index:3001;width:1024px;height:774px;">
+  <div class="window-container" id="fanbook"
+    style="backdrop-filter:blur(20px);z-index:3001;display:none;width:566px;height:410px;">
+    <div class="resize-handle nw"></div> <!--方向 西北-->
+    <div class="resize-handle ne"></div> <!--方向 东北-->
+    <!--<div class="resize-handle sw"></div> 方向 西南-->
+    <div class="resize-handle se"></div> <!--方向 东南-->
+    <div class="resize-handle n"></div> <!--方向 北-->
+    <div class="resize-handle s"></div> <!--方向 南-->
+    <div class="resize-handle e"></div> <!--方向 东-->
+    <div class="resize-handle w"></div> <!--方向 西-->
     <div class="close-btn" style="color:#000;z-index:9856;">×</div>
     <div class="title"
-      style="color: #000;z-index:9856;user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;cursor: move;height:52px;width:88%;">
+      style="color: #000;z-index:9856;user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;cursor: move;height:52px;width:76%;">
     </div>
-    <iframe id="fanbook-iframe" scrolling="no"
-      src="https://web.fanbook.cn/channels/465873163319095296/481778858375626752"
+    <iframe id="fanbook-iframe" scrolling="no" src="https://web.fanbook.cn/"
       style="width:100%;height:100%;border:none;border-radius:18px 18px 0 0;pointer-events:auto;"></iframe>
   </div>
 
@@ -1948,16 +2074,461 @@
   </div>
 
   <script>
-    showNotification({
-      title: '版本号',
-      message: 'v0.2.11.5',
-      image: 'https://i0.hdslb.com/bfs/new_dyn/a8ccd60f0c16104e779aaabf3f7baad21435113223.png@324w_324h.avif',
-      showImage: true,
-      buttons: [
-        { text: '确定', onClick: (el) => { showNotification({ title: '提示', message: '你点了确定喵' }); window.location.href = "https://www.bilibili.com/video/BV1sK41137i5?t=18.1"; el.remove(); } },
-        { text: '取消', onClick: (el) => { showNotification({ title: '提示', message: '你点了拒绝喵' }); el.remove(); } }
-      ]
+    (function () {
+      // 只显示一次（首次键盘），但允许手动随时打开
+      let shown = false;
+      window.showShortcutGuide = function (force) {
+        if (shown && !force) return;
+        shown = true;
+        localStorage.setItem('shortcut_guide_shown', '1');
+        // 若已存在则不重复弹出
+        if (document.getElementById('shortcut-guide-modal')) return;
+
+        // 弹窗HTML
+        const guide = document.createElement('div');
+        guide.id = 'shortcut-guide-modal';
+        guide.innerHTML = `
+        <div class="shortcut-guide-mask"></div>
+        <div class="shortcut-guide-content">
+          <div class="shortcut-guide-title">快捷键指南</div>
+          <ul class="shortcut-guide-list">
+            <li><b>Ctrl + 1</b>：Mac窗口</li>
+            <li><b>Ctrl + 2</b>：Flyme互联</li>
+            <li><b>Ctrl + 3</b>：超级盒子</li>
+            <li><b>Ctrl + 4</b>：数独游戏</li>
+            <li><b>Ctrl + 5</b>：Fanbook</li>
+            <li><b>Ctrl + Shift + S</b>：显示/隐藏超级盒子</li>
+            <li><b>Ctrl + Shift + L</b>：打开启动台</li>
+            <li><b>Ctrl + Shift + D</b>：显示/隐藏桌面</li>
+            <li><b>Ctrl + Shift + Q</b>：关闭当前窗口</li>
+            <li><b>Ctrl + Shift + K</b>：打开操作指南</li>
+          </ul>
+          <button class="shortcut-guide-close">我知道了</button>
+        </div>
+        `;
+        document.body.appendChild(guide);
+
+        // 样式（如已存在则不重复添加）
+        if (!document.getElementById('shortcut-guide-style')) {
+          const style = document.createElement('style');
+          style.id = 'shortcut-guide-style';
+          style.textContent = `
+          #shortcut-guide-modal {
+            position: fixed; z-index: 99999; left: 0; top: 0; width: 100vw; height: 100vh; display: flex;
+            align-items: center; justify-content: center;
+          }
+          .shortcut-guide-mask {
+            position: absolute; left: 0; top: 0; width: 100vw; height: 100vh;
+            background: rgba(30,32,38,0.32); backdrop-filter: blur(8px);
+          }
+          .shortcut-guide-content {
+            position: relative;
+            background: rgba(255,255,255,0.55);
+            backdrop-filter: blur(24px) saturate(140%);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px #4e8cff33, 0 2px 8px #0002;
+            padding: 38px 38px 28px 38px;
+            min-width: 340px;
+            max-width: 92vw;
+            color: #222;
+            animation: shortcut-guide-in 0.32s cubic-bezier(.4,0,.2,1);
+            font-family: 'Chillax', Arial, sans-serif;
+          }
+          @keyframes shortcut-guide-in {
+            from { opacity: 0; transform: scale(0.92);}
+            to { opacity: 1; transform: scale(1);}
+          }
+          .shortcut-guide-title {
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 18px;
+            color: #4e8cff;
+            text-align: center;
+          }
+          .shortcut-guide-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 18px 0;
+          }
+          .shortcut-guide-list li {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #333;
+            background: rgba(136,177,241,0.08);
+            border-radius: 10px;
+            padding: 7px 16px;
+            transition: background 0.2s;
+          }
+          .shortcut-guide-list li b {
+            color: #4e8cff;
+            font-weight: 800;
+            font-size: 17px;
+            margin-right: 10px;
+            font-family: 'Chillax', Arial, sans-serif;
+          }
+          .shortcut-guide-close {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 38px;
+            font-size: 18px;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(90deg, #4e8cff 0%, #6ad1ff 100%);
+            color: #fff;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0 2px 8px #4e8cff22;
+            cursor: pointer;
+            transition: background 0.2s;
+          }
+          .shortcut-guide-close:hover {
+            background: linear-gradient(90deg, #6ad1ff 0%, #4e8cff 100%);
+            color: #fff;
+          }
+        `;
+          document.head.appendChild(style);
+        }
+
+        // 关闭
+        guide.querySelector('.shortcut-guide-close').onclick =
+          guide.querySelector('.shortcut-guide-mask').onclick = function () {
+            guide.remove();
+          };
+      };
+
+      // 首次键盘按下时弹出
+      if (!localStorage.getItem('shortcut_guide_shown')) {
+        window.addEventListener('keydown', function once() {
+          window.showShortcutGuide();
+          window.removeEventListener('keydown', once, true);
+        }, true);
+      }
+    })();
+
+    // 快捷键操作
+    document.addEventListener('keydown', function (e) {
+      // 忽略输入框/textarea等输入时
+      const tag = (e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+
+      // Ctrl+1~5 快速打开窗口
+      if (e.ctrlKey && !e.shiftKey && !e.altKey) {
+        if (e.key === '1') { openWindow('macWindow'); e.preventDefault(); }
+        if (e.key === '2') { openWindow('flyme-linkpc'); e.preventDefault(); }
+        if (e.key === '3') { openWindow('windowBox'); e.preventDefault(); }
+        if (e.key === '4') { openWindow('sudokuBox'); e.preventDefault(); }
+        if (e.key === '5') { openWindow('fanbook'); e.preventDefault(); }
+      }
+      // Ctrl+Shift+S 显示/隐藏超级盒子
+      if (e.ctrlKey && e.shiftKey && !e.altKey && (e.key === 'S' || e.key === 's')) {
+        const win = windows.find(w => w.id === 'windowBox');
+        if (win) {
+          if (win.isOpen && !win.isMinimized && win.el.style.display !== 'none') {
+            closeWindow('windowBox');
+          } else {
+            openWindow('windowBox');
+          }
+          e.preventDefault();
+        }
+      }
+      // Ctrl+Shift+L 打开启动台
+      if (e.ctrlKey && e.shiftKey && !e.altKey && (e.key === 'L' || e.key === 'l')) {
+        openLaunchpad();
+        e.preventDefault();
+      }
+      // Ctrl+Shift+K 打开操作指南
+      if (e.ctrlKey && e.shiftKey && !e.altKey && (e.key === 'K' || e.key === 'k')) {
+        showShortcutGuide(true);
+        e.preventDefault();
+      }
+      // Ctrl+Shift+D 显示/隐藏桌面
+      if (e.ctrlKey && e.shiftKey && !e.altKey && (e.key === 'D' || e.key === 'd')) {
+        document.getElementById('show-desktop-btn').click();
+        e.preventDefault();
+      }
+      // Ctrl+Shift+Q 关闭当前最顶层窗口
+      if (e.ctrlKey && e.shiftKey && !e.altKey && (e.key === 'Q' || e.key === 'q')) {
+        // 找到zIndex最大的已打开窗口
+        let openWins = windows.filter(w => w.isOpen && !w.isMinimized && w.el.style.display !== 'none' && !w.el.classList.contains('hidden'));
+        if (openWins.length > 0) {
+          openWins.sort((a, b) => (parseInt(b.el.style.zIndex) || 0) - (parseInt(a.el.style.zIndex) || 0));
+          closeWindow(openWins[0].id);
+          e.preventDefault();
+        }
+      }
     });
+
+    // 在账户菜单添加“是否显示LOGO”开关
+    (function () {
+      const menuAccount = document.getElementById('menu-account');
+      if (menuAccount && !document.getElementById('logo-toggle')) {
+        // 插入到昵称输入框下方
+        const nameInput = document.getElementById('account-name');
+        const logoDiv = document.createElement('div');
+        logoDiv.style = "margin:18px 0;text-align:left;";
+        logoDiv.innerHTML = `
+      <label style="font-size:16px;vertical-align:middle;">
+        <input type="checkbox" id="logo-toggle" style="vertical-align:middle;margin-right:6px;">
+        显示LOGO
+      </label>
+    `;
+        nameInput.parentNode.parentNode.insertBefore(logoDiv, nameInput.parentNode.nextSibling);
+
+        // 读取本地设置
+        const logoShow = localStorage.getItem('show_logo') !== 'false';
+        document.getElementById('logo-toggle').checked = logoShow;
+
+        // 切换事件
+        document.getElementById('logo-toggle').onchange = function () {
+          const show = this.checked;
+          localStorage.setItem('show_logo', show);
+          setLogoShow(show);
+        };
+      }
+
+      // 控制LOGO显示/隐藏
+      function setLogoShow(show) {
+        const logoDiv = document.querySelector('#windowBox .title');
+        if (logoDiv) {
+          logoDiv.textContent = show ? 'SHOOTING STAR' : '   ';
+        }
+      }
+
+      // 打开账户菜单时同步开关和LOGO
+      const accountBtn = document.querySelector('.nav-btns button:last-child');
+      if (accountBtn) {
+        accountBtn.addEventListener('click', function () {
+          const logoShow = localStorage.getItem('show_logo') !== 'false';
+          document.getElementById('logo-toggle').checked = logoShow;
+          setLogoShow(logoShow);
+        });
+      }
+
+      // 页面加载时同步LOGO
+      document.addEventListener('DOMContentLoaded', function () {
+        const logoShow = localStorage.getItem('show_logo') !== 'false';
+        setLogoShow(logoShow);
+      });
+    })();
+
+    // 在账户汉堡菜单添加“修改背景图片”功能
+    (function () {
+      // 在账户菜单插入上传控件
+      const menuAccount = document.getElementById('menu-account');
+      if (menuAccount && !document.getElementById('bg-upload')) {
+        // 插入到头像下方
+        const avatarDiv = menuAccount.querySelector('div[style*="text-align:center"]');
+        const bgDiv = document.createElement('div');
+        bgDiv.style = "text-align:center;margin:18px 0;";
+        bgDiv.innerHTML = `
+      <img id="bg-preview" src="./PIC/cjbox.jpg" style="width:64px;height:36px;border-radius:8px;object-fit:cover;display:block;margin:0 auto 8px;">
+      <input type="file" id="bg-upload" accept="image/*" style="display:block;margin:8px auto;">
+      <button id="bg-save" style="margin-top:8px;width:100%;padding:8px;border-radius:12px;background:#4e8cff;color:#fff;border:none;">保存背景</button>
+    `;
+        avatarDiv.parentNode.insertBefore(bgDiv, avatarDiv.nextSibling);
+
+        // 预览和保存
+        let bgDataUrl = null;
+        document.getElementById('bg-upload').onchange = function (e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+              bgDataUrl = ev.target.result;
+              document.getElementById('bg-preview').src = bgDataUrl;
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+        document.getElementById('bg-save').onclick = function () {
+          if (bgDataUrl) {
+            localStorage.setItem('cjbox_bg', bgDataUrl);
+            showNotification({ title: '保存成功', message: '背景图片已保存' });
+            // 立即应用
+            setWindowBoxBg(bgDataUrl);
+          }
+        };
+      }
+
+      // 打开账户菜单时自动预览
+      const accountBtn = document.querySelector('.nav-btns button:last-child');
+      if (accountBtn) {
+        accountBtn.addEventListener('click', function () {
+          const bg = localStorage.getItem('cjbox_bg');
+          document.getElementById('bg-preview').src = bg || './PIC/cjbox.jpg';
+        });
+      }
+
+      // 应用背景到 windowBox
+      function setWindowBoxBg(bg) {
+        const img = document.querySelector('#windowBox > img');
+        if (img) img.src = bg || './PIC/cjbox.jpg';
+      }
+
+      // 页面加载时检查本地背景
+      document.addEventListener('DOMContentLoaded', function () {
+        const bg = localStorage.getItem('cjbox_bg');
+        setWindowBoxBg(bg);
+      });
+
+      // 每次打开超级盒子窗口时检查背景
+      const origOpenWindow = window.openWindow;
+      window.openWindow = function (id) {
+        if (id === 'windowBox') {
+          const bg = localStorage.getItem('cjbox_bg');
+          setWindowBoxBg(bg);
+        }
+        origOpenWindow.apply(this, arguments);
+      };
+    })();
+
+    (function () {
+      const box = document.getElementById('fanbook');
+      if (!box) return;
+      const minWidth = 400, minHeight = 250;
+      let startX, startY, startW, startH, startL, startT, dir;
+
+      function onMouseMove(e) {
+        let dx = e.clientX - startX;
+        let dy = e.clientY - startY;
+        let newW = startW, newH = startH, newL = startL, newT = startT;
+
+        if (dir === 'e') newW = Math.max(minWidth, startW + dx);
+        if (dir === 'w') {
+          newW = Math.max(minWidth, startW - dx);
+          newL = startL + dx;
+        }
+        if (dir === 's') newH = Math.max(minHeight, startH + dy);
+        if (dir === 'n') {
+          newH = Math.max(minHeight, startH - dy);
+          newT = startT + dy;
+        }
+        if (dir === 'se') {
+          newW = Math.max(minWidth, startW + dx);
+          newH = Math.max(minHeight, startH + dy);
+        }
+        if (dir === 'sw') {
+          newW = Math.max(minWidth, startW - dx);
+          newL = startL + dx;
+          newH = Math.max(minHeight, startH + dy);
+        }
+        if (dir === 'ne') {
+          newW = Math.max(minWidth, startW + dx);
+          newH = Math.max(minHeight, startH - dy);
+          newT = startT + dy;
+        }
+        if (dir === 'nw') {
+          newW = Math.max(minWidth, startW - dx);
+          newL = startL + dx;
+          newH = Math.max(minHeight, startH - dy);
+          newT = startT + dy;
+        }
+
+        box.style.width = newW + 'px';
+        box.style.height = newH + 'px';
+        box.style.left = newL + 'px';
+        box.style.top = newT + 'px';
+      }
+
+      function onMouseUp() {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+
+      // 拉伸手柄
+      box.querySelectorAll('.resize-handle').forEach(handle => {
+        handle.addEventListener('mousedown', function (e) {
+          e.preventDefault();
+          dir = this.className.split(' ')[1];
+          const rect = box.getBoundingClientRect();
+          startX = e.clientX;
+          startY = e.clientY;
+          startW = rect.width;
+          startH = rect.height;
+          startL = box.offsetLeft;
+          startT = box.offsetTop;
+          box.style.position = 'absolute';
+          document.addEventListener('mousemove', onMouseMove);
+          document.addEventListener('mouseup', onMouseUp);
+        });
+      });
+
+      // 拖动
+      box.addEventListener('mousedown', function (e) {
+        if (
+          e.target.classList.contains('resize-handle') ||
+          e.target.classList.contains('close-btn') ||
+          e.target.classList.contains('nav-btn') ||
+          e.target.classList.contains('start-btn')
+        ) return;
+        let isDragging = true;
+        let dragOffsetX = e.clientX - box.offsetLeft;
+        let dragOffsetY = e.clientY - box.offsetTop;
+        let prevTransition = box.style.transition;
+        box.style.transition = 'none';
+        box.style.position = 'absolute';
+
+        function onMove(ev) {
+          if (!isDragging) return;
+          let newL = ev.clientX - dragOffsetX;
+          let newT = ev.clientY - dragOffsetY;
+          newL = Math.max(0, Math.min(newL, window.innerWidth - box.offsetWidth));
+          newT = Math.max(0, Math.min(newT, window.innerHeight - box.offsetHeight));
+          box.style.left = newL + 'px';
+          box.style.top = newT + 'px';
+        }
+        function onUp() {
+          isDragging = false;
+          box.style.transition = prevTransition;
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+
+      // 关闭按钮
+      box.querySelector('.close-btn').onclick = function () {
+        closeWindow('fanbook');
+        const win = windows.find(w => w.id === 'fanbook');
+        if (win) {
+          win.isOpen = false;
+          win.isMinimized = false;
+          updateTaskbarWindows();
+          updateTaskbarVisibility();
+        }
+      };
+    })();
+
+    // 桌面快捷方式自适应布局（左上角竖向排列）
+    function layoutDesktopShortcuts() {
+      const desktop = document.getElementById('desktop');
+      const shortcuts = Array.from(desktop.querySelectorAll('.desktop-shortcut'));
+      // 图标尺寸和间距
+      const iconW = 80, iconH = 80, gapX = 32, gapY = 32;
+      // 桌面区域尺寸
+      const ww = window.innerWidth, wh = window.innerHeight;
+      // 计算每列能放多少个
+      const maxRows = Math.max(1, Math.floor((wh - 80) / (iconH + gapY)));
+      // 左上角起始点
+      const startX = 20;
+      const startY = 32;
+
+      shortcuts.forEach((el, i) => {
+        // 竖向排列：先排满一列再换列
+        const row = i % maxRows;
+        const col = Math.floor(i / maxRows);
+        el.style.position = 'absolute';
+        el.style.left = (startX + col * (iconW + gapX)) + 'px';
+        el.style.top = (startY + row * (iconH + gapY)) + 'px';
+      });
+    }
+
+    // 初始化和窗口变化时布局
+    window.addEventListener('resize', layoutDesktopShortcuts);
+    document.addEventListener('DOMContentLoaded', layoutDesktopShortcuts);
+
     // 记录被隐藏的窗口
     let desktopHiddenWindows = null;
 
@@ -2026,7 +2597,9 @@
         { icon: './PIC/Mac.png', name: 'Mac窗口', app: 'macWindow' },
         { icon: './PIC/flymelink.svg', name: 'Flyme 互联', app: 'flyme-linkpc' },
         { icon: './PIC/windowBox.svg', name: '超级盒子', app: 'windowBox' },
-        { icon: './PIC/Sudoku.png', name: '数独游戏', app: 'sudokuBox' }
+        { icon: './PIC/Sudoku.png', name: '数独游戏', app: 'sudokuBox' },
+        { icon: './PIC/fanbook.png', name: 'Fanbook', app: 'fanbook' },
+        { icon: 'https://img.icons8.com/fluency/48/keyboard.png', name: '操作指南', app: 'shortcutGuide' }
       ];
 
       function searchApps(keyword) {
@@ -2048,8 +2621,14 @@
             el.dataset.app = app.app;
             el.innerHTML = `<img src="${app.icon}" alt="${app.name}" /><span>${app.name}</span>`;
             el.onclick = function () {
-              openWindow(app.app);
-              closeLaunchpad();
+              // 支持操作指南
+              if (app.app === 'shortcutGuide') {
+                showShortcutGuide(true);
+                closeLaunchpad();
+              } else {
+                openWindow(app.app);
+                closeLaunchpad();
+              }
             };
             content.appendChild(el);
           });
@@ -2261,12 +2840,15 @@
         });
       }
 
+      //通知svg备份
+      //${icon || `<svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      //<circle cx="12" cy="12" r="10" fill="white" fill-opacity="0.2"/>
+      //<path d="M12 8v4M12 16h.01" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      //</svg>`}
+
       div.innerHTML = `
         <div class="tz-notification-icon">
-          ${icon || `<svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" fill="white" fill-opacity="0.2"/>
-            <path d="M12 8v4M12 16h.01" stroke="white" stroke-width="2" stroke-linecap="round"/>
-          </svg>`}
+          <img src="./PIC/windowBox.svg" alt="通知" style="width:22px;height:22px;border-radius:6px;">
         </div>
         <div class="tz-notification-content">
           ${showImage && image ? `<img class="tz-notification-image" src="${image}" alt="通知图片">` : ''}
@@ -2669,50 +3251,81 @@
       const navBtns = document.querySelector('.nav-btns');
       const navBtnsArray = Array.from(navBtns.children);
       const windowBox = document.getElementById('windowBox');
-      const minNavWidth = 600; // 触发折叠的宽度阈值，可根据实际调整
+      const minNavWidth = 600;
 
-      // 检查是否已存在折叠菜单
-      let collapseMenu = document.getElementById('collapse-menu');
-      if (!collapseMenu) {
-        collapseMenu = document.createElement('div');
-        collapseMenu.id = 'collapse-menu';
-        collapseMenu.style.display = 'none';
-        collapseMenu.style.position = 'relative';
-        collapseMenu.innerHTML = `
-            <button id="collapse-toggle" style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.7);border:none;cursor:pointer;font-size:24px;">☰</button>
-            <div id="collapse-list" style="display:none;position:absolute;top:50px;left:0;z-index:99;background:rgba(255,255,255,0.95);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+      // 检查是否已存在折叠菜单弹窗
+      let collapseModal = document.getElementById('collapse-modal');
+      if (!collapseModal) {
+        collapseModal = document.createElement('div');
+        collapseModal.id = 'collapse-modal';
+        collapseModal.style.display = 'none';
+        collapseModal.innerHTML = `
+          <div class="collapse-modal-mask" style="
+            position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;
+            background:rgba(0,0,0,0.18);display:flex;align-items:center;justify-content:center;">
+            <div class="collapse-modal-content" style="
+              background:rgba(255,255,255,0.55);
+              backdrop-filter:blur(18px);
+              border-radius:24px;
+              box-shadow:0 4px 24px rgba(0,0,0,0.10);
+              padding:36px 32px 28px 32px;
+              min-width:220px;display:flex;flex-direction:column;align-items:center;position:relative;">
+              <button id="collapse-modal-close" style="
+                position:absolute;top:18px;right:22px;font-size:28px;background:none;border:none;
+                color:#888;cursor:pointer;transition:color 0.2s;">×</button>
+              <div style="font-size:22px;font-weight:bold;color:#222;margin-bottom:18px;letter-spacing:2px;">
+                功能菜单
+              </div>
+              <div id="collapse-modal-list" style="width:100%;display:flex;flex-direction:column;gap:12px;"></div>
             </div>
+          </div>
         `;
-        navBtns.parentNode.insertBefore(collapseMenu, navBtns);
-        // 事件
-        collapseMenu.querySelector('#collapse-toggle').onclick = function () {
-          const list = collapseMenu.querySelector('#collapse-list');
-          list.style.display = list.style.display === 'block' ? 'none' : 'block';
+        document.body.appendChild(collapseModal);
+
+        // 关闭弹窗
+        collapseModal.querySelector('#collapse-modal-close').onclick = function () {
+          collapseModal.style.display = 'none';
         };
-        document.addEventListener('click', function (e) {
-          if (!collapseMenu.contains(e.target)) {
-            collapseMenu.querySelector('#collapse-list').style.display = 'none';
-          }
-        });
+        // 点击遮罩关闭
+        collapseModal.querySelector('.collapse-modal-mask').onclick = function (e) {
+          if (e.target === this) collapseModal.style.display = 'none';
+        };
+      }
+
+      // 汉堡按钮
+      let collapseBtn = document.getElementById('collapse-toggle');
+      if (!collapseBtn) {
+        collapseBtn = document.createElement('button');
+        collapseBtn.id = 'collapse-toggle';
+        collapseBtn.style = 'width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.7);border:none;cursor:pointer;font-size:24px;margin-right:10px;';
+        collapseBtn.textContent = '☰';
+        navBtns.parentNode.insertBefore(collapseBtn, navBtns);
+        collapseBtn.onclick = function () {
+          // 填充菜单项
+          const list = collapseModal.querySelector('#collapse-modal-list');
+          list.innerHTML = '';
+          navBtnsArray.forEach((btn, idx) => {
+            const item = document.createElement('button');
+            item.className = 'nav-btn';
+            item.style = 'width:180px;height:44px;border-radius:12px;background:rgba(255,255,255,0.85);border:none;cursor:pointer;font-size:20px;color:#333;margin:0 auto;';
+            item.textContent = btn.textContent;
+            item.onclick = function () {
+              btn.click();
+              collapseModal.style.display = 'none';
+            };
+            list.appendChild(item);
+          });
+          collapseModal.style.display = 'flex';
+        };
       }
 
       if (windowBox.offsetWidth < minNavWidth) {
-        // 折叠
-        collapseMenu.style.display = 'block';
+        collapseBtn.style.display = '';
         navBtns.style.display = 'none';
-        // 填充折叠菜单
-        const list = collapseMenu.querySelector('#collapse-list');
-        list.innerHTML = '';
-        navBtnsArray.forEach(btn => {
-          const clone = btn.cloneNode(true);
-          clone.style.width = '100%';
-          clone.style.margin = '0';
-          list.appendChild(clone);
-        });
       } else {
-        // 展开
-        collapseMenu.style.display = 'none';
+        collapseBtn.style.display = 'none';
         navBtns.style.display = 'flex';
+        collapseModal.style.display = 'none';
       }
     }
 
@@ -3234,11 +3847,13 @@
       });
     }
 
-    // 启用 Mac窗口和 Flyme互联窗口的拖动与分屏吸附
-    enableWindowDragAndSnap(document.getElementById('macWindow'), 400 / 340, 240, 120);
+    // 启用 Mac窗口的拖动与分屏吸附
+    enableWindowDragAndSnap(document.getElementById('macWindow'), 16 / 10, 240, 120);
     // 启用 Flyme互联窗口的拖动与分屏吸附
-    // 比例为 16 / 9，最小宽高为 240 / 135
-    enableWindowDragAndSnap(document.getElementById('flyme-linkpc'), 16 / 9, 240, 135);
+    // 比例为 16 / 10，最小宽高为 240 / 135
+    enableWindowDragAndSnap(document.getElementById('flyme-linkpc'), 16 / 10, 240, 135);
+    // 启用 Fanbook窗口的拖动与分屏吸附
+    enableWindowDragAndSnap(document.getElementById('fanbook'), 16 / 10, 400, 250);
 
 
     const introVideo = document.getElementById('intro-video');
@@ -3319,10 +3934,33 @@
 
     let topZIndex = 3000;
 
+    // 激活窗口并前置
     function activateWindow(win) {
       topZIndex++;
       win.style.zIndex = topZIndex;
     }
+
+    // Alt+Tab 快捷键切换窗口
+    document.addEventListener('keydown', function (e) {
+      if (e.altKey && e.key === 'Tab') {
+        e.preventDefault();
+        // 获取所有已打开且未最小化的窗口
+        let openWins = windows.filter(w => w.isOpen && !w.isMinimized && !w.el.classList.contains('hidden'));
+        if (openWins.length > 1) {
+          // 按 zIndex 降序排列
+          openWins.sort((a, b) => (parseInt(b.el.style.zIndex) || 0) - (parseInt(a.el.style.zIndex) || 0));
+          // 找到当前最顶层窗口
+          let idx = 0;
+          if (document.activeElement) {
+            idx = openWins.findIndex(w => w.el === document.activeElement.closest('.window, .window-container'));
+          }
+          let next = openWins[(idx + 1) % openWins.length];
+          activateWindow(next.el);
+          // 让窗口获得焦点
+          next.el.focus && next.el.focus();
+        }
+      }
+    });
 
     // 任务栏窗口区
     const taskbarCenter = document.querySelector('.taskbar-center');
@@ -3348,19 +3986,16 @@
           img.style.width = '24px';
           img.style.height = '24px';
           btn.appendChild(img);
-          // 修复：点击任务栏图标，最小化/还原窗口
+          // 点击任务栏图标，自动前置并激活
           btn.onclick = () => {
             if (win.id === 'windowBox') {
-              // 判断是否需要还原显示
               if (box.style.display === 'none' || box.classList.contains('hidden') || win.isMinimized) {
-                // 还原显示
                 box.style.display = '';
                 box.classList.remove('hidden');
                 win.isMinimized = false;
                 win.isOpen = true;
                 activateWindow(box);
               } else {
-                // 最小化/隐藏
                 box.style.display = 'none';
                 box.classList.add('hidden');
                 win.isMinimized = true;
@@ -3376,10 +4011,10 @@
                 activateWindow(win.el);
               }
             }
+            activateWindow(win.el); // 新增：点击任务栏自动前置
             updateTaskbarWindows();
             updateTaskbarVisibility();
           };
-
           center.appendChild(btn);
           win.taskbarBtn = btn;
         } else {
@@ -3388,7 +4023,7 @@
       });
     }
 
-    // 窗口对象数组，必须有
+    // 窗口对象数组
     const windows = [
       {
         id: 'macWindow',
@@ -3417,7 +4052,7 @@
         el: document.getElementById('windowBox'),
         icon: './PIC/windowBox.svg',
         title: '超级盒子',
-        isOpen: true,
+        isOpen: false,
         isMinimized: false,
         isMaximized: false,
         lastPosition: null,
@@ -3433,133 +4068,196 @@
         isMaximized: false,
         lastPosition: null,
         taskbarBtn: null
+      },
+      {
+        id: 'fanbook',
+        el: document.getElementById('fanbook'),
+        icon: './PIC/fanbook.png',
+        title: 'Fanbook',
+        isOpen: false,
+        isMinimized: false,
+        isMaximized: false,
+        lastPosition: null,
+        taskbarBtn: null
       }
     ];
 
-    (function () {
-      const box = document.getElementById('sudokuBox');
-      if (!box) return;
-      const minWidth = 400, minHeight = 250;
-      let startX, startY, startW, startH, startL, startT, dir;
-
-      function onMouseMove(e) {
-        let dx = e.clientX - startX;
-        let dy = e.clientY - startY;
-        let newW = startW, newH = startH, newL = startL, newT = startT;
-
-        if (dir === 'e') newW = Math.max(minWidth, startW + dx);
-        if (dir === 'w') {
-          newW = Math.max(minWidth, startW - dx);
-          newL = startL + dx;
-        }
-        if (dir === 's') newH = Math.max(minHeight, startH + dy);
-        if (dir === 'n') {
-          newH = Math.max(minHeight, startH - dy);
-          newT = startT + dy;
-        }
-        if (dir === 'se') {
-          newW = Math.max(minWidth, startW + dx);
-          newH = Math.max(minHeight, startH + dy);
-        }
-        if (dir === 'sw') {
-          newW = Math.max(minWidth, startW - dx);
-          newL = startL + dx;
-          newH = Math.max(minHeight, startH + dy);
-        }
-        if (dir === 'ne') {
-          newW = Math.max(minWidth, startW + dx);
-          newH = Math.max(minHeight, startH - dy);
-          newT = startT + dy;
-        }
-        if (dir === 'nw') {
-          newW = Math.max(minWidth, startW - dx);
-          newL = startL + dx;
-          newH = Math.max(minHeight, startH - dy);
-          newT = startT + dy;
-        }
-
-        box.style.width = newW + 'px';
-        box.style.height = newH + 'px';
-        box.style.left = newL + 'px';
-        box.style.top = newT + 'px';
-      }
-
-      function onMouseUp() {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-      }
-
-      box.querySelectorAll('.resize-handle').forEach(handle => {
-        handle.addEventListener('mousedown', function (e) {
-          e.preventDefault();
-          dir = this.className.split(' ')[1];
-          const rect = box.getBoundingClientRect();
-          startX = e.clientX;
-          startY = e.clientY;
-          startW = rect.width;
-          startH = rect.height;
-          startL = box.offsetLeft;
-          startT = box.offsetTop;
-          box.style.position = 'absolute';
-          document.addEventListener('mousemove', onMouseMove);
-          document.addEventListener('mouseup', onMouseUp);
-        });
-      });
-
-      // 拖动
-      box.addEventListener('mousedown', function (e) {
+    // 新增：点击窗口自动前置
+    windows.forEach(win => {
+      // 支持 windowBox、sudokuBox、fanbook 这类 window-container
+      win.el.addEventListener('mousedown', function (e) {
+        // 排除按钮/拉伸手柄/菜单
         if (
+          e.target.classList.contains('mac-btn') ||
           e.target.classList.contains('resize-handle') ||
           e.target.classList.contains('close-btn') ||
           e.target.classList.contains('nav-btn') ||
-          e.target.classList.contains('start-btn')
+          e.target.classList.contains('start-btn') ||
+          e.target.closest('.hamburger-menu')
+        ) return;
+        activateWindow(win.el);
+      });
+    });
+
+    // ========== 所有 window-container 支持触摸拖动（仅标题栏可拖动，内容可交互） ==========
+    ['windowBox', 'sudokuBox', 'fanbook', 'macWindow', 'flyme-linkpc'].forEach(function (id) {
+      const box = document.getElementById(id);
+      if (!box) return;
+      let minWidth = 400, minHeight = 250;
+      // 针对不同窗口自适应最小宽高和比例
+      if (id === 'macWindow') { minWidth = 240; minHeight = 120; }
+      if (id === 'flyme-linkpc') { minWidth = 240; minHeight = 135; }
+      if (id === 'fanbook') { minWidth = 400; minHeight = 250; }
+      if (id === 'windowBox') { minWidth = 400; minHeight = 250; }
+      if (id === 'sudokuBox') { minWidth = 400; minHeight = 250; }
+
+      function getClient(e) {
+        if (e.touches && e.touches.length) {
+          return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+      }
+
+      // 拉伸手柄支持触摸
+      box.querySelectorAll('.resize-handle').forEach(handle => {
+        function startResize(e) {
+          e.preventDefault && e.preventDefault();
+          let dir = this.className.split(' ')[1];
+          const rect = box.getBoundingClientRect();
+          const { x, y } = getClient(e);
+          let startX = x, startY = y, startW = rect.width, startH = rect.height, startL = box.offsetLeft, startT = box.offsetTop;
+          box.style.position = 'absolute';
+          function onMove(ev) {
+            const { x, y } = getClient(ev);
+            let dx = x - startX;
+            let dy = y - startY;
+            let newW = startW, newH = startH, newL = startL, newT = startT;
+            if (dir === 'e') newW = Math.max(minWidth, startW + dx);
+            if (dir === 'w') { newW = Math.max(minWidth, startW - dx); newL = startL + dx; }
+            if (dir === 's') newH = Math.max(minHeight, startH + dy);
+            if (dir === 'n') { newH = Math.max(minHeight, startH - dy); newT = startT + dy; }
+            if (dir === 'se') { newW = Math.max(minWidth, startW + dx); newH = Math.max(minHeight, startH + dy); }
+            if (dir === 'sw') { newW = Math.max(minWidth, startW - dx); newL = startL + dx; newH = Math.max(minHeight, startH + dy); }
+            if (dir === 'ne') { newW = Math.max(minWidth, startW + dx); newH = Math.max(minHeight, startH - dy); newT = startT + dy; }
+            if (dir === 'nw') { newW = Math.max(minWidth, startW - dx); newL = startL + dx; newH = Math.max(minHeight, startH - dy); newT = startT + dy; }
+            box.style.width = newW + 'px';
+            box.style.height = newH + 'px';
+            box.style.left = newL + 'px';
+            box.style.top = newT + 'px';
+            ev.preventDefault && ev.preventDefault();
+          }
+          function onUp() {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onUp);
+          }
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', onUp);
+          document.addEventListener('touchmove', onMove, { passive: false });
+          document.addEventListener('touchend', onUp);
+        }
+        handle.addEventListener('mousedown', startResize);
+        handle.addEventListener('touchstart', startResize, { passive: false });
+      });
+
+      // 只允许在标题栏拖动
+      let dragHandle = box.querySelector('.title-bar') || box.querySelector('.title');
+      if (!dragHandle) return;
+
+      dragHandle.addEventListener('mousedown', startDrag);
+      dragHandle.addEventListener('touchstart', startDrag, { passive: false });
+
+      function startDrag(e) {
+        // 排除按钮
+        if (
+          e.target.classList.contains('mac-btn') ||
+          e.target.classList.contains('close-btn') ||
+          e.target.classList.contains('nav-btn') ||
+          e.target.classList.contains('start-btn') ||
+          (e.target.closest && e.target.closest('.mac-btns'))
         ) return;
         let isDragging = true;
-        let dragOffsetX = e.clientX - box.offsetLeft;
-        let dragOffsetY = e.clientY - box.offsetTop;
+        const { x, y } = getClient(e);
+        let dragOffsetX = x - box.offsetLeft;
+        let dragOffsetY = y - box.offsetTop;
         let prevTransition = box.style.transition;
         box.style.transition = 'none';
         box.style.position = 'absolute';
-
         function onMove(ev) {
+          const { x, y } = getClient(ev);
           if (!isDragging) return;
-          let newL = ev.clientX - dragOffsetX;
-          let newT = ev.clientY - dragOffsetY;
+          let newL = x - dragOffsetX;
+          let newT = y - dragOffsetY;
           newL = Math.max(0, Math.min(newL, window.innerWidth - box.offsetWidth));
           newT = Math.max(0, Math.min(newT, window.innerHeight - box.offsetHeight));
           box.style.left = newL + 'px';
           box.style.top = newT + 'px';
+          ev.preventDefault && ev.preventDefault();
         }
         function onUp() {
           isDragging = false;
           box.style.transition = prevTransition;
           document.removeEventListener('mousemove', onMove);
           document.removeEventListener('mouseup', onUp);
+          document.removeEventListener('touchmove', onMove);
+          document.removeEventListener('touchend', onUp);
         }
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onUp);
-      });
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('touchend', onUp);
+        e.preventDefault && e.preventDefault();
+      }
+    });
 
-      // 关闭按钮
-      box.querySelector('.close-btn').onclick = function () {
-        closeWindow('sudokuBox');
-        const win = windows.find(w => w.id === 'sudokuBox');
-        if (win) {
-          win.isOpen = false;
-          win.isMinimized = false;
-          updateTaskbarWindows();
-          updateTaskbarVisibility();
-        }
-      };
-    })();
+    // 修复 sudokuBox 关闭按钮失效
+    document.querySelector('#sudokuBox .close-btn').onclick = function () {
+      closeWindow('sudokuBox');
+      const win = windows.find(w => w.id === 'sudokuBox');
+      if (win) {
+        win.isOpen = false;
+        win.isMinimized = false;
+        updateTaskbarWindows();
+        updateTaskbarVisibility();
+      }
+    };
+
+    // Fanbook窗口关闭按钮事件
+    document.querySelector('#fanbook .close-btn').onclick = function () {
+      closeWindow('fanbook');
+      const win = windows.find(w => w.id === 'fanbook');
+      if (win) {
+        win.isOpen = false;
+        win.isMinimized = false;
+        updateTaskbarWindows();
+        updateTaskbarVisibility();
+      }
+    };
 
     // 打开窗口
     function openWindow(id) {
       const win = windows.find(w => w.id === id);
       if (!win) return;
-      // 针对 windowBox 和 sudokuBox 都要移除 display:none
-      if (id === 'windowBox' || id === 'sudokuBox') {
+      // 分别设置每个窗口的默认尺寸
+      if (id === 'windowBox') {
         win.el.style.display = '';
+        win.el.style.width = '400px';
+        win.el.style.height = '250px';
+        win.el.classList.remove('maximized');
+        win.isMaximized = false;
+      } else if (id === 'sudokuBox') {
+        win.el.style.display = '';
+        win.el.style.width = '400px';
+        win.el.style.height = '348px';
+        win.el.classList.remove('maximized');
+        win.isMaximized = false;
+      } else if (id === 'fanbook') {
+        win.el.style.display = '';
+        win.el.style.width = '566px';
+        win.el.style.height = '410px';
+        win.el.classList.remove('maximized');
+        win.isMaximized = false;
       }
       win.el.classList.remove('hidden');
       win.isOpen = true;
@@ -3583,7 +4281,7 @@
     function closeWindow(id) {
       const win = windows.find(w => w.id === id);
       if (!win) return;
-      if (id === 'windowBox' || id === 'sudokuBox') {
+      if (id === 'windowBox' || id === 'sudokuBox' || id === 'fanbook') {
         win.el.style.display = 'none';
       }
       win.el.classList.add('hidden');
@@ -3635,11 +4333,14 @@
 
     // 启动台应用点击
     function renderLaunchpad(page = 0) {
+      // 新增快捷键指南应用
       const APPS = [
         { icon: './PIC/Mac.png', name: 'Mac窗口', app: 'macWindow' },
         { icon: './PIC/flymelink.svg', name: 'Flyme 互联', app: 'flyme-linkpc' },
         { icon: './PIC/windowBox.svg', name: '超级盒子', app: 'windowBox' },
-        { icon: './PIC/Sudoku.png', name: '数独游戏', app: 'sudokuBox' }
+        { icon: './PIC/Sudoku.png', name: '数独游戏', app: 'sudokuBox' },
+        { icon: './PIC/fanbook.png', name: 'Fanbook', app: 'fanbook' },
+        { icon: 'https://img.icons8.com/fluency/48/keyboard.png', name: '操作指南', app: 'shortcutGuide' }
       ];
       const APPS_PER_PAGE = 9;
       const launchpad = document.getElementById('launchpad');
@@ -3653,8 +4354,14 @@
         el.dataset.app = app.app;
         el.innerHTML = `<img src="${app.icon}" alt="${app.name}" /><span>${app.name}</span>`;
         el.onclick = function () {
-          openWindow(app.app);
-          closeLaunchpad();
+          if (app.app === 'shortcutGuide') {
+            // 打开快捷键指南弹窗
+            showShortcutGuide(true);
+            closeLaunchpad();
+          } else {
+            openWindow(app.app);
+            closeLaunchpad();
+          }
         };
         content.appendChild(el);
       });
@@ -3800,6 +4507,150 @@
         updateTaskbarVisibility();
       };
     });
+
+    function enableResizeHandles(winEl, aspectRatio = 16 / 10, minWidth = 240, minHeight = 120) {
+      let startX, startY, startW, startH, startL, startT, dir;
+      let resizing = false;
+      let mask = null; // 遮罩层
+      let iframes = Array.from(winEl.querySelectorAll('iframe'));
+      let iframePrevDisplay = [];
+
+      function onMouseMove(e) {
+        if (!resizing) return;
+
+        // 只在鼠标离开窗口整体（含内容区）一定距离时自动结束拉伸
+        const edgeThreshold = 60; // px
+        const rect = winEl.getBoundingClientRect();
+        if (
+          e.clientX < rect.left - edgeThreshold ||
+          e.clientX > rect.right + edgeThreshold ||
+          e.clientY < rect.top - edgeThreshold ||
+          e.clientY > rect.bottom + edgeThreshold
+        ) {
+          onMouseUp();
+          return;
+        }
+
+        let dx = e.clientX - startX;
+        let dy = e.clientY - startY;
+        let newW = startW, newH = startH, newL = startL, newT = startT;
+
+        if (dir === 'e' || dir === 'w') {
+          if (dir === 'e') newW = Math.max(minWidth, startW + dx);
+          if (dir === 'w') {
+            newW = Math.max(minWidth, startW - dx);
+            newL = startL + dx;
+          }
+          newH = newW / aspectRatio;
+          if (newH < minHeight) {
+            newH = minHeight;
+            newW = newH * aspectRatio;
+          }
+        } else if (dir === 'n' || dir === 's') {
+          if (dir === 's') newH = Math.max(minHeight, startH + dy);
+          if (dir === 'n') {
+            newH = Math.max(minHeight, startH - dy);
+            newT = startT + dy;
+          }
+          newW = newH * aspectRatio;
+          if (newW < minWidth) {
+            newW = minWidth;
+            newH = newW / aspectRatio;
+          }
+        } else {
+          let delta = 0;
+          if (dir === 'se') delta = Math.max(dx, dy);
+          if (dir === 'sw') delta = Math.max(-dx, dy);
+          if (dir === 'ne') delta = Math.max(dx, -dy);
+          if (dir === 'nw') delta = Math.max(-dx, -dy);
+
+          if (dir === 'se' || dir === 'ne') {
+            newW = Math.max(minWidth, startW + delta);
+            newH = newW / aspectRatio;
+          } else if (dir === 'sw' || dir === 'nw') {
+            newW = Math.max(minWidth, startW - delta);
+            newL = startL + delta;
+            newH = newW / aspectRatio;
+          }
+
+          if (dir === 'ne' || dir === 'nw') {
+            newT = startT - (newH - startH);
+          }
+          if (newH < minHeight) {
+            newH = minHeight;
+            newW = newH * aspectRatio;
+          }
+          if (newW < minWidth) {
+            newW = minWidth;
+            newH = newW / aspectRatio;
+          }
+        }
+
+        winEl.style.width = newW + 'px';
+        winEl.style.height = newH + 'px';
+        winEl.style.left = newL + 'px';
+        winEl.style.top = newT + 'px';
+      }
+
+      function onMouseUp() {
+        if (!resizing) return;
+        resizing = false;
+        document.removeEventListener('mousemove', onMouseMove, true);
+        document.removeEventListener('mouseup', onMouseUp, true);
+        // 移除遮罩
+        if (mask && mask.parentNode) mask.parentNode.removeChild(mask);
+        mask = null;
+        // 恢复iframe显示
+        iframes.forEach((iframe, idx) => {
+          iframe.style.display = iframePrevDisplay[idx] || '';
+        });
+      }
+
+      winEl.querySelectorAll('.resize-handle').forEach(handle => {
+        handle.addEventListener('mousedown', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          dir = this.className.split(' ')[1];
+          const rect = winEl.getBoundingClientRect();
+          startX = e.clientX;
+          startY = e.clientY;
+          startW = rect.width;
+          startH = rect.height;
+          startL = winEl.offsetLeft;
+          startT = winEl.offsetTop;
+          winEl.style.position = 'absolute';
+          resizing = true;
+          // 添加透明遮罩
+          if (!mask) {
+            mask = document.createElement('div');
+            mask.style.position = 'absolute';
+            mask.style.left = 0;
+            mask.style.top = 0;
+            mask.style.width = '100%';
+            mask.style.height = '100%';
+            mask.style.zIndex = 9999;
+            mask.style.background = 'rgba(0,0,0,0)';
+            mask.style.cursor = getComputedStyle(this).cursor || 'default';
+            winEl.appendChild(mask);
+          }
+          // 隐藏iframe
+          iframes = Array.from(winEl.querySelectorAll('iframe'));
+          iframePrevDisplay = iframes.map(iframe => iframe.style.display);
+          iframes.forEach(iframe => {
+            iframe.style.display = 'none';
+          });
+          document.addEventListener('mousemove', onMouseMove, true);
+          document.addEventListener('mouseup', onMouseUp, true);
+        });
+      });
+    }
+
+    // 统一拉伸，窗口调用
+    enableResizeHandles(document.getElementById('windowBox'), 900 / 510, 400, 250);
+    enableResizeHandles(document.getElementById('sudokuBox'), 16 / 9, 400, 250);
+    enableResizeHandles(document.getElementById('fanbook'), 16 / 9, 566, 410);
+    enableResizeHandles(document.getElementById('macWindow'), 16 / 9, 240, 240);
+    enableResizeHandles(document.getElementById('flyme-linkpc'), 16 / 9, 240, 135);
   </script>
 </body>
 
