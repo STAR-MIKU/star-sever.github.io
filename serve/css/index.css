@@ -1,0 +1,74 @@
+@font-face {
+    font-family: 'Chillax';
+    src: url('../files/fonts/Chillax-Bold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Chillax', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#logo-video.blur-out {
+    filter: blur(30px);
+    transition: filter 0.8s ease;
+}
+
+#logo-video.fade-out {
+    transition: opacity 1s;
+    opacity: 0;
+}
+
+#dock {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 46px;
+    background: #ffffff2c;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 100000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    height: 46px;
+    position: absolute;
+    right: 24px;
+    top: 0;
+    text-align: right;
+    font-family: 'Chillax', sans-serif;
+    font-size: 18px;
+    color: #fff;
+    user-select: none;
+}
+
+#time .clock {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: -4px;
+}
+
+#time .date {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+#hide {
+    width: 8px;
+    height: 30px;
+    background: #ffffff1a;
+    border-radius: 18px;
+    margin: 5px 8px 5px auto;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}

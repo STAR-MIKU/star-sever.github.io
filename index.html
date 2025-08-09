@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MuseFlutter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入CSS -->
+    <link rel="stylesheet" href="./serve/css/index.css">
+</head>
+<body>
+    <!-- logo动画 -->
+    <video id="logo-video" src="./users/files/videos/logo.mp4" autoplay muted playsinline
+        style="width:100%;height:100%;z-index:9999999999;object-fit:cover;pointer-events:none;position:fixed;top:0;left:0;display:none;"></video>
+    <script>
+        const video = document.getElementById('logo-video');
+        if (!localStorage.getItem('logoPlayed')) {
+            video.style.display = '';
+            video.play();
+            video.addEventListener('ended', function () {
+                video.classList.add('fade-out');
+                setTimeout(function () {
+                    video.style.display = 'none';
+                    localStorage.setItem('logoPlayed', 'true');
+                }, 600); // 渐隐动画持续1秒
+            });
+        }
+    </script>
+    <!-- 壁纸服务 -->
+    <video id="wallpaper-video" src="./users/files/videos/wallpaper.mp4" autoplay loop muted playsinline
+        style="width:100%;height:100%;object-fit:cover;pointer-events:none;position:fixed;top:0;left:0;"></video>
+    <!-- 任务栏 -->
+    <div id="dock">
+        <!-- 徽标 -->
+        <div id="logo">
+        </div>
+        <!-- 图标 -->
+        <div id="apps"></div>
+        <!-- 时间 -->
+        <div id="time">
+            <div class="clock"></div>
+            <div class="date"></div>
+        </div>
+        <!-- 空白 -->
+        <div id="hide"></div>
+    </div>
+    <h1 style="z-index: 99999999999999;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">重构中</h1>
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            const second = String(now.getSeconds()).padStart(2, '0');
+            document.querySelector('#time .clock').textContent = `${hour}:${minute}`;//:${second}加上秒
+            document.querySelector('#time .date').textContent = `${year}-${month}-${day}`;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+    <!-- 引入JS -->
+    <script src="./serve/js/index.js"></script>
+</body>
+
+</html>
