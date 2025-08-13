@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>节奏大师</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background: #121212;
+      color: white;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+      position: relative;
+      z-index: 10;
+    }
+    .score-display {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .high-score {
+      font-size: 16px;
+      color: #bbb;
+    }
+    .game-area {
+      position: relative;
+      width: 800px;
+      height: 500px;
+      margin: 0 auto;
+      border: 2px solid #333;
+      background: rgba(30, 30, 30, 0.8);
+    }
+    .note {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #4f46e5;
+      transform: translate(-50%, -50%);
+      transition: all 0.1s;
+    }
+    .note.hit {
+      background: #10b981;
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+    .note.missed {
+      background: #ef4444;
+      opacity: 0.5;
+    }
+    .target {
+      position: absolute;
+      bottom: 50px;
+      width: 60px;
+      height: 60px;
+      border: 3px solid #666;
+      border-radius: 50%;
+      transform: translateX(-50%);
+    }
+    .target.active {
+      border-color: #4f46e5;
+      box-shadow: 0 0 15px #4f46e5;
+    }
+    .controls {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      z-index: 10;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .custom-file-upload {
+      background: #3b82f6;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: inline-block;
+      margin-right: 10px;
+    }
+    select, button {
+      background: #333;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button {
+      background: #10b981;
+    }
+    button:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+    .game-over {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 40px;
+      border-radius: 10px;
+      text-align: center;
+      display: none;
+      z-index: 20;
+    }
+    .game-over h2 {
+      margin-top: 0;
+      color: #ef4444;
+    }
+    .game-over p {
+      font-size: 24px;
+    }
+    .audio-visualizer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      background: #1a1a1a;
+      overflow: hidden;
+    }
+    .visualizer-bar {
+      position: absolute;
+      bottom: 0;
+      width: 4px;
+      background: #4f46e5;
+      border-radius: 2px 2px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="game-header">
+      <div>
+        <div class="score-display">得分: <span id="score">0</span></div>
+        <div class="high-score">最高分: <span id="highScore">0</span></div>
+      </div>
+      <div>
+        连击: <span id="combo">0</span>
+      </div>
+    </div>
+
+    <div class="game-area" id="gameArea">
+      <div class="target" style="left: 25%;"></div>
+      <div class="target" style="left: 50%;"></div>
+      <div class="target" style="left: 75%;"></div>
+    </div>
+
+    <div class="audio-visualizer" id="visualizer"></div>
+
+    <div class="controls">
+      <label for="audioUpload" class="custom-file-upload">选择音乐</label>
+      <input type="file" id="audioUpload" accept="audio/*">
+      <select id="difficulty">
+        <option value="easy">简单</option>
+        <option value="medium" selected>中等</option>
+        <option value="hard">困难</option>
+      </select>
+      <button id="startGame" disabled>开始游戏</button>
+    </div>
+
+    <div class="game-over" id="gameOver">
+      <h2>游戏结束</h2>
+      <p>最终得分: <span id="finalScore">0</span></p>
+      <p>最高连击: <span id="finalCombo">0</span></p>
+      <button id="restartGame">再来一次</button>
+    </div>
+  </div>
+
+  <script>
+    const audioUpload = document.getElementById('audioUpload');
+    const startGameBtn = document.getElementById('startGame');
+    const restartGameBtn = document.getElementById('restartGame');
+    const difficultySelect = document.getElementById('difficulty');
+    const gameArea = document.getElementById('gameArea');
+    const visualizer = document.getElementById('visualizer');
+    const scoreDisplay = document.getElementById('score');
+    const comboDisplay = document.getElementById('combo');
+    const highScoreDisplay = document.getElementById('highScore');
+    const gameOverScreen = document.getElementById('gameOver');
+    const finalScoreDisplay = document.getElementById('finalScore');
+    const finalComboDisplay = document.getElementById('finalCombo');
+
+    let audioContext;
+    let analyser;
+    let audioElement;
+    let source;
+    let isPlaying = false;
+    let score = 0;
+    let combo = 0;
+    let highScore = localStorage.getItem('rhythmGameHighScore') || 0;
+    let notes = [];
+    let noteId = 0;
+    let animationFrameId;
+    let visualizerBars = [];
+    let noteSpawnTimer;
+    let gameDuration = 0;
+    let maxGameDuration = 0;
+
+    // 初始化高分显示
+    highScoreDisplay.textContent = highScore;
+
+    // 创建可视化音频条
+    function createVisualizerBars() {
+      visualizer.innerHTML = '';
+      visualizerBars = [];
+      const barCount = 80;
+      for (let i = 0; i < barCount; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'visualizer-bar';
+        bar.style.left = `${(i / barCount) * 100}%`;
+        visualizer.appendChild(bar);
+        visualizerBars.push(bar);
+      }
+    }
+
+    // 更新音频可视化
+    function updateVisualizer() {
+      if (!analyser) return;
+      
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      analyser.getByteFrequencyData(dataArray);
+      
+      const barCount = visualizerBars.length;
+      for (let i = 0; i < barCount; i++) {
+        const barHeight = (dataArray[i * 2] / 255) * 40; // 映射到0-40px高度
+        visualizerBars[i].style.height = `${barHeight}px`;
+      }
+      
+      if (isPlaying) {
+        requestAnimationFrame(updateVisualizer);
+      }
+    }
+
+    // 音符类
+    class Note {
+      constructor(id, lane) {
+        this.id = id;
+        this.lane = lane; // 1-3 对应三个轨道
+        this.element = document.createElement('div');
+        this.element.className = 'note';
+        this.element.dataset.id = id;
+        
+        // 根据轨道设置水平位置
+        const lanePositions = ['25%', '50%', '75%'];
+        this.element.style.left = lanePositions[lane - 1];
+        this.element.style.top = '0%';
+        
+        gameArea.appendChild(this.element);
+        
+        // 速度基于难度
+        const difficulty = difficultySelect.value;
+        this.speed = difficulty === 'easy' ? 2 : difficulty === 'medium' ? 3 : 4;
+        
+        this.y = 0;
+        this.hit = false;
+        this.missed = false;
+      }
+
+      update() {
+        if (this.hit || this.missed) return;
+        
+        // 移动音符
+        this.y += this.speed;
+        this.element.style.top = `${this.y}%`;
+        
+        // 检查是否错过
+        if (this.y > 90) {
+          this.missed = true;
+          this.element.classList.add('missed');
+          combo = 0;
+          comboDisplay.textContent = combo;
+          return true; // 表示已错过
+        }
+        
+        return false;
+      }
+
+      checkHit() {
+        // 检查是否在可击打范围内
+        if (this.y >= 80 && this.y <= 95 && !this.hit && !this.missed) {
+          this.hit = true;
+          this.element.classList.add('hit');
+          
+          // 根据准确度计算分数
+          const accuracy = 100 - Math.abs(this.y - 85);
+          const points = Math.floor(accuracy * 10);
+          
+          // 连击加成
+          score += points * (1 + combo * 0.1);
+          combo++;
+          
+          scoreDisplay.textContent = Math.floor(score);
+          comboDisplay.textContent = combo;
+          
+          // 移除元素
+          setTimeout(() => {
+            this.element.remove();
+          }, 100);
+          
+          return true;
+        }
+        return false;
+      }
+
+      remove() {
+        this.element.remove();
+      }
+    }
+
+    // 生成音符
+    function spawnNote() {
+      if (!isPlaying) return;
+      
+      // 随机选择轨道
+      const lane = Math.floor(Math.random() * 3) + 1;
+      notes.push(new Note(noteId++, lane));
+      
+      // 根据难度设置生成间隔
+      const difficulty = difficultySelect.value;
+      const minInterval = difficulty === 'easy' ? 800 : difficulty === 'medium' ? 500 : 300;
+      const maxInterval = difficulty === 'easy' ? 1500 : difficulty === 'medium' ? 1000 : 600;
+      const interval = minInterval + Math.random() * (maxInterval - minInterval);
+      
+      noteSpawnTimer = setTimeout(spawnNote, interval);
+    }
+
+    // 游戏主循环
+    function gameLoop() {
+      if (!isPlaying) return;
+      
+      // 更新游戏时间
+      gameDuration += 16; // 约16ms每帧
+      
+      // 检查游戏是否结束
+      if (gameDuration >= maxGameDuration) {
+        endGame();
+        return;
+      }
+      
+      // 更新所有音符
+      for (let i = notes.length - 1; i >= 0; i--) {
+        const note = notes[i];
+        const missed = note.update();
+        if (missed) {
+          notes.splice(i, 1);
+          setTimeout(() => note.remove(), 500);
+        }
+      }
+      
+      // 高亮当前轨道
+      const targets = document.querySelectorAll('.target');
+      targets.forEach(target => target.classList.remove('active'));
+      
+      animationFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    // 开始游戏
+    function startGame() {
+      if (!audioElement) return;
+      
+      // 重置游戏状态
+      score = 0;
+      combo = 0;
+      notes.forEach(note => note.remove());
+      notes = [];
+      gameDuration = 0;
+      maxGameDuration = audioElement.duration * 1000; // 转换为毫秒
+      
+      scoreDisplay.textContent = 0;
+      comboDisplay.textContent = 0;
+      gameOverScreen.style.display = 'none';
+      
+      // 初始化音频上下文
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      
+      source = audioContext.createMediaElementSource(audioElement);
+      source.connect(analyser);
+      analyser.connect(audioContext.destination);
+      
+      // 开始播放音频
+      audioElement.currentTime = 0;
+      audioElement.play();
+      isPlaying = true;
+      
+      // 开始生成音符和游戏循环
+      spawnNote();
+      gameLoop();
+      updateVisualizer();
+      
+      // 禁用按钮
+      startGameBtn.disabled = true;
+      audioUpload.disabled = true;
+      difficultySelect.disabled = true;
+    }
+
+    // 结束游戏
+    function endGame() {
+      isPlaying = false;
+      clearTimeout(noteSpawnTimer);
+      cancelAnimationFrame(animationFrameId);
+      
+      // 显示游戏结束画面
+      finalScoreDisplay.textContent = Math.floor(score);
+      finalComboDisplay.textContent = combo;
+      gameOverScreen.style.display = 'block';
+      
+      // 更新最高分
+      if (score > highScore) {
+        highScore = Math.floor(score);
+        localStorage.setItem('rhythmGameHighScore', highScore);
+        highScoreDisplay.textContent = highScore;
+      }
+      
+      // 启用按钮
+      startGameBtn.disabled = false;
+      audioUpload.disabled = false;
+      difficultySelect.disabled = false;
+    }
+
+    // 处理音符击打
+    function hitNote(lane) {
+      if (!isPlaying) return;
+      
+      // 高亮对应轨道
+      const targets = document.querySelectorAll('.target');
+      targets.forEach(target => target.classList.remove('active'));
+      targets[lane - 1].classList.add('active');
+      setTimeout(() => {
+        targets[lane - 1].classList.remove('active');
+      }, 100);
+      
+      // 检查是否击中音符
+      let hit = false;
+      for (let i = 0; i < notes.length; i++) {
+        if (notes[i].lane === lane) {
+          hit = notes[i].checkHit();
+          if (hit) {
+            notes.splice(i, 1);
+            break;
+          }
+        }
+      }
+      
+      // 未击中则重置连击
+      if (!hit) {
+        combo = 0;
+        comboDisplay.textContent = combo;
+      }
+    }
+
+    // 事件监听 - 音频上传
+    audioUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const objectUrl = URL.createObjectURL(file);
+      
+      // 创建音频元素
+      if (audioElement) {
+        audioElement.remove();
+      }
+      audioElement = new Audio(objectUrl);
+      audioElement.onloadedmetadata = () => {
+        startGameBtn.disabled = false;
+      };
+    });
+
+    // 事件监听 - 开始游戏
+    startGameBtn.addEventListener('click', startGame);
+
+    // 事件监听 - 重新开始
+    restartGameBtn.addEventListener('click', startGame);
+
+    // 键盘控制
+    window.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case 'a':
+        case 'A':
+          hitNote(1);
+          break;
+        case 's':
+        case 'S':
+          hitNote(2);
+          break;
+        case 'd':
+        case 'D':
+          hitNote(3);
+          break;
+        case ' ':
+          hitNote(2); // 空格键击打中间轨道
+          break;
+      }
+    });
+
+    // 触摸控制
+    const targets = document.querySelectorAll('.target');
+    targets.forEach((target, index) => {
+      target.addEventListener('click', () => {
+        hitNote(index + 1);
+      });
+    });
+
+    // 初始化可视化条
+    createVisualizerBars();
+  </script>
+</body>
+</html>

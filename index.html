@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MuseFlutter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入CSS -->
+    <link rel="stylesheet" href="./serve/css/reset.css">
+    <link rel="stylesheet" href="./serve/css/index.css">
+    <link rel="stylesheet" href="./serve/css/window.css">
+    <link rel="icon" href="./serve/files/logo/logo.png" type="image/png">
+</head>
+
+<body>
+    <!-- logo动画 -->
+    <video id="logo-video" src="./serve/files/logo/logo.mp4" autoplay muted playsinline
+        style="width:100%;height:100%;z-index:9999999999;object-fit:cover;pointer-events:none;position:fixed;top:0;left:0;display:none;"></video>
+    <script>
+        const video = document.getElementById('logo-video');
+        if (!localStorage.getItem('logoPlayed')) {
+            video.style.display = '';
+            video.play();
+            video.addEventListener('ended', function () {
+                video.classList.add('fade-out');
+                setTimeout(function () {
+                    video.style.display = 'none';
+                    localStorage.setItem('logoPlayed', 'true');
+                }, 600); // 渐隐动画持续时间
+            });
+        }
+    </script>
+    <!-- 壁纸服务 -->
+    <video id="wallpaper-video" src="./users/files/videos/wallpaper.mp4" autoplay loop muted playsinline
+        style="width:100%;height:100%;object-fit:cover;pointer-events:none;position:fixed;top:0;left:0;"></video>
+    <!-- 任务栏 -->
+    <div id="dock">
+        <!-- 徽标 -->
+        <div id="logo">
+            <div class="muse-flutter-logo"
+                style="display: flex; align-items: center; justify-content: center; height: 30px; width: 110px; color: white; font-family: 'Chillax', sans-serif; font-size: 16px; font-weight: bold;">
+                MuseFlutter
+            </div>
+        </div>
+        <!-- 图标 -->
+        <div id="apps"></div>
+        <!-- 时间 -->
+        <div id="time">
+
+            <div class="clock"></div>
+            <div class="time-content">
+                <div class="flip-container">
+                    <div class="flipper">
+                        <div class="front"></div>
+                        <div class="back"></div>
+                    </div>
+                </div>
+                <div class="date"></div>
+            </div>
+        </div>
+        <!-- 空白 -->
+        <div id="hide"></div>
+    </div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+
+            // 转换为12小时制并确定AM/PM
+            let hour = now.getHours();
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            hour = hour % 12;
+            hour = hour ? hour : 12; // 0点变为12点
+            const hourStr = String(hour).padStart(2, '0');
+
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            const second = String(now.getSeconds()).padStart(2, '0');
+            document.querySelector('#time .clock').textContent = `${hourStr}:${minute} ${ampm}`;//:${second}加上秒
+            document.querySelector('#time .date').textContent = `${month}-${day}`;
+            const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            const dayOfWeek = weekDays[now.getDay()];
+            document.querySelector('.front').textContent = dayOfWeek;
+            document.querySelector('.back').textContent = year;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // 翻转效果逻辑
+        const flipContainer = document.querySelector('.flip-container');
+        let isFlipped = false;
+
+        function flip() {
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                flipContainer.classList.add('flipped');
+            } else {
+                flipContainer.classList.remove('flipped');
+            }
+        }
+
+        // 每5秒翻转一次
+        setInterval(flip, 5000);
+    </script>
+
+
+    <!-- 预设应用区域 -->
+    <div id="preset-apps"
+        style="position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 10px; border-radius: 10px; z-index: 9999; display: none;">
+        <h3 style="color: white; margin-bottom: 10px; text-align: center;">预设应用</h3>
+        <div id="preset-apps-container" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+            <!-- 预设应用将通过JS动态加载 -->
+        </div>
+    </div>
+
+    <!-- 引入JS -->
+    <script src="./serve/js/index.js"></script>
+    <script src="./serve/js/window.js"></script>
+    <script>
+        // 初始化应用
+        window.addEventListener('DOMContentLoaded', () => {
+
+            // 创建自定义窗口的函数
+            window.createCustomWindow = function (options) {
+                const newWindow = new RoundedWindow({
+                    title: options.title,
+                    icon: options.icon,
+                    url: options.url,
+                    content: options.content,
+                    width: 350,
+                    height: 570,
+                    x: 150,
+                    y: 150,
+                    isCustom: true
+                });
+                return newWindow;
+            }
+
+            // 在任务栏中添加一个加号按钮来创建新窗口
+            const createWindowBtn = document.createElement('div');
+            createWindowBtn.id = 'add-window-btn';
+            createWindowBtn.className = 'taskbar-icon';
+            createWindowBtn.textContent = '+';
+            createWindowBtn.style.cursor = 'pointer';
+            createWindowBtn.style.width = '30px';
+            createWindowBtn.style.height = '30px';
+            createWindowBtn.style.display = 'flex';
+            createWindowBtn.style.alignItems = 'center';
+            createWindowBtn.style.justifyContent = 'center';
+            createWindowBtn.style.color = 'white';
+            createWindowBtn.style.fontSize = '20px';
+            createWindowBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            createWindowBtn.style.backdropFilter = 'blur(10px)';
+            createWindowBtn.style.transition = 'all 0.2s';
+            createWindowBtn.addEventListener('click', () => {
+                const presetApps = document.getElementById('preset-apps');
+                presetApps.style.display = presetApps.style.display === 'none' ? 'block' : 'none';
+            });
+
+            // 鼠标离开预设应用区域时关闭
+            document.getElementById('preset-apps').addEventListener('mouseleave', () => {
+                const presetApps = document.getElementById('preset-apps');
+                presetApps.style.display = 'none';
+            });
+            document.getElementById('apps').appendChild(createWindowBtn);
+
+            // 使用现有的hide元素作为关闭全部窗口按钮
+            const hideBtn = document.getElementById('hide');
+            hideBtn.style.cursor = 'pointer'; // 只保留光标样式，确保用户知道这是可点击的
+            hideBtn.addEventListener('click', () => {
+                if (window.windowManager && window.windowManager.windows) {
+                    // 复制窗口列表以避免在迭代中修改
+                    const windowsCopy = [...window.windowManager.windows];
+                    windowsCopy.forEach(window => window.close());
+                }
+            });
+
+            // 加载预设应用
+            function loadPresetApps() {
+                const presetAppsContainer = document.getElementById('preset-apps-container');
+                if (!presetAppsContainer) return;
+
+                // 预设应用列表
+                const presetApps = [
+                    { name: '代码编辑器', file: 'code-editor.html', icon: './serve/files/icon/code-editor.svg' },
+                    { name: '思维导图', file: 'mind-map.html', icon: './serve/files/icon/mind-map.svg' },
+                    { name: '神秘书店', file: 'mystery-bookstore-gal.html', icon: './serve/files/icon/bookstore.svg' },
+                    { name: '粒子物理', file: 'particle-physics.html', icon: './serve/files/icon/physics.svg' },
+                    { name: '像素艺术', file: 'pixel-art.html', icon: './serve/files/icon/pixel-art.svg' },
+                    { name: '像素编辑器', file: 'pixel-editor.html', icon: './serve/files/icon/pixel-editor.svg' },
+                    { name: '程序员贪吃蛇', file: 'programmer-snake.html', icon: './serve/files/icon/snake.svg' },
+                    { name: '节奏游戏', file: 'rhythm-game.html', icon: './serve/files/icon/music.svg' },
+                    { name: '旅行日志', file: 'travel-log.html', icon: './serve/files/icon/travel.svg' },
+                    { name: '空白HTML', file: 'about:blank', icon: './serve/files/icon/html.svg' }
+                ];
+
+                // 清空容器
+                presetAppsContainer.innerHTML = '';
+
+                // 添加预设应用
+                presetApps.forEach(app => {
+                    const appButton = document.createElement('div');
+                    appButton.className = 'preset-app-button';
+                    appButton.style.width = '80px';
+                    appButton.style.height = '80px';
+                    appButton.style.display = 'flex';
+                    appButton.style.flexDirection = 'column';
+                    appButton.style.alignItems = 'center';
+                    appButton.style.justifyContent = 'center';
+                    appButton.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                    appButton.style.borderRadius = '10px';
+                    appButton.style.cursor = 'pointer';
+                    appButton.style.transition = 'all 0.2s';
+                    appButton.style.color = 'white';
+                    appButton.style.fontSize = '12px';
+                    appButton.style.padding = '5px';
+                    appButton.style.boxSizing = 'border-box';
+
+                    // 应用图标
+                    const appIcon = document.createElement('img');
+                    appIcon.src = app.icon;
+                    appIcon.alt = app.name;
+                    appIcon.style.width = '32px';
+                    appIcon.style.height = '32px';
+                    appIcon.style.marginBottom = '5px';
+
+                    // 应用名称
+                    const appName = document.createElement('div');
+                    appName.textContent = app.name;
+                    appName.style.textAlign = 'center';
+                    appName.style.overflow = 'hidden';
+                    appName.style.textOverflow = 'ellipsis';
+                    appName.style.whiteSpace = 'nowrap';
+                    appName.style.width = '100%';
+
+                    // 组装
+                    appButton.appendChild(appIcon);
+                    appButton.appendChild(appName);
+
+                    // 点击事件
+                    appButton.addEventListener('click', () => {
+                        if (app.file === 'about:blank') {
+                            window.createCustomWindow({
+                                title: app.name,
+                                icon: app.icon,
+                                url: app.file
+                            });
+                        } else {
+                            window.createCustomWindow({
+                                title: app.name,
+                                icon: app.icon,
+                                url: `./users/applications/${app.file}`
+                            });
+                        }
+                    });
+
+                    // 悬停效果
+                    appButton.addEventListener('mouseenter', () => {
+                        appButton.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                        appButton.style.transform = 'scale(1.05)';
+                    });
+
+                    appButton.addEventListener('mouseleave', () => {
+                        appButton.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                        appButton.style.transform = 'scale(1)';
+                    });
+
+                    presetAppsContainer.appendChild(appButton);
+                });
+            }
+
+            // 初始化时加载预设应用
+            loadPresetApps();
+        });
+    </script>
+</body>
+
+</html>

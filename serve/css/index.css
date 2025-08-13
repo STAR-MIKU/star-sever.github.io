@@ -1,0 +1,250 @@
+@font-face {
+    font-family: 'Chillax';
+    src: url('../files/fonts/Chillax-Bold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Chillax', sans-serif;
+    margin: 0;
+    padding: 0;
+    font-weight: 900;
+}
+
+/* 动态长虹玻璃滚动效果 */
+.wavy-glass {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* 增强滚动纹理 */
+    background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 12px 100%, 100% 12px;
+    animation: subtle-shift 15s infinite linear;
+}
+
+/* 主滚动层 */
+.wavy-glass::before {
+    content: '';
+    position: absolute;
+    top: -70%;
+    left: -70%;
+    width: 240%;
+    height: 240%;
+    background: linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.4) 100%);
+    animation: glass-distort 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+    opacity: 0.7;
+    z-index: 1;
+}
+
+/* 次级滚动层 */
+.wavy-glass::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg, rgba(9, 151, 227, 0.3) 0%, rgba(9, 151, 227, 0) 50%, rgba(9, 151, 227, 0.3) 100%);
+    animation: glass-distort-secondary 8s infinite cubic-bezier(0.6, 0, 0.4, 1) reverse;
+    transform-origin: center;
+    opacity: 0.5;
+    z-index: 2;
+}
+
+/* 第三滚动层 - 使用额外的div实现，这里定义样式 */
+.wavy-glass .third-layer {
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(90deg, rgba(255, 105, 180, 0.2) 0%, rgba(255, 105, 180, 0) 50%, rgba(255, 105, 180, 0.2) 100%);
+    animation: glass-distort-tertiary 12s infinite cubic-bezier(0.3, 0, 0.5, 1);
+    transform-origin: center;
+    opacity: 0.3;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* 主滚动动画 */
+@keyframes glass-distort {
+    0% {
+        transform: translateX(0%) skewX(-5deg) scaleX(1.5);
+    }
+    100% {
+        transform: translateX(-100%) skewX(-5deg) scaleX(1.5);
+    }
+}
+
+/* 次级滚动动画 */
+@keyframes glass-distort-secondary {
+    0% {
+        transform: translateX(-20%) skewX(5deg) scaleX(1.3);
+    }
+    100% {
+        transform: translateX(-180%) skewX(5deg) scaleX(1.3);
+    }
+}
+
+/* 第三滚动动画 */
+@keyframes glass-distort-tertiary {
+    0% {
+        transform: translateX(0%) skewX(-8deg) scaleX(1.7);
+    }
+    100% {
+        transform: translateX(-130%) skewX(-8deg) scaleX(1.7);
+    }
+}
+
+/*  subtle背景移动 */
+@keyframes subtle-shift {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: -30px 0;
+    }
+}
+
+#logo-video.blur-out {
+    filter: blur(30px);
+    transition: filter 0.8s ease;
+}
+
+#logo-video.fade-out {
+    transition: opacity 1s;
+    opacity: 0;
+}
+
+#logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    height: 100%;
+}
+
+.svg-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 30px;
+}
+
+.icon {
+    height: 24px;
+    width: 24px;
+    fill: white;
+}
+
+#dock {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 10px;
+    width: 80%;
+    max-width: 1000px;
+    height: 46px;
+    background: #ffffff2c;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 100000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+#dock.hidden {
+    transform: translateX(-50%) translateY(calc(100% + 10px));
+    opacity: 0;
+}
+
+#time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    height: 46px;
+    position: absolute;
+    right: 24px;
+    top: 0;
+    text-align: right;
+    font-family: 'Chillax', sans-serif;
+    font-size: 18px;
+    color: #fff;
+    user-select: none;
+}
+
+.time-content {
+    display: flex;
+    align-items: center;
+}
+
+#time .clock {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: -4px;
+}
+
+#time .date {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-left: 4px;
+}
+
+.flip-container {
+    perspective: 1000px;
+    display: inline-block;
+}
+
+.flipper {
+    position: relative;
+    width: 30px;
+    height: 16px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+.front, .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #fff;
+    background: #ffffff1a;
+    border-radius: 4px;
+}
+
+.back {
+    transform: rotateX(180deg);
+}
+
+.flipped .flipper {
+    transform: rotateX(180deg);
+}
+
+#hide {
+    width: 8px;
+    height: 30px;
+    background: #ffffff1a;
+    border-radius: 18px;
+    margin: 5px 8px 5px auto;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}

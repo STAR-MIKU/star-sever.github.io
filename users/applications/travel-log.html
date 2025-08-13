@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>虚拟旅行日志</title>
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .sidebar {
+      background: #f8f9fa;
+      padding: 20px;
+      overflow-y: auto;
+      border-right: 1px solid #ddd;
+    }
+    .map-container {
+      position: relative;
+      background: #eaf4fc;
+      overflow: hidden;
+    }
+    #worldMap {
+      width: 100%;
+      height: 100%;
+    }
+    .marker {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #e74c3c;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .marker:hover {
+      transform: translate(-50%, -50%) scale(1.3);
+    }
+    .marker::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      background: white;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .entry-form {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: 600;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    .entries-list {
+      margin-top: 20px;
+    }
+    .entry-card {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .entry-card h3 {
+      margin: 0 0 10px 0;
+      color: #2c3e50;
+    }
+    .entry-meta {
+      font-size: 12px;
+      color: #7f8c8d;
+      margin-bottom: 10px;
+    }
+    .entry-image {
+      width: 100%;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      max-height: 150px;
+      object-fit: cover;
+    }
+    .delete-btn {
+      background: #e74c3c;
+      margin-top: 10px;
+    }
+    .delete-btn:hover {
+      background: #c0392b;
+    }
+    .map-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .map-control-btn {
+      border: none;
+      background: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+    }
+    .map-control-btn:hover {
+      background: #f1f1f1;
+    }
+    .entry-detail {
+      position: absolute;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+      max-width: 300px;
+      display: none;
+    }
+    .entry-detail.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>我的旅行日志</h2>
+    <div class="entry-form">
+      <h3>添加旅行记录</h3>
+      <div class="form-group">
+        <label for="locationName">地点名称</label>
+        <input type="text" id="locationName" placeholder="例如：巴黎铁塔">
+      </div>
+      <div class="form-group">
+        <label for="date">日期</label>
+        <input type="date" id="date">
+      </div>
+      <div class="form-group">
+        <label for="weather">天气</label>
+        <select id="weather">
+          <option value="sunny">晴朗</option>
+          <option value="rainy">下雨</option>
+          <option value="cloudy">多云</option>
+          <option value="snowy">下雪</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="notes">旅行笔记</label>
+        <textarea id="notes" rows="3" placeholder="记录你的感受..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="photo">上传照片</label>
+        <input type="file" id="photo" accept="image/*">
+      </div>
+      <button id="addEntry">添加到地图</button>
+    </div>
+    <div class="entries-list" id="entriesList">
+      <!-- 旅行记录会在这里显示 -->
+    </div>
+  </div>
+  <div class="map-container">
+    <svg id="worldMap" viewBox="0 0 1000 500">
+      <!-- 简化的世界地图轮廓 -->
+      <path d="M300,150 Q400,100 500,150 T700,150 Q800,200 900,150" fill="none" stroke="#3498db" stroke-width="2"/>
+      <path d="M200,250 Q350,200 500,250 T650,250 Q750,300 850,250" fill="none" stroke="#3498db" stroke-width="2"/>
+      <path d="M150,350 Q300,300 450,350 T600,350 Q700,400 800,350" fill="none" stroke="#3498db" stroke-width="2"/>
+      <!--  continents simplified -->
+      <rect x="200" y="100" width="150" height="100" rx="20" fill="rgba(46, 204, 113, 0.2)" stroke="#2ecc71" stroke-width="1"/>
+      <rect x="400" y="150" width="200" height="120" rx="20" fill="rgba(46, 204, 113, 0.2)" stroke="#2ecc71" stroke-width="1"/>
+      <rect x="650" y="100" width="180" height="100" rx="20" fill="rgba(46, 204, 113, 0.2)" stroke="#2ecc71" stroke-width="1"/>
+      <rect x="150" y="250" width="200" height="150" rx="20" fill="rgba(46, 204, 113, 0.2)" stroke="#2ecc71" stroke-width="1"/>
+      <rect x="400" y="300" width="250" height="120" rx="20" fill="rgba(46, 204, 113, 0.2)" stroke="#2ecc71" stroke-width="1"/>
+    </svg>
+    <div class="map-controls">
+      <button class="map-control-btn" id="zoomIn">+</button>
+      <button class="map-control-btn" id="zoomOut">-</button>
+      <button class="map-control-btn" id="resetMap">⟲</button>
+    </div>
+    <div class="entry-detail" id="entryDetail">
+      <h3 id="detailTitle"></h3>
+      <div class="entry-meta" id="detailMeta"></div>
+      <img class="entry-image" id="detailImage" alt="旅行照片">
+      <p id="detailNotes"></p>
+    </div>
+  </div>
+
+  <script>
+    // 旅行记录数据
+    let travelEntries = JSON.parse(localStorage.getItem('travelEntries')) || [];
+    let mapScale = 1;
+    let mapOffsetX = 0;
+    let mapOffsetY = 0;
+    let isDragging = false;
+    let dragStartX, dragStartY;
+
+    const worldMap = document.getElementById('worldMap');
+    const entriesList = document.getElementById('entriesList');
+    const entryDetail = document.getElementById('entryDetail');
+    const mapContainer = document.querySelector('.map-container');
+
+    // 初始化地图交互
+    function initMapInteraction() {
+      // 缩放功能
+      document.getElementById('zoomIn').addEventListener('click', () => {
+        mapScale = Math.min(mapScale * 1.2, 3);
+        updateMapTransform();
+      });
+
+      document.getElementById('zoomOut').addEventListener('click', () => {
+        mapScale = Math.max(mapScale / 1.2, 0.5);
+        updateMapTransform();
+      });
+
+      document.getElementById('resetMap').addEventListener('click', () => {
+        mapScale = 1;
+        mapOffsetX = 0;
+        mapOffsetY = 0;
+        updateMapTransform();
+      });
+
+      // 拖拽功能
+      mapContainer.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        dragStartX = e.clientX - mapOffsetX;
+        dragStartY = e.clientY - mapOffsetY;
+        mapContainer.style.cursor = 'grabbing';
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        mapOffsetX = e.clientX - dragStartX;
+        mapOffsetY = e.clientY - dragStartY;
+        updateMapTransform();
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDragging = false;
+        mapContainer.style.cursor = 'grab';
+      });
+
+      // 地图点击添加标记
+      mapContainer.addEventListener('click', (e) => {
+        if (isDragging) return; // 拖拽时不添加标记
+        
+        // 计算点击在地图上的相对位置
+        const rect = mapContainer.getBoundingClientRect();
+        const x = (e.clientX - rect.left - mapOffsetX) / mapScale;
+        const y = (e.clientY - rect.top - mapOffsetY) / mapScale;
+        
+        // 自动填充位置输入框
+        document.getElementById('locationName').focus();
+      });
+    }
+
+    // 更新地图变换
+    function updateMapTransform() {
+      worldMap.style.transform = `translate(${mapOffsetX}px, ${mapOffsetY}px) scale(${mapScale})`;
+      // 更新所有标记位置
+      document.querySelectorAll('.marker').forEach(marker => {
+        const entryId = marker.dataset.id;
+        const entry = travelEntries.find(e => e.id === entryId);
+        if (entry) {
+          marker.style.left = `${entry.x * mapScale + mapOffsetX}px`;
+          marker.style.top = `${entry.y * mapScale + mapOffsetY}px`;
+        }
+      });
+    }
+
+    // 添加旅行记录
+    document.getElementById('addEntry').addEventListener('click', async () => {
+      const name = document.getElementById('locationName').value;
+      const date = document.getElementById('date').value;
+      const weather = document.getElementById('weather').value;
+      const notes = document.getElementById('notes').value;
+      const photoInput = document.getElementById('photo');
+      
+      if (!name || !date) {
+        alert('请填写地点名称和日期');
+        return;
+      }
+      
+      // 随机生成地图上的位置（实际应用中可根据点击位置设置）
+      const x = 200 + Math.random() * 600;
+      const y = 100 + Math.random() * 300;
+      
+      // 处理照片
+      let photoUrl = '';
+      if (photoInput.files[0]) {
+        photoUrl = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.readAsDataURL(photoInput.files[0]);
+        });
+      }
+      
+      // 创建新记录
+      const newEntry = {
+        id: Date.now().toString(),
+        name,
+        date,
+        weather,
+        notes,
+        photoUrl,
+        x,
+        y
+      };
+      
+      // 保存记录
+      travelEntries.push(newEntry);
+      localStorage.setItem('travelEntries', JSON.stringify(travelEntries));
+      
+      // 更新UI
+      renderEntries();
+      addMarker(newEntry);
+      
+      // 重置表单
+      document.getElementById('locationName').value = '';
+      document.getElementById('date').value = '';
+      document.getElementById('notes').value = '';
+      photoInput.value = '';
+    });
+
+    // 渲染旅行记录列表
+    function renderEntries() {
+      entriesList.innerHTML = '';
+      
+      travelEntries.forEach(entry => {
+        const entryCard = document.createElement('div');
+        entryCard.className = 'entry-card';
+        entryCard.innerHTML = `
+          <h3>${entry.name}</h3>
+          <div class="entry-meta">
+            ${new Date(entry.date).toLocaleDateString()} · ${getWeatherIcon(entry.weather)}
+          </div>
+          ${entry.photoUrl ? `<img src="${entry.photoUrl}" class="entry-image" alt="${entry.name}">` : ''}
+          <p>${entry.notes.substring(0, 50)}${entry.notes.length > 50 ? '...' : ''}</p>
+          <button class="delete-btn" data-id="${entry.id}">删除记录</button>
+        `;
+        entriesList.appendChild(entryCard);
+        
+        // 删除按钮事件
+        entryCard.querySelector('.delete-btn').addEventListener('click', (e) => {
+          const id = e.target.dataset.id;
+          travelEntries = travelEntries.filter(entry => entry.id !== id);
+          localStorage.setItem('travelEntries', JSON.stringify(travelEntries));
+          renderEntries();
+          document.querySelector(`.marker[data-id="${id}"]`).remove();
+        });
+      });
+    }
+
+    // 添加地图标记
+    function addMarker(entry) {
+      const marker = document.createElement('div');
+      marker.className = 'marker';
+      marker.dataset.id = entry.id;
+      marker.style.left = `${entry.x * mapScale + mapOffsetX}px`;
+      marker.style.top = `${entry.y * mapScale + mapOffsetY}px`;
+      
+      // 标记点击事件
+      marker.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showEntryDetail(entry);
+      });
+      
+      mapContainer.appendChild(marker);
+    }
+
+    // 显示记录详情
+    function showEntryDetail(entry) {
+      document.getElementById('detailTitle').textContent = entry.name;
+      document.getElementById('detailMeta').textContent = 
+        `${new Date(entry.date).toLocaleDateString()} · ${getWeatherIcon(entry.weather)}`;
+      document.getElementById('detailNotes').textContent = entry.notes;
+      
+      const detailImage = document.getElementById('detailImage');
+      if (entry.photoUrl) {
+        detailImage.src = entry.photoUrl;
+        detailImage.style.display = 'block';
+      } else {
+        detailImage.style.display = 'none';
+      }
+      
+      // 定位详情面板
+      entryDetail.style.left = `${Math.min(entry.x * mapScale + mapOffsetX + 20, mapContainer.clientWidth - 320)}px`;
+      entryDetail.style.top = `${Math.min(entry.y * mapScale + mapOffsetY + 20, mapContainer.clientHeight - 300)}px`;
+      entryDetail.classList.add('active');
+      
+      // 点击地图其他区域关闭详情
+      mapContainer.addEventListener('click', closeDetail, { once: true });
+    }
+
+    // 关闭详情面板
+    function closeDetail() {
+      entryDetail.classList.remove('active');
+    }
+
+    // 获取天气图标
+    function getWeatherIcon(weather) {
+      switch(weather) {
+        case 'sunny': return '☀️ 晴朗';
+        case 'rainy': return '🌧️ 下雨';
+        case 'cloudy': return '☁️ 多云';
+        case 'snowy': return '❄️ 下雪';
+        default: return weather;
+      }
+    }
+
+    // 初始化
+    function init() {
+      initMapInteraction();
+      renderEntries();
+      // 添加所有保存的标记
+      travelEntries.forEach(entry => addMarker(entry));
+    }
+
+    init();
+  </script>
+</body>
+</html>
+    
