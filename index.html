@@ -214,7 +214,7 @@
                         window.createCustomWindow({
                             title: app.name,
                             icon: app.icon,
-                            url: `./users/applications/${app.file}`
+                            url: app.file === 'about:blank' ? 'about:blank' : `./users/applications/${app.file}`
                         });
                         contextMenu.style.display = 'none';
                     });

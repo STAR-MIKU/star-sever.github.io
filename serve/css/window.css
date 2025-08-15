@@ -10,11 +10,6 @@
     z-index: 100;
 }
 
-/* 活动窗口样式 */
-.rounded-window.active {
-    /*box-shadow: 0 0 0 2px rgba(91, 192, 255, 0.7), 0 8px 32px rgba(0, 0, 0, 0.35);*/
-}
-
 /* 任务栏容器样式 */
 #apps {
     display: flex;
@@ -220,11 +215,4 @@ input, textarea, [contenteditable="true"] {
     -webkit-user-select: text;
     -moz-user-select: text;
     -ms-user-select: text;
-}
-    font-family: 'Chillax', sans-serif;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 10px 20px;
-    border-radius: 8px;
-    backdrop-filter: blur(5px);
 }

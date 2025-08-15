@@ -244,6 +244,9 @@ class RoundedWindow {
         if (this.content) {
             console.log('使用srcdoc加载内容');
             iframeElement.srcdoc = this.content;
+        } else if (this.url === 'about:blank') {
+            console.log('使用空白页面');
+            iframeElement.src = 'about:blank';
         } else {
             console.log('使用src加载URL:', this.url);
             iframeElement.src = this.url;
@@ -348,6 +351,10 @@ class RoundedWindow {
         // 添加过渡效果使移动更平滑
         this.windowElement.style.transition = 'left 0.05s ease-out, top 0.05s ease-out';
         this.windowElement.style.zIndex = '1000'; // 拖动时提升层级
+        // 初始化分屏相关变量
+        this.snapZoneSize = 50; // 吸附区域大小
+        this.snapPreview = null; // 分屏预览元素
+        this.snapRegion = null; // 当前吸附区域
         e.preventDefault(); // 防止选中文本
     }
 
@@ -363,9 +370,81 @@ class RoundedWindow {
         let newX = this.x + deltaX;
         let newY = this.y + deltaY;
 
-        // 限制窗口不超出屏幕边界
-        newX = Math.max(0, Math.min(newX, this.screenWidth - this.windowElement.offsetWidth));
-        newY = Math.max(0, Math.min(newY, this.screenHeight - this.windowElement.offsetHeight));
+        // 检测分屏区域
+        const screenWidth = this.screenWidth;
+        const screenHeight = this.screenHeight;
+        const windowWidth = this.windowElement.offsetWidth;
+        const windowHeight = this.windowElement.offsetHeight;
+
+        // 清除之前的预览和区域
+        if (this.snapPreview) {
+            document.body.removeChild(this.snapPreview);
+            this.snapPreview = null;
+        }
+        this.snapRegion = null;
+
+        // 左侧区域
+        if (newX <= this.snapZoneSize && windowWidth < screenWidth * 0.7) {
+            this.snapRegion = 'left';
+            newX = 0;
+            this.createSnapPreview(0, 0, screenWidth / 2, screenHeight);
+        }
+        // 右侧区域
+        else if (newX + windowWidth >= screenWidth - this.snapZoneSize && windowWidth < screenWidth * 0.7) {
+            this.snapRegion = 'right';
+            newX = screenWidth / 2;
+            this.createSnapPreview(screenWidth / 2, 0, screenWidth / 2, screenHeight);
+        }
+        // 上侧区域
+        else if (newY <= this.snapZoneSize && windowHeight < screenHeight * 0.7) {
+            this.snapRegion = 'top';
+            newY = 0;
+            this.createSnapPreview(0, 0, screenWidth, screenHeight / 2);
+        }
+        // 下侧区域
+        else if (newY + windowHeight >= screenHeight - this.snapZoneSize && windowHeight < screenHeight * 0.7) {
+            this.snapRegion = 'bottom';
+            newY = screenHeight / 2;
+            this.createSnapPreview(0, screenHeight / 2, screenWidth, screenHeight / 2);
+        }
+        // 左上区域
+        else if (newX <= this.snapZoneSize && newY <= this.snapZoneSize && 
+                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+            this.snapRegion = 'top-left';
+            newX = 0;
+            newY = 0;
+            this.createSnapPreview(0, 0, screenWidth / 2, screenHeight / 2);
+        }
+        // 右上区域
+        else if (newX + windowWidth >= screenWidth - this.snapZoneSize && newY <= this.snapZoneSize && 
+                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+            this.snapRegion = 'top-right';
+            newX = screenWidth / 2;
+            newY = 0;
+            this.createSnapPreview(screenWidth / 2, 0, screenWidth / 2, screenHeight / 2);
+        }
+        // 左下区域
+        else if (newX <= this.snapZoneSize && newY + windowHeight >= screenHeight - this.snapZoneSize && 
+                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+            this.snapRegion = 'bottom-left';
+            newX = 0;
+            newY = screenHeight / 2;
+            this.createSnapPreview(0, screenHeight / 2, screenWidth / 2, screenHeight / 2);
+        }
+        // 右下区域
+        else if (newX + windowWidth >= screenWidth - this.snapZoneSize && newY + windowHeight >= screenHeight - this.snapZoneSize && 
+                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+            this.snapRegion = 'bottom-right';
+            newX = screenWidth / 2;
+            newY = screenHeight / 2;
+            this.createSnapPreview(screenWidth / 2, screenHeight / 2, screenWidth / 2, screenHeight / 2);
+        }
+        // 没有吸附区域
+        else {
+            // 普通边界检查
+            newX = Math.max(0, Math.min(newX, screenWidth - windowWidth));
+            newY = Math.max(0, Math.min(newY, screenHeight - windowHeight));
+        }
 
         // 应用新位置
         this.windowElement.style.left = newX + 'px';
@@ -396,6 +475,10 @@ class RoundedWindow {
         // 添加过渡效果使移动更平滑
         this.windowElement.style.transition = 'transform 0.05s ease-out';
         this.windowElement.style.zIndex = '1000'; // 拖动时提升层级
+        // 初始化分屏相关变量
+        this.snapZoneSize = 50; // 吸附区域大小
+        this.snapPreview = null; // 分屏预览元素
+        this.snapRegion = null; // 当前吸附区域
         e.preventDefault(); // 防止页面滚动
     }
 
@@ -407,9 +490,81 @@ class RoundedWindow {
         let newX = touch.clientX - this.touchStartX;
         let newY = touch.clientY - this.touchStartY;
 
-        // 限制窗口不超出屏幕边界
-        newX = Math.max(0, Math.min(newX, this.screenWidth - this.windowElement.offsetWidth));
-        newY = Math.max(0, Math.min(newY, this.screenHeight - this.windowElement.offsetHeight));
+        // 检测分屏区域
+        const screenWidth = this.screenWidth;
+        const screenHeight = this.screenHeight;
+        const windowWidth = this.windowElement.offsetWidth;
+        const windowHeight = this.windowElement.offsetHeight;
+
+        // 清除之前的预览和区域
+        if (this.snapPreview) {
+            document.body.removeChild(this.snapPreview);
+            this.snapPreview = null;
+        }
+        this.snapRegion = null;
+
+        // 左侧区域
+        if (newX <= this.snapZoneSize && windowWidth < screenWidth * 0.7) {
+            this.snapRegion = 'left';
+            newX = 0;
+            this.createSnapPreview(0, 0, screenWidth / 2, screenHeight);
+        }
+        // 右侧区域
+        else if (newX + windowWidth >= screenWidth - this.snapZoneSize && windowWidth < screenWidth * 0.7) {
+            this.snapRegion = 'right';
+            newX = screenWidth / 2;
+            this.createSnapPreview(screenWidth / 2, 0, screenWidth / 2, screenHeight);
+        }
+        // 上侧区域
+        else if (newY <= this.snapZoneSize && windowHeight < screenHeight * 0.7) {
+            this.snapRegion = 'top';
+            newY = 0;
+            this.createSnapPreview(0, 0, screenWidth, screenHeight / 2);
+        }
+        // 下侧区域
+        else if (newY + windowHeight >= screenHeight - this.snapZoneSize && windowHeight < screenHeight * 0.7) {
+            this.snapRegion = 'bottom';
+            newY = screenHeight / 2;
+            this.createSnapPreview(0, screenHeight / 2, screenWidth, screenHeight / 2);
+        }
+        // 左上区域
+        else if (newX <= this.snapZoneSize && newY <= this.snapZoneSize && 
+                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+            this.snapRegion = 'top-left';
+            newX = 0;
+            newY = 0;
+            this.createSnapPreview(0, 0, screenWidth / 2, screenHeight / 2);
+        }
+        // 右上区域
+        else if (newX + windowWidth >= screenWidth - this.snapZoneSize && newY <= this.snapZoneSize && 
+                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+            this.snapRegion = 'top-right';
+            newX = screenWidth / 2;
+            newY = 0;
+            this.createSnapPreview(screenWidth / 2, 0, screenWidth / 2, screenHeight / 2);
+        }
+        // 左下区域
+        else if (newX <= this.snapZoneSize && newY + windowHeight >= screenHeight - this.snapZoneSize && 
+                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+            this.snapRegion = 'bottom-left';
+            newX = 0;
+            newY = screenHeight / 2;
+            this.createSnapPreview(0, screenHeight / 2, screenWidth / 2, screenHeight / 2);
+        }
+        // 右下区域
+        else if (newX + windowWidth >= screenWidth - this.snapZoneSize && newY + windowHeight >= screenHeight - this.snapZoneSize && 
+                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+            this.snapRegion = 'bottom-right';
+            newX = screenWidth / 2;
+            newY = screenHeight / 2;
+            this.createSnapPreview(screenWidth / 2, screenHeight / 2, screenWidth / 2, screenHeight / 2);
+        }
+        // 没有吸附区域
+        else {
+            // 普通边界检查
+            newX = Math.max(0, Math.min(newX, screenWidth - windowWidth));
+            newY = Math.max(0, Math.min(newY, screenHeight - windowHeight));
+        }
 
         // 应用新位置（使用transform提高性能）
         this.windowElement.style.transform = `translate(${newX}px, ${newY}px)`;
@@ -427,6 +582,17 @@ class RoundedWindow {
         this.x = parseInt(this.windowElement.style.left) || 0;
         this.y = parseInt(this.windowElement.style.top) || 0;
         this.windowElement.style.zIndex = '100'; // 拖动结束后恢复层级
+
+        // 应用分屏
+        if (this.snapRegion) {
+            this.applySnapRegion(this.snapRegion);
+        }
+
+        // 清除预览
+        if (this.snapPreview) {
+            document.body.removeChild(this.snapPreview);
+            this.snapPreview = null;
+        }
     }
 
     startResize(e) {
@@ -494,6 +660,108 @@ class RoundedWindow {
                 dock.classList.add('hidden');
             }
         }
+    }
+
+    // 创建分屏预览
+    createSnapPreview(x, y, width, height) {
+        if (this.snapPreview) {
+            document.body.removeChild(this.snapPreview);
+        }
+        this.snapPreview = document.createElement('div');
+        this.snapPreview.className = 'snap-preview';
+        this.snapPreview.style.position = 'fixed';
+        this.snapPreview.style.left = x + 'px';
+        this.snapPreview.style.top = y + 'px';
+        this.snapPreview.style.width = width + 'px';
+        this.snapPreview.style.height = height + 'px';
+        this.snapPreview.style.backgroundColor = 'rgba(50, 150, 255, 0.3)';
+        this.snapPreview.style.border = '2px dashed rgba(50, 150, 255, 0.7)';
+        this.snapPreview.style.zIndex = '9998';
+        document.body.appendChild(this.snapPreview);
+    }
+
+    // 应用分屏区域
+    applySnapRegion(region) {
+        const screenWidth = this.screenWidth;
+        const screenHeight = this.screenHeight;
+        const dock = document.getElementById('dock');
+        const dockHeight = dock ? dock.offsetHeight : 0;
+        const adjustedHeight = screenHeight - dockHeight;
+
+        // 保存当前状态以便恢复
+        this.normalState.width = this.windowElement.offsetWidth;
+        this.normalState.height = this.windowElement.offsetHeight;
+        this.normalState.x = this.windowElement.offsetLeft;
+        this.normalState.y = this.windowElement.offsetTop;
+
+        // 移除最大化类
+        this.windowElement.classList.remove('maximized');
+
+        switch (region) {
+            case 'left':
+                this.windowElement.style.width = (screenWidth / 2) + 'px';
+                this.windowElement.style.height = adjustedHeight + 'px';
+                this.windowElement.style.left = '0px';
+                this.windowElement.style.top = '0px';
+                break;
+            case 'right':
+                this.windowElement.style.width = (screenWidth / 2) + 'px';
+                this.windowElement.style.height = adjustedHeight + 'px';
+                this.windowElement.style.left = (screenWidth / 2) + 'px';
+                this.windowElement.style.top = '0px';
+                break;
+            case 'top':
+                this.windowElement.style.width = screenWidth + 'px';
+                this.windowElement.style.height = (adjustedHeight / 2) + 'px';
+                this.windowElement.style.left = '0px';
+                this.windowElement.style.top = '0px';
+                break;
+            case 'bottom':
+                this.windowElement.style.width = screenWidth + 'px';
+                this.windowElement.style.height = (adjustedHeight / 2) + 'px';
+                this.windowElement.style.left = '0px';
+                this.windowElement.style.top = (adjustedHeight / 2) + 'px';
+                break;
+            case 'top-left':
+                this.windowElement.style.width = (screenWidth / 2) + 'px';
+                this.windowElement.style.height = (adjustedHeight / 2) + 'px';
+                this.windowElement.style.left = '0px';
+                this.windowElement.style.top = '0px';
+                break;
+            case 'top-right':
+                this.windowElement.style.width = (screenWidth / 2) + 'px';
+                this.windowElement.style.height = (adjustedHeight / 2) + 'px';
+                this.windowElement.style.left = (screenWidth / 2) + 'px';
+                this.windowElement.style.top = '0px';
+                break;
+            case 'bottom-left':
+                this.windowElement.style.width = (screenWidth / 2) + 'px';
+                this.windowElement.style.height = (adjustedHeight / 2) + 'px';
+                this.windowElement.style.left = '0px';
+                this.windowElement.style.top = (adjustedHeight / 2) + 'px';
+                break;
+            case 'bottom-right':
+                this.windowElement.style.width = (screenWidth / 2) + 'px';
+                this.windowElement.style.height = (adjustedHeight / 2) + 'px';
+                this.windowElement.style.left = (screenWidth / 2) + 'px';
+                this.windowElement.style.top = (adjustedHeight / 2) + 'px';
+                break;
+        }
+
+        // 隐藏任务栏（如果窗口是全屏的）
+        if (dock) {
+            if (region === 'top' || region === 'bottom') {
+                dock.classList.add('hidden');
+            } else {
+                dock.classList.remove('hidden');
+            }
+        }
+
+        // 更新窗口坐标和大小
+        this.x = parseInt(this.windowElement.style.left) || 0;
+        this.y = parseInt(this.windowElement.style.top) || 0;
+        this.width = parseInt(this.windowElement.style.width) || 0;
+        this.height = parseInt(this.windowElement.style.height) || 0;
     }
 
     minimize() {
@@ -584,21 +852,25 @@ class RoundedWindow {
         uploadContainer.style.flexDirection = 'column';
         uploadContainer.style.alignItems = 'center';
         uploadContainer.style.justifyContent = 'center';
-        uploadContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        uploadContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
         uploadContainer.style.color = 'white';
         uploadContainer.style.zIndex = '10';
+        uploadContainer.style.padding = '20px';
 
         // 创建上传提示
         const uploadPrompt = document.createElement('div');
-        uploadPrompt.textContent = '上传HTML文件或粘贴HTML代码';
+        uploadPrompt.textContent = '上传HTML文件、粘贴或输入HTML代码';
         uploadPrompt.style.fontSize = '18px';
         uploadPrompt.style.marginBottom = '20px';
+        uploadPrompt.style.textAlign = 'center';
 
         // 创建按钮容器
         const buttonContainer = document.createElement('div');
         buttonContainer.style.display = 'flex';
         buttonContainer.style.gap = '10px';
         buttonContainer.style.marginBottom = '20px';
+        buttonContainer.style.flexWrap = 'wrap';
+        buttonContainer.style.justifyContent = 'center';
 
         // 创建上传按钮
         const uploadButton = document.createElement('button');
@@ -622,27 +894,127 @@ class RoundedWindow {
         pasteButton.style.cursor = 'pointer';
         pasteButton.style.transition = 'all 0.2s';
 
+        // 创建应用按钮
+        const applyButton = document.createElement('button');
+        applyButton.textContent = '应用HTML代码';
+        applyButton.style.padding = '10px 20px';
+        applyButton.style.backgroundColor = 'rgba(0, 198, 6, 0.7)';
+        applyButton.style.color = 'white';
+        applyButton.style.border = '1px solid white';
+        applyButton.style.borderRadius = '4px';
+        applyButton.style.cursor = 'pointer';
+        applyButton.style.transition = 'all 0.2s';
+        applyButton.style.display = 'none';
+
         // 创建隐藏的文件输入
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
         fileInput.accept = '.html';
         fileInput.style.display = 'none';
 
+        // 创建HTML代码文本区域
+        const htmlTextArea = document.createElement('textarea');
+        htmlTextArea.placeholder = '在此输入HTML代码...';
+        htmlTextArea.style.width = '100%';
+        htmlTextArea.style.maxWidth = '500px';
+        htmlTextArea.style.height = '200px';
+        htmlTextArea.style.padding = '10px';
+        htmlTextArea.style.marginBottom = '20px';
+        htmlTextArea.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+        htmlTextArea.style.color = 'white';
+        htmlTextArea.style.border = '1px solid white';
+        htmlTextArea.style.borderRadius = '4px';
+        htmlTextArea.style.display = 'none';
+
+        // 切换到手动输入模式
+        const manualInputButton = document.createElement('button');
+        manualInputButton.textContent = '手动输入HTML';
+        manualInputButton.style.padding = '10px 20px';
+        manualInputButton.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+        manualInputButton.style.color = 'white';
+        manualInputButton.style.border = '1px solid white';
+        manualInputButton.style.borderRadius = '4px';
+        manualInputButton.style.cursor = 'pointer';
+        manualInputButton.style.transition = 'all 0.2s';
+
+        manualInputButton.addEventListener('click', () => {
+            uploadPrompt.textContent = '输入HTML代码';
+            buttonContainer.style.display = 'none';
+            htmlTextArea.style.display = 'block';
+            applyButton.style.display = 'block';
+        });
+
+        // 返回按钮
+        const backButton = document.createElement('button');
+        backButton.textContent = '返回';
+        backButton.style.padding = '10px 20px';
+        backButton.style.backgroundColor = 'rgba(255, 59, 48, 0.7)';
+        backButton.style.color = 'white';
+        backButton.style.border = '1px solid white';
+        backButton.style.borderRadius = '4px';
+        backButton.style.cursor = 'pointer';
+        backButton.style.transition = 'all 0.2s';
+        backButton.style.display = 'none';
+
+        // 创建重置按钮
+        const resetButton = document.createElement('button');
+        resetButton.textContent = '重置';
+        resetButton.style.padding = '10px 20px';
+        resetButton.style.backgroundColor = 'rgba(255, 149, 0, 0.7)';
+        resetButton.style.color = 'white';
+        resetButton.style.border = '1px solid white';
+        resetButton.style.borderRadius = '4px';
+        resetButton.style.cursor = 'pointer';
+        resetButton.style.transition = 'all 0.2s';
+        resetButton.style.display = 'none';
+
+        // 重置功能
+        resetButton.addEventListener('click', () => {
+            this.hasUploaded = false;
+            this.iframeElement.srcdoc = '';
+            uploadContainer.style.display = 'flex';
+            uploadPrompt.textContent = '上传HTML文件、粘贴或输入HTML代码';
+            buttonContainer.style.display = 'flex';
+            htmlTextArea.style.display = 'none';
+            htmlTextArea.value = '';
+            applyButton.style.display = 'none';
+            backButton.style.display = 'none';
+            resetButton.style.display = 'none';
+            alert('已重置，可以重新上传/粘贴HTML内容');
+        });
+
+        backButton.addEventListener('click', () => {
+            uploadPrompt.textContent = '上传HTML文件、粘贴或输入HTML代码';
+            buttonContainer.style.display = 'flex';
+            htmlTextArea.style.display = 'none';
+            applyButton.style.display = 'none';
+            backButton.style.display = 'none';
+            resetButton.style.display = 'none';
+        });
+
         // 点击按钮触发文件选择
         uploadButton.addEventListener('click', () => {
             if (!this.hasUploaded) {
                 fileInput.click();
             } else {
-                alert('每个窗口只能上传一次HTML文件');
+                alert('当前窗口已有内容，点击"重置"按钮可清除并重新上传');
+                resetButton.style.display = 'block';
+                contentElement.appendChild(resetButton);
             }
         });
 
         // 处理文件选择
         fileInput.addEventListener('change', (e) => {
-            if (this.hasUploaded) return;
+            if (this.hasUploaded) {
+                alert('当前窗口已有内容，点击"重置"按钮可清除并重新上传');
+                resetButton.style.display = 'block';
+                contentElement.appendChild(resetButton);
+                return;
+            }
 
             const file = e.target.files[0];
-            if (file && file.type === 'text/html') {
+            if (file) {
+                // 检查文件类型，即使没有正确设置MIME类型也尝试读取
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     try {
@@ -650,6 +1022,9 @@ class RoundedWindow {
                         this.iframeElement.srcdoc = event.target.result;
                         this.hasUploaded = true;
                         uploadContainer.style.display = 'none';
+                        resetButton.style.display = 'block';
+                        contentElement.appendChild(resetButton);
+                        alert('HTML文件上传成功！点击"重置"按钮可修改内容');
                         console.log('HTML文件上传成功');
                     } catch (error) {
                         console.error('加载HTML文件失败:', error);
@@ -658,14 +1033,16 @@ class RoundedWindow {
                 };
                 reader.readAsText(file);
             } else {
-                alert('请选择有效的HTML文件');
+                alert('请选择一个文件');
             }
         });
 
         // 处理粘贴HTML代码
         pasteButton.addEventListener('click', async () => {
             if (this.hasUploaded) {
-                alert('每个窗口只能上传/粘贴一次HTML内容');
+                alert('当前窗口已有内容，点击"重置"按钮可清除并重新粘贴');
+                resetButton.style.display = 'block';
+                contentElement.appendChild(resetButton);
                 return;
             }
 
@@ -677,20 +1054,79 @@ class RoundedWindow {
                     this.iframeElement.srcdoc = text;
                     this.hasUploaded = true;
                     uploadContainer.style.display = 'none';
+                    resetButton.style.display = 'block';
+                    contentElement.appendChild(resetButton);
+                    alert('HTML代码粘贴成功！点击"重置"按钮可修改内容');
                     console.log('HTML代码粘贴成功');
                 } else {
                     alert('剪贴板为空');
                 }
             } catch (error) {
                 console.error('读取剪贴板失败:', error);
-                alert('读取剪贴板失败，请手动粘贴');
+                // 提供fallback选项
+                uploadPrompt.textContent = '剪贴板访问失败，请手动输入HTML代码';
+                buttonContainer.style.display = 'none';
+                htmlTextArea.style.display = 'block';
+                applyButton.style.display = 'block';
+                backButton.style.display = 'block';
             }
+        });
+
+        // 处理手动输入的HTML代码
+        applyButton.addEventListener('click', () => {
+            if (this.hasUploaded) {
+                alert('当前窗口已有内容，点击"重置"按钮可清除并重新输入');
+                resetButton.style.display = 'block';
+                contentElement.appendChild(resetButton);
+                return;
+            }
+
+            const htmlCode = htmlTextArea.value.trim();
+            if (htmlCode) {
+                try {
+                    // 在iframe中加载HTML内容
+                    this.iframeElement.srcdoc = htmlCode;
+                    this.hasUploaded = true;
+                    uploadContainer.style.display = 'none';
+                    resetButton.style.display = 'block';
+                    contentElement.appendChild(resetButton);
+                    alert('HTML代码应用成功！点击"重置"按钮可修改内容');
+                    console.log('HTML代码应用成功');
+                } catch (error) {
+                    console.error('加载HTML代码失败:', error);
+                    alert('加载HTML代码失败，请检查代码格式');
+                }
+            } else {
+                alert('请输入HTML代码');
+            }
+        });
+
+        // 悬停效果
+        [uploadButton, pasteButton, manualInputButton].forEach(button => {
+            button.addEventListener('mouseover', () => {
+                button.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+            });
+            button.addEventListener('mouseout', () => {
+                button.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            });
+        });
+
+        uploadButton.addEventListener('mouseover', () => {
+            uploadButton.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+        });
+        uploadButton.addEventListener('mouseout', () => {
+            uploadButton.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
         });
 
         uploadContainer.appendChild(uploadPrompt);
         buttonContainer.appendChild(uploadButton);
         buttonContainer.appendChild(pasteButton);
+        buttonContainer.appendChild(manualInputButton);
         uploadContainer.appendChild(buttonContainer);
+        uploadContainer.appendChild(htmlTextArea);
+        uploadContainer.appendChild(applyButton);
+        uploadContainer.appendChild(backButton);
+        uploadContainer.appendChild(resetButton);
         uploadContainer.appendChild(fileInput);
 
         contentElement.appendChild(uploadContainer);
