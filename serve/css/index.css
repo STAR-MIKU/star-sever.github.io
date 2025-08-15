@@ -131,6 +131,18 @@ body {
     justify-content: center;
     padding: 0 10px;
     height: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+#apps {
+    position: relative;
+    z-index: 1;
+}
+
+#time {
+    position: relative;
+    z-index: 1;
 }
 
 .svg-icon-container {
@@ -155,7 +167,7 @@ body {
     width: 80%;
     max-width: 1000px;
     height: 46px;
-    background: #ffffff2c;
+    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     z-index: 100000;
@@ -164,6 +176,31 @@ body {
     align-items: center;
     border-radius: 12px;
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+#dock::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+    animation: glass-flow 8s infinite linear;
+    opacity: 0.5;
+    z-index: 0;
+}
+
+@keyframes glass-flow {
+    0% {
+        transform: translateX(0%) skewX(-15deg);
+    }
+    100% {
+        transform: translateX(100%) skewX(-15deg);
+    }
 }
 
 #dock.hidden {
@@ -177,14 +214,16 @@ body {
     align-items: flex-end;
     justify-content: center;
     height: 46px;
-    position: absolute;
-    right: 24px;
-    top: 0;
+    padding: 0 8px;
     text-align: right;
     font-family: 'Chillax', sans-serif;
     font-size: 18px;
     color: #fff;
     user-select: none;
+    margin-left: auto;
+    white-space: nowrap;
+    position: relative;
+    z-index: 2;
 }
 
 .time-content {
@@ -247,4 +286,87 @@ body {
     margin: 5px 8px 5px auto;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    transition: background 0.3s ease;
+}
+
+#hide:hover {
+    background: white;
+}
+
+#more {
+    width: 18px;
+    height: 18px;
+    background: #ffffff1a;
+    border-radius: 18px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /*margin: 5px 8px;*/
+}
+
+#more:hover {
+    transform: scale(1.1);
+}
+
+#more img {
+    transition: transform 0.5s ease;
+}
+
+#more.clicked img {
+    transform: rotate(180deg);
+}
+
+/* 自定义右键菜单样式 */
+.custom-context-menu {
+    font-family: 'Chillax', sans-serif;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    animation: fade-in 0.2s ease-out;
+}
+
+.context-menu-item {
+    padding: 8px 15px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.context-menu-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.context-menu-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    filter: invert(1);
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 预设应用区域样式 */
+#preset-apps {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 9999;
+    display: none;
 }

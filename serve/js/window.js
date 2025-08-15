@@ -108,7 +108,7 @@ class RoundedWindow {
         this.content = this.options.content || null;
         this.width = this.options.width || 350;
         this.height = this.options.height || 570;
-        this.x = this.options.x || 100;
+        this.x = this.options.x || 1000;
         this.y = this.options.y || 100;
         this.id = 'window-' + Date.now();
         this.isCustom = this.options.isCustom || false; // 是否为用户自定义窗口
@@ -255,6 +255,7 @@ class RoundedWindow {
             console.log('窗口已添加到文档');
             // 触发底部飞入动画
             setTimeout(() => {
+                this.windowElement.style.left = this.x + 'px';
                 this.windowElement.style.top = this.y + 'px';
                 this.windowElement.style.opacity = '1';
             }, 10);
@@ -306,12 +307,11 @@ class RoundedWindow {
         }
 
         this.isDragging = true;
-        // 记录鼠标在窗口头部的相对位置
-        const rect = this.windowElement.getBoundingClientRect();
-        this.dragStartX = e.clientX - rect.left;
-        this.dragStartY = e.clientY - rect.top;
+        // 记录鼠标在屏幕上的绝对位置
+        this.dragStartX = e.clientX;
+        this.dragStartY = e.clientY;
         // 添加过渡效果使移动更平滑
-        this.windowElement.style.transition = 'transform 0.05s ease-out';
+        this.windowElement.style.transition = 'left 0.05s ease-out, top 0.05s ease-out';
         this.windowElement.style.zIndex = '1000'; // 拖动时提升层级
         e.preventDefault(); // 防止选中文本
     }
@@ -320,15 +320,21 @@ class RoundedWindow {
     drag(e) {
         if (!this.isDragging) return;
 
-        let newX = e.clientX - this.dragStartX;
-        let newY = e.clientY - this.dragStartY;
+        // 计算相对于初始拖动位置的偏移
+        const deltaX = e.clientX - this.dragStartX;
+        const deltaY = e.clientY - this.dragStartY;
+
+        // 计算新位置
+        let newX = this.x + deltaX;
+        let newY = this.y + deltaY;
 
         // 限制窗口不超出屏幕边界
         newX = Math.max(0, Math.min(newX, this.screenWidth - this.windowElement.offsetWidth));
         newY = Math.max(0, Math.min(newY, this.screenHeight - this.windowElement.offsetHeight));
 
-        // 应用新位置（使用transform提高性能）
-        this.windowElement.style.transform = `translate(${newX}px, ${newY}px)`;
+        // 应用新位置
+        this.windowElement.style.left = newX + 'px';
+        this.windowElement.style.top = newY + 'px';
     }
 
     // 触摸拖动开始
@@ -382,16 +388,9 @@ class RoundedWindow {
         this.isDragging = false;
         // 移除过渡效果
         this.windowElement.style.transition = '';
-        // 获取当前transform值并应用到left和top
-        const transform = this.windowElement.style.transform;
-        if (transform) {
-            const match = transform.match(/translate\(([^,]+)px,\s*([^)]+)px\)/);
-            if (match) {
-                this.windowElement.style.left = match[1] + 'px';
-                this.windowElement.style.top = match[2] + 'px';
-                this.windowElement.style.transform = '';
-            }
-        }
+        // 更新坐标属性
+        this.x = parseInt(this.windowElement.style.left) || 0;
+        this.y = parseInt(this.windowElement.style.top) || 0;
         this.windowElement.style.zIndex = '100'; // 拖动结束后恢复层级
     }
 

@@ -44,6 +44,16 @@
         </div>
         <!-- 图标 -->
         <div id="apps"></div>
+        <!-- 更多 -->
+        <div id="more">
+            <img src="./serve/files/icon/zk-ico.png" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+        <script>
+            // 为#more元素添加点击事件
+            document.getElementById('more').addEventListener('click', function() {
+                this.classList.toggle('clicked');
+            });
+        </script>
         <!-- 时间 -->
         <div id="time">
 
@@ -131,40 +141,12 @@
                     content: options.content,
                     width: 350,
                     height: 570,
-                    x: 150,
-                    y: 150,
+                    x: 1,
+                    y: 1,
                     isCustom: true
                 });
                 return newWindow;
             }
-
-            // 在任务栏中添加一个加号按钮来创建新窗口
-            const createWindowBtn = document.createElement('div');
-            createWindowBtn.id = 'add-window-btn';
-            createWindowBtn.className = 'taskbar-icon';
-            createWindowBtn.textContent = '+';
-            createWindowBtn.style.cursor = 'pointer';
-            createWindowBtn.style.width = '30px';
-            createWindowBtn.style.height = '30px';
-            createWindowBtn.style.display = 'flex';
-            createWindowBtn.style.alignItems = 'center';
-            createWindowBtn.style.justifyContent = 'center';
-            createWindowBtn.style.color = 'white';
-            createWindowBtn.style.fontSize = '20px';
-            createWindowBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-            createWindowBtn.style.backdropFilter = 'blur(10px)';
-            createWindowBtn.style.transition = 'all 0.2s';
-            createWindowBtn.addEventListener('click', () => {
-                const presetApps = document.getElementById('preset-apps');
-                presetApps.style.display = presetApps.style.display === 'none' ? 'block' : 'none';
-            });
-
-            // 鼠标离开预设应用区域时关闭
-            document.getElementById('preset-apps').addEventListener('mouseleave', () => {
-                const presetApps = document.getElementById('preset-apps');
-                presetApps.style.display = 'none';
-            });
-            document.getElementById('apps').appendChild(createWindowBtn);
 
             // 使用现有的hide元素作为关闭全部窗口按钮
             const hideBtn = document.getElementById('hide');
@@ -177,7 +159,89 @@
                 }
             });
 
-            // 加载预设应用
+            // 加载预设应用到右键菜单
+            function loadPresetAppsToContextMenu() {
+                const contextMenu = document.getElementById('custom-context-menu');
+                if (!contextMenu) return;
+
+                // 预设应用列表
+                const presetApps = [
+                    { name: '代码编辑器', file: 'code-editor.html', icon: './serve/files/icon/code-editor.svg' },
+                    { name: '思维导图', file: 'mind-map.html', icon: './serve/files/icon/mind-map.svg' },
+                    { name: '神秘书店', file: 'mystery-bookstore-gal.html', icon: './serve/files/icon/bookstore.svg' },
+                    { name: '粒子物理', file: 'particle-physics.html', icon: './serve/files/icon/physics.svg' },
+                    { name: '像素艺术', file: 'pixel-art.html', icon: './serve/files/icon/pixel-art.svg' },
+                    { name: '像素编辑器', file: 'pixel-editor.html', icon: './serve/files/icon/pixel-editor.svg' },
+                    { name: '程序员贪吃蛇', file: 'programmer-snake.html', icon: './serve/files/icon/snake.svg' },
+                    { name: '节奏游戏', file: 'rhythm-game.html', icon: './serve/files/icon/music.svg' },
+                    { name: '旅行日志', file: 'travel-log.html', icon: './serve/files/icon/travel.svg' },
+                    { name: '空白HTML', file: 'about:blank', icon: './serve/files/icon/html.svg' }
+                ];
+
+                // 清空菜单
+                contextMenu.innerHTML = '';
+
+                // 添加应用菜单项
+                presetApps.forEach(app => {
+                    const menuItem = document.createElement('div');
+                    menuItem.className = 'context-menu-item';
+                    menuItem.innerHTML = `<img src="${app.icon}" alt="${app.name}" class="context-menu-icon">${app.name}`;
+                    menuItem.addEventListener('click', () => {
+                        window.createCustomWindow({
+                            title: app.name,
+                            icon: app.icon,
+                            url: `./users/applications/${app.file}`
+                        });
+                        contextMenu.style.display = 'none';
+                    });
+                    contextMenu.appendChild(menuItem);
+                });
+            }
+
+            // 初始化右键菜单
+            function initContextMenu() {
+                // 创建右键菜单元素
+                const contextMenu = document.createElement('div');
+                contextMenu.id = 'custom-context-menu';
+                contextMenu.className = 'custom-context-menu';
+                contextMenu.style.position = 'fixed';
+                contextMenu.style.display = 'none';
+                contextMenu.style.zIndex = '99999';
+                contextMenu.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                contextMenu.style.backdropFilter = 'blur(10px)';
+                contextMenu.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                contextMenu.style.borderRadius = '8px';
+                contextMenu.style.padding = '5px 0';
+                contextMenu.style.minWidth = '180px';
+                document.body.appendChild(contextMenu);
+
+                // 屏蔽默认右键菜单
+                document.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    
+                    // 获取鼠标位置
+                    const x = e.clientX;
+                    const y = e.clientY;
+                    
+                    // 显示右键菜单
+                    contextMenu.style.left = `${x}px`;
+                    contextMenu.style.top = `${y}px`;
+                    contextMenu.style.display = 'block';
+                });
+
+                // 点击其他地方关闭右键菜单
+                document.addEventListener('click', () => {
+                    contextMenu.style.display = 'none';
+                });
+
+                // 加载应用到右键菜单
+                loadPresetAppsToContextMenu();
+            }
+
+            // 初始化右键菜单
+            initContextMenu();
+
+            // 加载预设应用（仅保留容器，不再通过加号按钮触发）
             function loadPresetApps() {
                 const presetAppsContainer = document.getElementById('preset-apps-container');
                 if (!presetAppsContainer) return;
