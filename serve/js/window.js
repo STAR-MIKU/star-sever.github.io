@@ -10,7 +10,10 @@ class WindowManager {
 
     addWindow(window) {
         this.windows.push(window);
-        this.createTaskbarIcon(window);
+        // 系统面板不需要任务栏图标
+        if (!window.isSystemPanel) {
+            this.createTaskbarIcon(window);
+        }
         this.setActiveWindow(window.id);
     }
 
@@ -112,6 +115,9 @@ class RoundedWindow {
         this.y = this.options.y || 100;
         this.id = 'window-' + Date.now();
         this.isCustom = this.options.isCustom || false; // 是否为用户自定义窗口
+        this.isSystemPanel = this.options.isSystemPanel || false; // 是否为系统面板
+        this.showTitleBar = this.options.showTitleBar !== undefined ? this.options.showTitleBar : true; // 是否显示标题栏
+        this.draggable = this.options.draggable !== undefined ? this.options.draggable : true; // 是否可拖动
         // 拖动相关属性
         this.isDragging = false;
         this.isAnimating = false; // 标记窗口是否正在动画中
@@ -158,6 +164,9 @@ class RoundedWindow {
         // 创建窗口元素
         this.windowElement = document.createElement('div');
         this.windowElement.className = 'rounded-window';
+        if (this.isSystemPanel) {
+            this.windowElement.classList.add('system-panel');
+        }
         this.windowElement.id = this.id;
         this.windowElement.style.width = this.width + 'px';
         this.windowElement.style.height = this.height + 'px';
@@ -168,45 +177,66 @@ class RoundedWindow {
         this.windowElement.style.opacity = '0';
         console.log('窗口样式:', this.windowElement.style);
 
-        // 创建窗口头部
-        this.headerElement = document.createElement('div');
-        this.headerElement.className = 'window-header';
-
-        // 创建窗口标题
-        const titleElement = document.createElement('div');
-        titleElement.className = 'window-title';
-        titleElement.textContent = this.title;
-        this.titleElement = titleElement; // 保存标题元素引用
-
-        // 创建窗口控制按钮
-        const controlsElement = document.createElement('div');
-        controlsElement.className = 'window-controls';
-
-        const minimizeBtn = document.createElement('div');
-        minimizeBtn.className = 'window-control';
-        minimizeBtn.style.background = 'rgba(255, 208, 0, 0.7)';
-        minimizeBtn.addEventListener('click', () => this.minimize());
-
-        const maximizeBtn = document.createElement('div');
-        maximizeBtn.className = 'window-control';
-        maximizeBtn.style.background = 'rgba(0, 198, 6, 0.7)';
-        maximizeBtn.addEventListener('click', () => this.toggleMaximize());
-
-        const closeBtn = document.createElement('div');
-        closeBtn.className = 'window-control';
-        closeBtn.style.background = 'rgba(255, 59, 48, 0.7)';
-        closeBtn.addEventListener('click', () => this.close());
-
-        controlsElement.appendChild(minimizeBtn);
-        controlsElement.appendChild(maximizeBtn);
-        controlsElement.appendChild(closeBtn);
-
-        this.headerElement.appendChild(titleElement);
-        this.headerElement.appendChild(controlsElement);
-
-        // 创建窗口内容
+        // 窗口内容容器
         const contentElement = document.createElement('div');
         contentElement.className = 'window-content';
+
+        // 如果显示标题栏
+        if (this.showTitleBar) {
+            // 创建窗口头部
+            this.headerElement = document.createElement('div');
+            this.headerElement.className = 'window-header';
+
+            // 创建窗口标题
+            const titleElement = document.createElement('div');
+            titleElement.className = 'window-title';
+            titleElement.textContent = this.title;
+            this.titleElement = titleElement; // 保存标题元素引用
+
+            // 创建窗口控制按钮
+            const controlsElement = document.createElement('div');
+            controlsElement.className = 'window-controls';
+
+            const minimizeBtn = document.createElement('div');
+            minimizeBtn.className = 'window-control';
+            minimizeBtn.style.background = 'rgba(255, 208, 0, 0.7)';
+            minimizeBtn.addEventListener('click', () => this.minimize());
+
+            const maximizeBtn = document.createElement('div');
+            maximizeBtn.className = 'window-control';
+            maximizeBtn.style.background = 'rgba(0, 198, 6, 0.7)';
+            maximizeBtn.addEventListener('click', () => this.toggleMaximize());
+
+            const closeBtn = document.createElement('div');
+            closeBtn.className = 'window-control';
+            closeBtn.style.background = 'rgba(255, 59, 48, 0.7)';
+            closeBtn.addEventListener('click', () => this.close());
+
+            controlsElement.appendChild(minimizeBtn);
+            controlsElement.appendChild(maximizeBtn);
+            controlsElement.appendChild(closeBtn);
+
+            this.headerElement.appendChild(titleElement);
+            this.headerElement.appendChild(controlsElement);
+        } else {
+            // 不显示标题栏，添加关闭按钮到内容区
+            const closeBtnContainer = document.createElement('div');
+            closeBtnContainer.style.position = 'absolute';
+            closeBtnContainer.style.top = '5px';
+            closeBtnContainer.style.right = '5px';
+            closeBtnContainer.style.zIndex = '100';
+
+            const closeBtn = document.createElement('div');
+            closeBtn.className = 'window-control';
+            closeBtn.style.background = 'rgba(255, 59, 48, 0.7)';
+            closeBtn.addEventListener('click', () => this.close());
+            closeBtn.style.width = '20px';
+            closeBtn.style.height = '20px';
+            closeBtn.style.borderRadius = '50%';
+
+            closeBtnContainer.appendChild(closeBtn);
+            contentElement.appendChild(closeBtnContainer);
+        }
 
         // 创建iframe
         const iframeElement = document.createElement('iframe');
@@ -245,7 +275,9 @@ class RoundedWindow {
         this.resizeHandle.className = 'resize-handle';
 
         // 组装窗口
-        this.windowElement.appendChild(this.headerElement);
+        if (this.showTitleBar) {
+            this.windowElement.appendChild(this.headerElement);
+        }
         this.windowElement.appendChild(contentElement);
         this.windowElement.appendChild(this.resizeHandle);
 
@@ -282,15 +314,18 @@ class RoundedWindow {
         document.addEventListener('mousemove', (e) => this.resize(e));
         document.addEventListener('mouseup', () => this.stopResize());
 
-        // 拖动事件 - 鼠标
-        this.headerElement.addEventListener('mousedown', (e) => this.startDrag(e));
-        document.addEventListener('mousemove', (e) => this.drag(e));
-        document.addEventListener('mouseup', () => this.stopDrag());
+        // 如果可拖动且显示标题栏，则绑定拖动事件
+        if (this.draggable && this.showTitleBar) {
+            // 拖动事件 - 鼠标
+            this.headerElement.addEventListener('mousedown', (e) => this.startDrag(e));
+            document.addEventListener('mousemove', (e) => this.drag(e));
+            document.addEventListener('mouseup', () => this.stopDrag());
 
-        // 拖动事件 - 触摸
-        this.headerElement.addEventListener('touchstart', (e) => this.startTouchDrag(e));
-        document.addEventListener('touchmove', (e) => this.touchDrag(e));
-        document.addEventListener('touchend', () => this.stopDrag());
+            // 拖动事件 - 触摸
+            this.headerElement.addEventListener('touchstart', (e) => this.startTouchDrag(e));
+            document.addEventListener('touchmove', (e) => this.touchDrag(e));
+            document.addEventListener('touchend', () => this.stopDrag());
+        }
     }
 
     // 鼠标拖动开始
