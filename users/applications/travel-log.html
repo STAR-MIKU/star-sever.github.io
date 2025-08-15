@@ -1,16 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-  <title>虚拟旅行日志</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>旅行日志 - 探索世界的足迹</title>
+  <!-- 引入Font Awesome图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
-      font-family: 'Nunito', sans-serif;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       margin: 0;
       padding: 0;
       display: grid;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 320px 1fr;
       height: 100vh;
       overflow: hidden;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+    @media (max-width: 768px) {
+      body {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+      .sidebar {
+        max-height: 40vh;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+      }
     }
     .sidebar {
       background: #f8f9fa;
@@ -22,6 +39,47 @@
       position: relative;
       background: #eaf4fc;
       overflow: hidden;
+      cursor: grab;
+    }
+    .map-container:active {
+      cursor: grabbing;
+    }
+    .search-box {
+      display: flex;
+      margin-top: 15px;
+      margin-bottom: 20px;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px 0 0 4px;
+      font-family: inherit;
+    }
+    .search-box button {
+      padding: 8px 12px;
+      border: none;
+      background: #3498db;
+      color: white;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+      width: auto;
+    }
+    .search-box button:hover {
+      background: #2980b9;
+    }
+    .header {
+      margin-bottom: 20px;
+    }
+    .edit-btn {
+      background: #f39c12;
+      margin-top: 10px;
+      margin-right: 5px;
+      width: calc(50% - 5px);
+      display: inline-block;
+    }
+    .edit-btn:hover {
+      background: #d35400;
     }
     #worldMap {
       width: 100%;
@@ -29,14 +87,26 @@
     }
     .marker {
       position: absolute;
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       background: #e74c3c;
       border-radius: 50%;
       transform: translate(-50%, -50%);
       cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+      }
     }
     .marker:hover {
       transform: translate(-50%, -50%) scale(1.3);
@@ -158,7 +228,13 @@
 </head>
 <body>
   <div class="sidebar">
-    <h2>我的旅行日志</h2>
+    <div class="header">
+        <h2><i class="fas fa-globe-americas"></i> 我的旅行日志</h2>
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="搜索旅行记录...">
+          <button id="searchBtn"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
     <div class="entry-form">
       <h3>添加旅行记录</h3>
       <div class="form-group">
@@ -186,7 +262,9 @@
         <label for="photo">上传照片</label>
         <input type="file" id="photo" accept="image/*">
       </div>
-      <button id="addEntry">添加到地图</button>
+      <button id="addEntry" class="primary-btn"><i class="fas fa-plus"></i> 添加到地图</button>
+      <button id="cancelEdit" class="cancel-btn" style="display:none;"><i class="fas fa-times"></i> 取消编辑</button>
+      <input type="hidden" id="editEntryId">
     </div>
     <div class="entries-list" id="entriesList">
       <!-- 旅行记录会在这里显示 -->
@@ -281,8 +359,40 @@
         const x = (e.clientX - rect.left - mapOffsetX) / mapScale;
         const y = (e.clientY - rect.top - mapOffsetY) / mapScale;
         
-        // 自动填充位置输入框
-        document.getElementById('locationName').focus();
+        // 如果正在编辑现有记录，则更新其位置
+        const editId = document.getElementById('editEntryId').value;
+        if (editId) {
+          const entryIndex = travelEntries.findIndex(entry => entry.id === editId);
+          if (entryIndex !== -1) {
+            travelEntries[entryIndex].x = x;
+            travelEntries[entryIndex].y = y;
+            localStorage.setItem('travelEntries', JSON.stringify(travelEntries));
+            renderEntries();
+            // 更新标记位置
+            const marker = document.querySelector(`.marker[data-id="${editId}"]`);
+            if (marker) {
+              marker.style.left = `${x * mapScale + mapOffsetX}px`;
+              marker.style.top = `${y * mapScale + mapOffsetY}px`;
+            }
+            showNotification('位置已更新');
+          }
+        } else {
+          // 自动填充位置输入框
+          document.getElementById('locationName').focus();
+          // 临时显示点击位置的标记
+          const tempMarker = document.createElement('div');
+          tempMarker.className = 'marker';
+          tempMarker.style.left = `${e.clientX - rect.left}px`;
+          tempMarker.style.top = `${e.clientY - rect.top}px`;
+          tempMarker.style.opacity = '0.7';
+          tempMarker.style.animation = 'none';
+          mapContainer.appendChild(tempMarker);
+          
+          // 2秒后移除临时标记
+          setTimeout(() => {
+            mapContainer.removeChild(tempMarker);
+          }, 2000);
+        }
       });
     }
 
@@ -299,6 +409,62 @@
         }
       });
     }
+
+    // 添加通知提示功能
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      // 显示通知
+      setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+      }, 10);
+      
+      // 3秒后隐藏通知
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 3000);
+    }
+
+    // 添加CSS样式
+    const style = document.createElement('style');
+    style.textContent = `
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(46, 204, 113, 0.9);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: all 0.3s ease;
+        z-index: 1000;
+      }
+      .primary-btn {
+        background: #3498db;
+        margin-bottom: 10px;
+      }
+      .primary-btn:hover {
+        background: #2980b9;
+      }
+      .cancel-btn {
+        background: #95a5a6;
+      }
+      .cancel-btn:hover {
+        background: #7f8c8d;
+      }
+    `;
+    document.head.appendChild(style);
 
     // 添加旅行记录
     document.getElementById('addEntry').addEventListener('click', async () => {
@@ -327,31 +493,71 @@
         });
       }
       
-      // 创建新记录
-      const newEntry = {
-        id: Date.now().toString(),
-        name,
-        date,
-        weather,
-        notes,
-        photoUrl,
-        x,
-        y
-      };
+      const editId = document.getElementById('editEntryId').value;
       
-      // 保存记录
-      travelEntries.push(newEntry);
-      localStorage.setItem('travelEntries', JSON.stringify(travelEntries));
-      
-      // 更新UI
-      renderEntries();
-      addMarker(newEntry);
-      
-      // 重置表单
-      document.getElementById('locationName').value = '';
-      document.getElementById('date').value = '';
-      document.getElementById('notes').value = '';
-      photoInput.value = '';
+      if (editId) {
+        // 更新现有记录
+        const entryIndex = travelEntries.findIndex(entry => entry.id === editId);
+        if (entryIndex !== -1) {
+          // 保留原位置
+          const originalX = travelEntries[entryIndex].x;
+          const originalY = travelEntries[entryIndex].y;
+          
+          // 更新记录
+          travelEntries[entryIndex] = {
+            ...travelEntries[entryIndex],
+            name,
+            date,
+            weather,
+            notes,
+            photoUrl: photoUrl || travelEntries[entryIndex].photoUrl,
+            x: originalX,
+            y: originalY
+          };
+          
+          localStorage.setItem('travelEntries', JSON.stringify(travelEntries));
+          renderEntries();
+          
+          // 重置表单
+          document.getElementById('locationName').value = '';
+          document.getElementById('date').value = '';
+          document.getElementById('notes').value = '';
+          photoInput.value = '';
+          document.getElementById('editEntryId').value = '';
+          document.getElementById('addEntry').innerHTML = '<i class="fas fa-plus"></i> 添加到地图';
+          document.getElementById('cancelEdit').style.display = 'none';
+          
+          showNotification('旅行记录已更新');
+        }
+      } else {
+        // 创建新记录
+        const newEntry = {
+          id: Date.now().toString(),
+          name,
+          date,
+          weather,
+          notes,
+          photoUrl,
+          x: 200 + Math.random() * 600,
+          y: 100 + Math.random() * 300
+        };
+        
+        // 保存记录
+        travelEntries.push(newEntry);
+        localStorage.setItem('travelEntries', JSON.stringify(travelEntries));
+        
+        // 更新UI
+        renderEntries();
+        addMarker(newEntry);
+        
+        // 重置表单
+        document.getElementById('locationName').value = '';
+        document.getElementById('date').value = '';
+        document.getElementById('notes').value = '';
+        photoInput.value = '';
+        
+        showNotification('新旅行记录已添加');
+      }
     });
 
     // 渲染旅行记录列表
@@ -368,17 +574,42 @@
           </div>
           ${entry.photoUrl ? `<img src="${entry.photoUrl}" class="entry-image" alt="${entry.name}">` : ''}
           <p>${entry.notes.substring(0, 50)}${entry.notes.length > 50 ? '...' : ''}</p>
-          <button class="delete-btn" data-id="${entry.id}">删除记录</button>
+          <button class="edit-btn" data-id="${entry.id}"><i class="fas fa-edit"></i> 编辑</button>
+          <button class="delete-btn" data-id="${entry.id}"><i class="fas fa-trash-alt"></i> 删除</button>
         `;
         entriesList.appendChild(entryCard);
+        
+        // 编辑按钮事件
+        entryCard.querySelector('.edit-btn').addEventListener('click', (e) => {
+          const id = e.target.dataset.id;
+          const entry = travelEntries.find(entry => entry.id === id);
+          if (entry) {
+            document.getElementById('locationName').value = entry.name;
+            document.getElementById('date').value = entry.date;
+            document.getElementById('weather').value = entry.weather;
+            document.getElementById('notes').value = entry.notes;
+            document.getElementById('editEntryId').value = entry.id;
+            document.getElementById('addEntry').innerHTML = '<i class="fas fa-save"></i> 保存更改';
+            document.getElementById('cancelEdit').style.display = 'block';
+            
+            // 滚动到表单
+            document.querySelector('.entry-form').scrollIntoView({ behavior: 'smooth' });
+          }
+        });
         
         // 删除按钮事件
         entryCard.querySelector('.delete-btn').addEventListener('click', (e) => {
           const id = e.target.dataset.id;
-          travelEntries = travelEntries.filter(entry => entry.id !== id);
-          localStorage.setItem('travelEntries', JSON.stringify(travelEntries));
-          renderEntries();
-          document.querySelector(`.marker[data-id="${id}"]`).remove();
+          if (confirm('确定要删除这条旅行记录吗？')) {
+            travelEntries = travelEntries.filter(entry => entry.id !== id);
+            localStorage.setItem('travelEntries', JSON.stringify(travelEntries));
+            renderEntries();
+            const marker = document.querySelector(`.marker[data-id="${id}"]`);
+            if (marker) {
+              marker.remove();
+            }
+            showNotification('旅行记录已删除');
+          }
         });
       });
     }
@@ -440,15 +671,144 @@
       }
     }
 
+    // 搜索功能
+    function setupSearch() {
+      const searchInput = document.getElementById('searchInput');
+      const searchBtn = document.getElementById('searchBtn');
+      
+      function performSearch() {
+        const query = searchInput.value.toLowerCase().trim();
+        if (!query) {
+          renderEntries();
+          return;
+        }
+        
+        const filteredEntries = travelEntries.filter(entry => 
+          entry.name.toLowerCase().includes(query) || 
+          entry.notes.toLowerCase().includes(query) || 
+          entry.date.includes(query)
+        );
+        
+        // 更新UI显示搜索结果
+        entriesList.innerHTML = '';
+        if (filteredEntries.length === 0) {
+          entriesList.innerHTML = '<div class="no-results">没有找到匹配的旅行记录</div>';
+          // 隐藏所有标记
+          document.querySelectorAll('.marker').forEach(marker => {
+            marker.style.display = 'none';
+          });
+        } else {
+          filteredEntries.forEach(entry => {
+            const entryCard = document.createElement('div');
+            entryCard.className = 'entry-card';
+            entryCard.innerHTML = `
+              <h3>${entry.name}</h3>
+              <div class="entry-meta">
+                ${new Date(entry.date).toLocaleDateString()} · ${getWeatherIcon(entry.weather)}
+              </div>
+              ${entry.photoUrl ? `<img src="${entry.photoUrl}" class="entry-image" alt="${entry.name}">` : ''}
+              <p>${entry.notes.substring(0, 50)}${entry.notes.length > 50 ? '...' : ''}</p>
+              <button class="edit-btn" data-id="${entry.id}"><i class="fas fa-edit"></i> 编辑</button>
+              <button class="delete-btn" data-id="${entry.id}"><i class="fas fa-trash-alt"></i> 删除</button>
+            `;
+            entriesList.appendChild(entryCard);
+            
+            // 编辑按钮事件
+            entryCard.querySelector('.edit-btn').addEventListener('click', (e) => {
+              const id = e.target.dataset.id;
+              const entry = travelEntries.find(entry => entry.id === id);
+              if (entry) {
+                document.getElementById('locationName').value = entry.name;
+                document.getElementById('date').value = entry.date;
+                document.getElementById('weather').value = entry.weather;
+                document.getElementById('notes').value = entry.notes;
+                document.getElementById('editEntryId').value = entry.id;
+                document.getElementById('addEntry').innerHTML = '<i class="fas fa-save"></i> 保存更改';
+                document.getElementById('cancelEdit').style.display = 'block';
+              }
+            });
+            
+            // 删除按钮事件
+            entryCard.querySelector('.delete-btn').addEventListener('click', (e) => {
+              const id = e.target.dataset.id;
+              if (confirm('确定要删除这条旅行记录吗？')) {
+                travelEntries = travelEntries.filter(entry => entry.id !== id);
+                localStorage.setItem('travelEntries', JSON.stringify(travelEntries));
+                renderEntries();
+                const marker = document.querySelector(`.marker[data-id="${id}"]`);
+                if (marker) {
+                  marker.remove();
+                }
+                showNotification('旅行记录已删除');
+              }
+            });
+          });
+          
+          // 显示匹配的标记，隐藏其他标记
+          document.querySelectorAll('.marker').forEach(marker => {
+            const markerId = marker.dataset.id;
+            const isMatch = filteredEntries.some(entry => entry.id === markerId);
+            marker.style.display = isMatch ? 'block' : 'none';
+          });
+        }
+      }
+      
+      searchBtn.addEventListener('click', performSearch);
+      searchInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+      });
+    }
+
+    // 取消编辑按钮事件
+    document.getElementById('cancelEdit').addEventListener('click', () => {
+      document.getElementById('locationName').value = '';
+      document.getElementById('date').value = '';
+      document.getElementById('notes').value = '';
+      document.getElementById('photo').value = '';
+      document.getElementById('editEntryId').value = '';
+      document.getElementById('addEntry').innerHTML = '<i class="fas fa-plus"></i> 添加到地图';
+      document.getElementById('cancelEdit').style.display = 'none';
+    });
+
     // 初始化
     function init() {
       initMapInteraction();
       renderEntries();
+      setupSearch();
       // 添加所有保存的标记
       travelEntries.forEach(entry => addMarker(entry));
     }
 
+    // 添加一些默认样式
+    const defaultStyles = document.createElement('style');
+    defaultStyles.textContent = `
+      .no-results {
+        text-align: center;
+        padding: 20px;
+        color: #7f8c8d;
+        font-style: italic;
+      }
+      .entry-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+      }
+      .entry-card {
+        transition: all 0.3s ease;
+      }
+    `;
+    document.head.appendChild(defaultStyles);
+
     init();
+
+    // 页面加载完成后显示欢迎通知
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        showNotification('欢迎使用旅行日志应用！点击地图添加新的旅行记录');
+      }, 1000);
+    });
   </script>
 </body>
 </html>

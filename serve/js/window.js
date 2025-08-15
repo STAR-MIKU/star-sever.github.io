@@ -680,6 +680,14 @@ class RoundedWindow {
     }
 
     close() {
+        // 检查是否是最大化状态，如果是，则恢复任务栏显示
+        const dock = document.getElementById('dock');
+        if (this.windowElement.classList.contains('maximized')) {
+            if (dock) {
+                dock.classList.remove('hidden');
+            }
+        }
+
         // 添加回收到底部的动画
         this.windowElement.style.top = this.screenHeight + 'px';
         this.windowElement.style.opacity = '0';
