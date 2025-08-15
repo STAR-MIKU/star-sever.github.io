@@ -22,7 +22,8 @@
     overflow-x: auto;
     padding: 5px 0;
     flex-grow: 1;
-    margin-right: 120px; /* 确保与时间组件保持20px距离 */
+    /*margin-right: 120px; /* 确保与时间组件保持20px距离 */
+    max-width:740px;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
 }
