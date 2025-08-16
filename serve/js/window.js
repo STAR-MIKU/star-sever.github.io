@@ -348,19 +348,23 @@ class RoundedWindow {
         // 记录鼠标在屏幕上的绝对位置
         this.dragStartX = e.clientX;
         this.dragStartY = e.clientY;
-        // 添加过渡效果使移动更平滑
-        this.windowElement.style.transition = 'left 0.05s ease-out, top 0.05s ease-out';
-        this.windowElement.style.zIndex = '1000'; // 拖动时提升层级
         // 初始化分屏相关变量
         this.snapZoneSize = 50; // 吸附区域大小
         this.snapPreview = null; // 分屏预览元素
         this.snapRegion = null; // 当前吸附区域
+        // 上次更新时间，用于节流
+        this.lastDragUpdate = 0;
         e.preventDefault(); // 防止选中文本
     }
 
     // 鼠标拖动
     drag(e) {
         if (!this.isDragging) return;
+
+        // 节流处理，限制更新频率
+        const now = Date.now();
+        if (now - this.lastDragUpdate < 10) return; // 限制为100fps
+        this.lastDragUpdate = now;
 
         // 计算相对于初始拖动位置的偏移
         const deltaX = e.clientX - this.dragStartX;
@@ -376,79 +380,85 @@ class RoundedWindow {
         const windowWidth = this.windowElement.offsetWidth;
         const windowHeight = this.windowElement.offsetHeight;
 
-        // 清除之前的预览和区域
-        if (this.snapPreview) {
-            document.body.removeChild(this.snapPreview);
-            this.snapPreview = null;
-        }
+        // 清除之前的区域标记
         this.snapRegion = null;
 
-        // 左侧区域
-        if (newX <= this.snapZoneSize && windowWidth < screenWidth * 0.7) {
-            this.snapRegion = 'left';
-            newX = 0;
-            this.createSnapPreview(0, 0, screenWidth / 2, screenHeight);
-        }
-        // 右侧区域
-        else if (newX + windowWidth >= screenWidth - this.snapZoneSize && windowWidth < screenWidth * 0.7) {
-            this.snapRegion = 'right';
-            newX = screenWidth / 2;
-            this.createSnapPreview(screenWidth / 2, 0, screenWidth / 2, screenHeight);
-        }
-        // 上侧区域
-        else if (newY <= this.snapZoneSize && windowHeight < screenHeight * 0.7) {
-            this.snapRegion = 'top';
-            newY = 0;
-            this.createSnapPreview(0, 0, screenWidth, screenHeight / 2);
-        }
-        // 下侧区域
-        else if (newY + windowHeight >= screenHeight - this.snapZoneSize && windowHeight < screenHeight * 0.7) {
-            this.snapRegion = 'bottom';
-            newY = screenHeight / 2;
-            this.createSnapPreview(0, screenHeight / 2, screenWidth, screenHeight / 2);
-        }
-        // 左上区域
-        else if (newX <= this.snapZoneSize && newY <= this.snapZoneSize && 
-                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
-            this.snapRegion = 'top-left';
-            newX = 0;
-            newY = 0;
-            this.createSnapPreview(0, 0, screenWidth / 2, screenHeight / 2);
-        }
-        // 右上区域
-        else if (newX + windowWidth >= screenWidth - this.snapZoneSize && newY <= this.snapZoneSize && 
-                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
-            this.snapRegion = 'top-right';
-            newX = screenWidth / 2;
-            newY = 0;
-            this.createSnapPreview(screenWidth / 2, 0, screenWidth / 2, screenHeight / 2);
-        }
-        // 左下区域
-        else if (newX <= this.snapZoneSize && newY + windowHeight >= screenHeight - this.snapZoneSize && 
-                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
-            this.snapRegion = 'bottom-left';
-            newX = 0;
-            newY = screenHeight / 2;
-            this.createSnapPreview(0, screenHeight / 2, screenWidth / 2, screenHeight / 2);
-        }
-        // 右下区域
-        else if (newX + windowWidth >= screenWidth - this.snapZoneSize && newY + windowHeight >= screenHeight - this.snapZoneSize && 
-                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
-            this.snapRegion = 'bottom-right';
-            newX = screenWidth / 2;
-            newY = screenHeight / 2;
-            this.createSnapPreview(screenWidth / 2, screenHeight / 2, screenWidth / 2, screenHeight / 2);
-        }
-        // 没有吸附区域
-        else {
+        // 计算当前鼠标位置相对于屏幕的比例
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        // 使用requestAnimationFrame优化动画
+        requestAnimationFrame(() => {
+            // 分屏区域检测
+            let region = null;
+            let previewX = 0, previewY = 0, previewWidth = 0, previewHeight = 0;
+
+            // 左侧中间区域 (左半屏)
+            if (mouseX <= this.snapZoneSize && mouseY > this.snapZoneSize && mouseY < screenHeight - this.snapZoneSize && windowWidth < screenWidth * 0.7) {
+                region = 'left';
+                previewX = 0; previewY = 0; previewWidth = screenWidth / 2; previewHeight = screenHeight;
+            }
+            // 右侧中间区域 (右半屏)
+            else if (mouseX >= screenWidth - this.snapZoneSize && mouseY > this.snapZoneSize && mouseY < screenHeight - this.snapZoneSize && windowWidth < screenWidth * 0.7) {
+                region = 'right';
+                previewX = screenWidth / 2; previewY = 0; previewWidth = screenWidth / 2; previewHeight = screenHeight;
+            }
+            // 顶部全屏区域 (拖动到屏幕顶部边缘)
+            else if (mouseY <= this.snapZoneSize / 2 && windowHeight < screenHeight * 0.7) {
+                region = 'fullscreen';
+                previewX = 0; previewY = 0; previewWidth = screenWidth; previewHeight = screenHeight;
+            }
+            // 上侧中间区域 (上半屏)
+            else if (mouseY <= this.snapZoneSize && windowHeight < screenHeight * 0.7) {
+                region = 'top';
+                previewX = 0; previewY = 0; previewWidth = screenWidth; previewHeight = screenHeight / 2;
+            }
+            // 下侧区域
+            else if (mouseY >= screenHeight - this.snapZoneSize && windowHeight < screenHeight * 0.7) {
+                region = 'bottom';
+                previewX = 0; previewY = screenHeight / 2; previewWidth = screenWidth; previewHeight = screenHeight / 2;
+            }
+            // 左上区域
+            else if (mouseX <= this.snapZoneSize && mouseY <= this.snapZoneSize && 
+                     windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+                region = 'top-left';
+                previewX = 0; previewY = 0; previewWidth = screenWidth / 2; previewHeight = screenHeight / 2;
+            }
+            // 右上区域
+            else if (mouseX >= screenWidth - this.snapZoneSize && mouseY <= this.snapZoneSize && 
+                     windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+                region = 'top-right';
+                previewX = screenWidth / 2; previewY = 0; previewWidth = screenWidth / 2; previewHeight = screenHeight / 2;
+            }
+            // 左下区域
+            else if (mouseX <= this.snapZoneSize && mouseY >= screenHeight - this.snapZoneSize && 
+                     windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+                region = 'bottom-left';
+                previewX = 0; previewY = screenHeight / 2; previewWidth = screenWidth / 2; previewHeight = screenHeight / 2;
+            }
+            // 右下区域
+            else if (mouseX >= screenWidth - this.snapZoneSize && mouseY >= screenHeight - this.snapZoneSize && 
+                     windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+                region = 'bottom-right';
+                previewX = screenWidth / 2; previewY = screenHeight / 2; previewWidth = screenWidth / 2; previewHeight = screenHeight / 2;
+            }
+
+            // 更新分屏区域和预览
+            if (region) {
+                this.snapRegion = region;
+                this.createSnapPreview(previewX, previewY, previewWidth, previewHeight);
+            } else if (this.snapPreview) {
+                document.body.removeChild(this.snapPreview);
+                this.snapPreview = null;
+            }
+
             // 普通边界检查
             newX = Math.max(0, Math.min(newX, screenWidth - windowWidth));
             newY = Math.max(0, Math.min(newY, screenHeight - windowHeight));
-        }
 
-        // 应用新位置
-        this.windowElement.style.left = newX + 'px';
-        this.windowElement.style.top = newY + 'px';
+            // 使用transform提高性能
+            this.windowElement.style.transform = `translate(${newX}px, ${newY}px)`;
+        });
     }
 
     // 触摸拖动开始
@@ -472,19 +482,23 @@ class RoundedWindow {
         // 记录触摸点在窗口头部的相对位置
         this.touchStartX = touch.clientX - rect.left;
         this.touchStartY = touch.clientY - rect.top;
-        // 添加过渡效果使移动更平滑
-        this.windowElement.style.transition = 'transform 0.05s ease-out';
-        this.windowElement.style.zIndex = '1000'; // 拖动时提升层级
         // 初始化分屏相关变量
         this.snapZoneSize = 50; // 吸附区域大小
         this.snapPreview = null; // 分屏预览元素
         this.snapRegion = null; // 当前吸附区域
+        // 上次更新时间，用于节流
+        this.lastTouchUpdate = 0;
         e.preventDefault(); // 防止页面滚动
     }
 
     // 触摸拖动
     touchDrag(e) {
         if (!this.isDragging || e.touches.length !== 1) return;
+
+        // 节流处理，限制更新频率
+        const now = Date.now();
+        if (now - this.lastTouchUpdate < 16) return; // 限制约60fps
+        this.lastTouchUpdate = now;
 
         const touch = e.touches[0];
         let newX = touch.clientX - this.touchStartX;
@@ -496,78 +510,86 @@ class RoundedWindow {
         const windowWidth = this.windowElement.offsetWidth;
         const windowHeight = this.windowElement.offsetHeight;
 
-        // 清除之前的预览和区域
-        if (this.snapPreview) {
-            document.body.removeChild(this.snapPreview);
-            this.snapPreview = null;
-        }
+        // 清除之前的区域标记
         this.snapRegion = null;
 
-        // 左侧区域
-        if (newX <= this.snapZoneSize && windowWidth < screenWidth * 0.7) {
-            this.snapRegion = 'left';
-            newX = 0;
-            this.createSnapPreview(0, 0, screenWidth / 2, screenHeight);
-        }
-        // 右侧区域
-        else if (newX + windowWidth >= screenWidth - this.snapZoneSize && windowWidth < screenWidth * 0.7) {
-            this.snapRegion = 'right';
-            newX = screenWidth / 2;
-            this.createSnapPreview(screenWidth / 2, 0, screenWidth / 2, screenHeight);
-        }
-        // 上侧区域
-        else if (newY <= this.snapZoneSize && windowHeight < screenHeight * 0.7) {
-            this.snapRegion = 'top';
-            newY = 0;
-            this.createSnapPreview(0, 0, screenWidth, screenHeight / 2);
-        }
-        // 下侧区域
-        else if (newY + windowHeight >= screenHeight - this.snapZoneSize && windowHeight < screenHeight * 0.7) {
-            this.snapRegion = 'bottom';
-            newY = screenHeight / 2;
-            this.createSnapPreview(0, screenHeight / 2, screenWidth, screenHeight / 2);
-        }
-        // 左上区域
-        else if (newX <= this.snapZoneSize && newY <= this.snapZoneSize && 
-                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
-            this.snapRegion = 'top-left';
-            newX = 0;
-            newY = 0;
-            this.createSnapPreview(0, 0, screenWidth / 2, screenHeight / 2);
-        }
-        // 右上区域
-        else if (newX + windowWidth >= screenWidth - this.snapZoneSize && newY <= this.snapZoneSize && 
-                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
-            this.snapRegion = 'top-right';
-            newX = screenWidth / 2;
-            newY = 0;
-            this.createSnapPreview(screenWidth / 2, 0, screenWidth / 2, screenHeight / 2);
-        }
-        // 左下区域
-        else if (newX <= this.snapZoneSize && newY + windowHeight >= screenHeight - this.snapZoneSize && 
-                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
-            this.snapRegion = 'bottom-left';
-            newX = 0;
-            newY = screenHeight / 2;
-            this.createSnapPreview(0, screenHeight / 2, screenWidth / 2, screenHeight / 2);
-        }
-        // 右下区域
-        else if (newX + windowWidth >= screenWidth - this.snapZoneSize && newY + windowHeight >= screenHeight - this.snapZoneSize && 
-                 windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
-            this.snapRegion = 'bottom-right';
-            newX = screenWidth / 2;
-            newY = screenHeight / 2;
-            this.createSnapPreview(screenWidth / 2, screenHeight / 2, screenWidth / 2, screenHeight / 2);
-        }
-        // 没有吸附区域
-        else {
+        // 计算当前触摸位置相对于屏幕的比例
+        const touchX = touch.clientX;
+        const touchY = touch.clientY;
+
+        // 使用requestAnimationFrame优化动画
+        requestAnimationFrame(() => {
+            // 分屏区域检测
+            let region = null;
+            let previewX = 0, previewY = 0, previewWidth = 0, previewHeight = 0;
+
+            // 左侧中间区域 (左半屏)
+            if (touchX <= this.snapZoneSize && touchY > this.snapZoneSize && touchY < screenHeight - this.snapZoneSize && windowWidth < screenWidth * 0.7) {
+                region = 'left';
+                previewX = 0; previewY = 0; previewWidth = screenWidth / 2; previewHeight = screenHeight;
+            }
+            // 右侧中间区域 (右半屏)
+            else if (touchX >= screenWidth - this.snapZoneSize && touchY > this.snapZoneSize && touchY < screenHeight - this.snapZoneSize && windowWidth < screenWidth * 0.7) {
+                region = 'right';
+                previewX = screenWidth / 2; previewY = 0; previewWidth = screenWidth / 2; previewHeight = screenHeight;
+            }
+            // 顶部全屏区域 (拖动到屏幕顶部边缘)
+            else if (touchY <= this.snapZoneSize / 2 && windowHeight < screenHeight * 0.7) {
+                region = 'fullscreen';
+                previewX = 0; previewY = 0; previewWidth = screenWidth; previewHeight = screenHeight;
+            }
+            // 上侧中间区域 (上半屏)
+            else if (touchY <= this.snapZoneSize && windowHeight < screenHeight * 0.7) {
+                region = 'top';
+                previewX = 0; previewY = 0; previewWidth = screenWidth; previewHeight = screenHeight / 2;
+            }
+            // 下侧区域
+            else if (touchY >= screenHeight - this.snapZoneSize && windowHeight < screenHeight * 0.7) {
+                region = 'bottom';
+                previewX = 0; previewY = screenHeight / 2; previewWidth = screenWidth; previewHeight = screenHeight / 2;
+            }
+            // 左上区域
+            else if (touchX <= this.snapZoneSize && touchY <= this.snapZoneSize && 
+                     windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+                region = 'top-left';
+                previewX = 0; previewY = 0; previewWidth = screenWidth / 2; previewHeight = screenHeight / 2;
+            }
+            // 右上区域
+            else if (touchX >= screenWidth - this.snapZoneSize && touchY <= this.snapZoneSize && 
+                     windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+                region = 'top-right';
+                previewX = screenWidth / 2; previewY = 0; previewWidth = screenWidth / 2; previewHeight = screenHeight / 2;
+            }
+            // 左下区域
+            else if (touchX <= this.snapZoneSize && touchY >= screenHeight - this.snapZoneSize && 
+                     windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+                region = 'bottom-left';
+                previewX = 0; previewY = screenHeight / 2; previewWidth = screenWidth / 2; previewHeight = screenHeight / 2;
+            }
+            // 右下区域
+            else if (touchX >= screenWidth - this.snapZoneSize && touchY >= screenHeight - this.snapZoneSize && 
+                     windowWidth < screenWidth * 0.7 && windowHeight < screenHeight * 0.7) {
+                region = 'bottom-right';
+                previewX = screenWidth / 2; previewY = screenHeight / 2; previewWidth = screenWidth / 2; previewHeight = screenHeight / 2;
+            }
+
+            // 更新分屏区域和预览
+            if (region) {
+                this.snapRegion = region;
+                this.createSnapPreview(previewX, previewY, previewWidth, previewHeight);
+            } else if (this.snapPreview) {
+                document.body.removeChild(this.snapPreview);
+                this.snapPreview = null;
+            }
+
             // 普通边界检查
             newX = Math.max(0, Math.min(newX, screenWidth - windowWidth));
             newY = Math.max(0, Math.min(newY, screenHeight - windowHeight));
-        }
 
-        // 应用新位置（使用transform提高性能）
-        this.windowElement.style.transform = `translate(${newX}px, ${newY}px)`;
+            // 使用transform提高性能
+            this.windowElement.style.transform = `translate(${newX}px, ${newY}px)`;
+        });
+
         e.preventDefault(); // 防止页面滚动
     }
 
@@ -579,13 +601,22 @@ class RoundedWindow {
         // 移除过渡效果
         this.windowElement.style.transition = '';
         // 更新坐标属性
-        this.x = parseInt(this.windowElement.style.left) || 0;
-        this.y = parseInt(this.windowElement.style.top) || 0;
+        const transform = this.windowElement.style.transform;
+        if (transform) {
+            const match = transform.match(/translate\((\d+)px, (\d+)px\)/);
+            if (match) {
+                this.x = parseInt(match[1]) || 0;
+                this.y = parseInt(match[2]) || 0;
+            }
+        }
+        this.windowElement.style.transform = ''; // 清除transform
+        this.windowElement.style.left = this.x + 'px';
+        this.windowElement.style.top = this.y + 'px';
         this.windowElement.style.zIndex = '100'; // 拖动结束后恢复层级
 
         // 应用分屏
         if (this.snapRegion) {
-            this.applySnapRegion(this.snapRegion);
+            requestAnimationFrame(() => this.applySnapRegion(this.snapRegion));
         }
 
         // 清除预览
@@ -664,20 +695,22 @@ class RoundedWindow {
 
     // 创建分屏预览
     createSnapPreview(x, y, width, height) {
-        if (this.snapPreview) {
-            document.body.removeChild(this.snapPreview);
+        // 复用现有预览元素
+        if (!this.snapPreview) {
+            this.snapPreview = document.createElement('div');
+            this.snapPreview.className = 'snap-preview';
+            this.snapPreview.style.position = 'fixed';
+            this.snapPreview.style.backgroundColor = 'rgba(50, 150, 255, 0.3)';
+            this.snapPreview.style.border = '2px dashed rgba(50, 150, 255, 0.7)';
+            this.snapPreview.style.zIndex = '9998';
+            document.body.appendChild(this.snapPreview);
         }
-        this.snapPreview = document.createElement('div');
-        this.snapPreview.className = 'snap-preview';
-        this.snapPreview.style.position = 'fixed';
+
+        // 更新预览位置和大小
         this.snapPreview.style.left = x + 'px';
         this.snapPreview.style.top = y + 'px';
         this.snapPreview.style.width = width + 'px';
         this.snapPreview.style.height = height + 'px';
-        this.snapPreview.style.backgroundColor = 'rgba(50, 150, 255, 0.3)';
-        this.snapPreview.style.border = '2px dashed rgba(50, 150, 255, 0.7)';
-        this.snapPreview.style.zIndex = '9998';
-        document.body.appendChild(this.snapPreview);
     }
 
     // 应用分屏区域
@@ -698,6 +731,15 @@ class RoundedWindow {
         this.windowElement.classList.remove('maximized');
 
         switch (region) {
+            case 'fullscreen':
+                this.windowElement.style.width = screenWidth + 'px';
+                this.windowElement.style.height = adjustedHeight + 'px';
+                this.windowElement.style.left = '0px';
+                this.windowElement.style.top = '0px';
+                if (dock) {
+                    dock.classList.add('hidden');
+                }
+                break;
             case 'left':
                 this.windowElement.style.width = (screenWidth / 2) + 'px';
                 this.windowElement.style.height = adjustedHeight + 'px';

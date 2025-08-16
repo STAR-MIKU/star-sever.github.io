@@ -5,6 +5,185 @@
     font-style: normal;
 }
 
+/* 通知系统样式 */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 320px;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.notification {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+    color: white;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    animation: notification-slide-in 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+    transform: translateX(120%);
+    opacity: 0;
+}
+
+@keyframes notification-slide-in {
+    0% {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes notification-slide-out {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+}
+
+.notification.closing {
+    animation: notification-slide-out 0.3s ease forwards;
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.notification-title {
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.notification-time {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.notification-content {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 12px;
+}
+
+.notification-image {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    object-fit: cover;
+    height: 120px;
+}
+
+.notification-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.notification-button {
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.notification-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.notification-button.primary {
+    background: rgba(9, 151, 227, 0.7);
+}
+
+.notification-button.primary:hover {
+    background: rgba(9, 151, 227, 0.9);
+}
+
+/* 提示系统样式 */
+.prompt-container {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    pointer-events: none;
+}
+
+.prompt {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 15px 20px;
+    color: white;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    max-width: 80%;
+    text-align: center;
+    animation: prompt-fade-in 0.3s ease forwards;
+    opacity: 0;
+    pointer-events: auto;
+}
+
+@keyframes prompt-fade-in {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes prompt-fade-out {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+.prompt.closing {
+    animation: prompt-fade-out 0.3s ease forwards;
+}
+
 body {
     font-family: 'Chillax', sans-serif;
     margin: 0;
@@ -23,9 +202,9 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
     /* 增强滚动纹理 */
-    background-image: 
-        linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 12px 100%, 100% 12px;
     animation: subtle-shift 15s infinite linear;
 }
@@ -38,7 +217,7 @@ body {
     left: -70%;
     width: 240%;
     height: 240%;
-    background: linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.4) 100%);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.4) 100%);
     animation: glass-distort 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
     transform-origin: center;
     opacity: 0.7;
@@ -80,6 +259,7 @@ body {
     0% {
         transform: translateX(0%) skewX(-5deg) scaleX(1.5);
     }
+
     100% {
         transform: translateX(-100%) skewX(-5deg) scaleX(1.5);
     }
@@ -90,6 +270,7 @@ body {
     0% {
         transform: translateX(-20%) skewX(5deg) scaleX(1.3);
     }
+
     100% {
         transform: translateX(-180%) skewX(5deg) scaleX(1.3);
     }
@@ -100,6 +281,7 @@ body {
     0% {
         transform: translateX(0%) skewX(-8deg) scaleX(1.7);
     }
+
     100% {
         transform: translateX(-130%) skewX(-8deg) scaleX(1.7);
     }
@@ -110,6 +292,7 @@ body {
     0% {
         background-position: 0 0;
     }
+
     100% {
         background-position: -30px 0;
     }
@@ -170,15 +353,75 @@ body {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    z-index: 100000;
+    z-index: 99999;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 12px;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, height 0.3s ease, width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+}
+
+#dock:hover {
+    height: 54px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* 任务栏图标容器样式 */
+#apps {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 12px;
+    height: 100%;
+}
+
+/* 任务栏图标样式 */
+.app-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.app-icon:hover {
+    transform: translateY(-3px) scale(1.1);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* 图标呼吸效果 */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+}
+
+.pulse-effect {
+    animation: pulse 2s infinite;
+}
+
+/* 任务栏显示/隐藏动画优化 */
+#dock.hidden {
+    transform: translateX(-50%) translateY(calc(100% + 10px));
+    opacity: 0;
+    height: 0;
+    width: 0;
 }
 
 #dock::before {
@@ -188,7 +431,7 @@ body {
     left: -100%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
     animation: glass-flow 8s infinite linear;
     opacity: 0.5;
     z-index: 0;
@@ -198,6 +441,7 @@ body {
     0% {
         transform: translateX(0%) skewX(-15deg);
     }
+
     100% {
         transform: translateX(100%) skewX(-15deg);
     }
@@ -256,7 +500,8 @@ body {
     transition: transform 0.6s;
 }
 
-.front, .back {
+.front,
+.back {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -322,28 +567,185 @@ body {
 /* 自定义右键菜单样式 */
 .custom-context-menu {
     font-family: 'Chillax', sans-serif;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    animation: fade-in 0.2s ease-out;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: menu-fade-in 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    transform-origin: top left;
+    opacity: 0;
+    animation-fill-mode: forwards;
 }
 
+/* 增强菜单淡入动画 */
+@keyframes menu-fade-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(10px);
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* 增强菜单淡出动画 */
+@keyframes menu-fade-out {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.95) translateY(5px);
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
+}
+
+/* 菜单关闭时应用的类 */
+.custom-context-menu.closing {
+    animation: menu-fade-out 0.2s ease forwards;
+}
+
+/* 菜单项动画 */
 .context-menu-item {
-    padding: 8px 15px;
+    padding: 8px 12px;
     color: white;
     cursor: pointer;
     display: flex;
     align-items: center;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 6px;
+    margin: 1px 3px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateX(-10px);
+    animation: menu-item-fade-in 0.2s ease forwards;
 }
 
+@keyframes menu-item-fade-in {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 为不同菜单项设置不同的动画延迟 */
+.context-menu-item:nth-child(1) { animation-delay: 0.05s; }
+.context-menu-item:nth-child(2) { animation-delay: 0.1s; }
+.context-menu-item:nth-child(3) { animation-delay: 0.15s; }
+.context-menu-item:nth-child(4) { animation-delay: 0.2s; }
+.context-menu-item:nth-child(5) { animation-delay: 0.25s; }
+.context-menu-item:nth-child(6) { animation-delay: 0.3s; }
+.context-menu-item:nth-child(7) { animation-delay: 0.35s; }
+.context-menu-item:nth-child(8) { animation-delay: 0.4s; }
+.context-menu-item:nth-child(n+9) { animation-delay: 0.45s; }
+
+/* 增强菜单项悬停效果 */
 .context-menu-item:hover {
     background: rgba(255, 255, 255, 0.2);
+    transform: translateX(2px) scale(1.02);
 }
 
-.context-menu-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 10px;
-    filter: invert(1);
+/* 子菜单滑入动画 */
+.submenu {
+    margin-left: 10px;
+    margin-top: -10px;
+    animation: submenu-slide-in 0.2s ease forwards;
+    opacity: 0;
+    transform: translateX(-5px);
+}
+
+@keyframes submenu-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 系统菜单项样式增强 */
+.windows11-system-menu {
+    display: flex;
+    flex-direction: row;
+    border-radius: 8px;
+    margin: 0px 3px;
+    flex-wrap: nowrap;
+    padding: 3px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.windows11-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+    opacity: 0;
+    transform: translateY(-5px);
+    animation: menu-item-fade-in 0.2s ease forwards;
+}
+
+.windows11-item:nth-child(1) { animation-delay: 0.05s; }
+.windows11-item:nth-child(2) { animation-delay: 0.1s; }
+.windows11-item:nth-child(3) { animation-delay: 0.15s; }
+
+/* 菜单淡入动画 */
+@keyframes menu-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* 菜单淡出动画 */
+@keyframes menu-fade-out {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* 菜单关闭时应用的类 */
+.custom-context-menu.closing {
+    animation: menu-fade-out 0.2s ease forwards;
+}
+
+.custom-context-menu::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+    animation: glass-flow 8s infinite linear;
+    opacity: 0.5;
+    z-index: 0;
 }
 
 @keyframes fade-in {
@@ -351,6 +753,112 @@ body {
         opacity: 0;
         transform: scale(0.95);
     }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.context-menu-item {
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+    border-radius: 6px;
+    margin: 1px 3px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 移动端触控优化 */
+@media (max-width: 768px) {
+    .context-menu-item {
+        padding: 12px 16px;
+        min-height: 44px;
+        /* 增大触控区域 */
+    }
+
+    .windows11-system-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+.context-menu-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(2px);
+}
+
+/* 右键菜单分割线样式 */
+.context-menu-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 4px 8px;
+}
+
+.context-menu-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    opacity: 0.85;
+}
+
+.windows11-system-menu {
+    display: flex;
+    flex-direction: row;
+    /* gap: 4px; */
+    /* padding: 6px; */
+    /* background-color: rgba(255, 255, 255, 0.05); */
+    border-radius: 8px;
+    margin: 0px 3px;
+    flex-wrap: nowrap;
+}
+
+.windows11-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.windows11-item:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: none;
+}
+
+.windows11-item-text {
+    margin-left: 8px;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.context-menu-separator {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin: 5px 0;
+}
+
+.submenu {
+    margin-left: 10px;
+    margin-top: -10px;
+}
+
+/* 此代码片段格式错误，推测可能是想定义某个选择器应用 invert 滤镜，以下为示例 */
+body.dark-mode {
+    filter: invert(1);
+}
+/* 此处多余的 } 可能是代码错误，已移除 */
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
     to {
         opacity: 1;
         transform: scale(1);
