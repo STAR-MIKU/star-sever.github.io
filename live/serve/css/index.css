@@ -1,0 +1,978 @@
+@font-face {
+    font-family: 'Chillax';
+    src: url('../files/fonts/Chillax-Bold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+/* 通知系统样式 */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 320px;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.notification {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+    color: white;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    animation: notification-slide-in 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+    transform: translateX(120%);
+    opacity: 0;
+}
+
+@keyframes notification-slide-in {
+    0% {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes notification-slide-out {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+}
+
+.notification.closing {
+    animation: notification-slide-out 0.3s ease forwards;
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.notification-title {
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.notification-time {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.notification-content {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 12px;
+}
+
+.notification-image {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    object-fit: cover;
+    height: 120px;
+}
+
+.notification-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.notification-button {
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.notification-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.notification-button.primary {
+    background: rgba(9, 151, 227, 0.7);
+}
+
+.notification-button.primary:hover {
+    background: rgba(9, 151, 227, 0.9);
+}
+
+/* 提示系统样式 */
+.prompt-container {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    pointer-events: none;
+}
+
+.prompt {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 15px 20px;
+    color: white;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    max-width: 80%;
+    text-align: center;
+    animation: prompt-fade-in 0.3s ease forwards;
+    opacity: 0;
+    pointer-events: auto;
+}
+
+@keyframes prompt-fade-in {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes prompt-fade-out {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+.prompt.closing {
+    animation: prompt-fade-out 0.3s ease forwards;
+}
+
+body {
+    font-family: 'Chillax', sans-serif;
+    margin: 0;
+    padding: 0;
+    font-weight: 900;
+}
+
+/* 动态长虹玻璃滚动效果 */
+.wavy-glass {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* 增强滚动纹理 */
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 12px 100%, 100% 12px;
+    animation: subtle-shift 15s infinite linear;
+}
+
+/* 主滚动层 */
+.wavy-glass::before {
+    content: '';
+    position: absolute;
+    top: -70%;
+    left: -70%;
+    width: 240%;
+    height: 240%;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.4) 100%);
+    animation: glass-distort 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+    opacity: 0.7;
+    z-index: 1;
+}
+
+/* 次级滚动层 */
+.wavy-glass::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg, rgba(9, 151, 227, 0.3) 0%, rgba(9, 151, 227, 0) 50%, rgba(9, 151, 227, 0.3) 100%);
+    animation: glass-distort-secondary 8s infinite cubic-bezier(0.6, 0, 0.4, 1) reverse;
+    transform-origin: center;
+    opacity: 0.5;
+    z-index: 2;
+}
+
+/* 第三滚动层 - 使用额外的div实现，这里定义样式 */
+.wavy-glass .third-layer {
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(90deg, rgba(255, 105, 180, 0.2) 0%, rgba(255, 105, 180, 0) 50%, rgba(255, 105, 180, 0.2) 100%);
+    animation: glass-distort-tertiary 12s infinite cubic-bezier(0.3, 0, 0.5, 1);
+    transform-origin: center;
+    opacity: 0.3;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* 主滚动动画 */
+@keyframes glass-distort {
+    0% {
+        transform: translateX(0%) skewX(-5deg) scaleX(1.5);
+    }
+
+    100% {
+        transform: translateX(-100%) skewX(-5deg) scaleX(1.5);
+    }
+}
+
+/* 次级滚动动画 */
+@keyframes glass-distort-secondary {
+    0% {
+        transform: translateX(-20%) skewX(5deg) scaleX(1.3);
+    }
+
+    100% {
+        transform: translateX(-180%) skewX(5deg) scaleX(1.3);
+    }
+}
+
+/* 第三滚动动画 */
+@keyframes glass-distort-tertiary {
+    0% {
+        transform: translateX(0%) skewX(-8deg) scaleX(1.7);
+    }
+
+    100% {
+        transform: translateX(-130%) skewX(-8deg) scaleX(1.7);
+    }
+}
+
+/*  subtle背景移动 */
+@keyframes subtle-shift {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: -30px 0;
+    }
+}
+
+#logo-video.blur-out {
+    filter: blur(30px);
+    transition: filter 0.8s ease;
+}
+
+#logo-video.fade-out {
+    transition: opacity 1s;
+    opacity: 0;
+}
+
+#logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+#apps {
+    position: relative;
+    z-index: 1;
+}
+
+#time {
+    position: relative;
+    z-index: 1;
+}
+
+.svg-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 30px;
+}
+
+.icon {
+    height: 24px;
+    width: 24px;
+    fill: white;
+}
+
+#dock {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 10px;
+    width: 80%;
+    max-width: 1000px;
+    height: 46px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, height 0.3s ease, width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+#dock:hover {
+    height: 54px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* 任务栏图标容器样式 */
+#apps {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 12px;
+    height: 100%;
+}
+
+/* 任务栏图标样式 */
+.app-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.app-icon:hover {
+    transform: translateY(-3px) scale(1.1);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* 图标呼吸效果 */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+}
+
+.pulse-effect {
+    animation: pulse 2s infinite;
+}
+
+/* 任务栏显示/隐藏动画优化 */
+#dock.hidden {
+    transform: translateX(-50%) translateY(calc(100% + 10px));
+    opacity: 0;
+    height: 0;
+    width: 0;
+}
+
+#dock::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+    animation: glass-flow 8s infinite linear;
+    opacity: 0.5;
+    z-index: 0;
+}
+
+@keyframes glass-flow {
+    0% {
+        transform: translateX(0%) skewX(-15deg);
+    }
+
+    100% {
+        transform: translateX(100%) skewX(-15deg);
+    }
+}
+
+#dock.hidden {
+    transform: translateX(-50%) translateY(calc(100% + 10px));
+    opacity: 0;
+}
+
+#time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    height: 46px;
+    padding: 0 8px;
+    text-align: right;
+    font-family: 'Chillax', sans-serif;
+    font-size: 18px;
+    color: #fff;
+    user-select: none;
+    margin-left: auto;
+    white-space: nowrap;
+    position: relative;
+    z-index: 2;
+}
+
+.time-content {
+    display: flex;
+    align-items: center;
+}
+
+#time .clock {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: -4px;
+}
+
+#time .date {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-left: 4px;
+}
+
+.flip-container {
+    perspective: 1000px;
+    display: inline-block;
+}
+
+.flipper {
+    position: relative;
+    width: 30px;
+    height: 16px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+.front,
+.back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #fff;
+    background: #ffffff1a;
+    border-radius: 4px;
+}
+
+.back {
+    transform: rotateX(180deg);
+}
+
+.flipped .flipper {
+    transform: rotateX(180deg);
+}
+
+#hide {
+    width: 8px;
+    height: 30px;
+    background: #ffffff1a;
+    border-radius: 18px;
+    margin: 5px 8px 5px auto;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background 0.3s ease;
+}
+
+#hide:hover {
+    background: white;
+}
+
+#more {
+    width: 18px;
+    height: 18px;
+    background: #ffffff1a;
+    border-radius: 18px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /*margin: 5px 8px;*/
+}
+
+#more:hover {
+    transform: scale(1.1);
+}
+
+#more img {
+    transition: transform 0.5s ease;
+}
+
+#more.clicked img {
+    transform: rotate(180deg);
+}
+
+/* 自定义右键菜单样式 */
+.custom-context-menu {
+    font-family: 'Chillax', sans-serif;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: menu-fade-in 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    transform-origin: top left;
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+
+/* 增强菜单淡入动画 */
+@keyframes menu-fade-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(10px);
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* 增强菜单淡出动画 */
+@keyframes menu-fade-out {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.95) translateY(5px);
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
+}
+
+/* 菜单关闭时应用的类 */
+.custom-context-menu.closing {
+    animation: menu-fade-out 0.2s ease forwards;
+}
+
+/* 菜单项动画 */
+.context-menu-item {
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 10px;
+    margin: 2px 4px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateX(-10px);
+    animation: menu-item-fade-in 0.2s ease forwards;
+}
+
+@keyframes menu-item-fade-in {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 为不同菜单项设置不同的动画延迟 */
+.context-menu-item:nth-child(1) { animation-delay: 0.05s; }
+.context-menu-item:nth-child(2) { animation-delay: 0.1s; }
+.context-menu-item:nth-child(3) { animation-delay: 0.15s; }
+.context-menu-item:nth-child(4) { animation-delay: 0.2s; }
+.context-menu-item:nth-child(5) { animation-delay: 0.25s; }
+.context-menu-item:nth-child(6) { animation-delay: 0.3s; }
+.context-menu-item:nth-child(7) { animation-delay: 0.35s; }
+.context-menu-item:nth-child(8) { animation-delay: 0.4s; }
+.context-menu-item:nth-child(n+9) { animation-delay: 0.45s; }
+
+/* 增强菜单项悬停效果 */
+.context-menu-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(2px) scale(1.02);
+}
+
+/* 子菜单滑入动画 */
+.submenu {
+    margin-left: 10px;
+    margin-top: -10px;
+    animation: submenu-slide-in 0.2s ease forwards;
+    opacity: 0;
+    transform: translateX(-5px);
+}
+
+@keyframes submenu-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 系统菜单项样式增强 */
+.windows11-system-menu {
+    display: flex;
+    flex-direction: row;
+    border-radius: 12px;
+    margin: 0px 3px;
+    flex-wrap: nowrap;
+    padding: 3px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.windows11-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 10px;
+    transition: all 0.15s ease;
+    opacity: 0;
+    transform: translateY(-5px);
+    animation: menu-item-fade-in 0.2s ease forwards;
+}
+
+.windows11-item:nth-child(1) { animation-delay: 0.05s; }
+.windows11-item:nth-child(2) { animation-delay: 0.1s; }
+.windows11-item:nth-child(3) { animation-delay: 0.15s; }
+
+/* 菜单淡入动画 */
+@keyframes menu-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* 菜单淡出动画 */
+@keyframes menu-fade-out {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* 菜单关闭时应用的类 */
+.custom-context-menu.closing {
+    animation: menu-fade-out 0.2s ease forwards;
+}
+
+.custom-context-menu::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+    animation: glass-flow 8s infinite linear;
+    opacity: 0.5;
+    z-index: 0;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.context-menu-item {
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+    border-radius: 6px;
+    margin: 1px 3px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 移动端触控优化 */
+@media (max-width: 768px) {
+    .context-menu-item {
+        padding: 12px 16px;
+        min-height: 44px;
+        /* 增大触控区域 */
+    }
+
+    .windows11-system-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+.context-menu-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(2px);
+}
+
+/* 右键菜单分割线样式 */
+.context-menu-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 4px 8px;
+}
+
+.context-menu-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    opacity: 0.85;
+}
+
+.windows11-system-menu {
+    display: flex;
+    flex-direction: row;
+    /* gap: 4px; */
+    /* padding: 6px; */
+    /* background-color: rgba(255, 255, 255, 0.05); */
+    border-radius: 12px;
+    margin: 0px 3px;
+    flex-wrap: nowrap;
+}
+
+.windows11-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 10px;
+    transition: all 0.15s ease;
+}
+
+.windows11-item:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: none;
+}
+
+.windows11-item-text {
+    margin-left: 8px;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.context-menu-separator {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin: 5px 0;
+}
+
+.submenu {
+    margin-left: 10px;
+    margin-top: -10px;
+}
+
+/* 此代码片段格式错误，推测可能是想定义某个选择器应用 invert 滤镜，以下为示例 */
+body.dark-mode {
+    filter: invert(1);
+}
+/* 此处多余的 } 可能是代码错误，已移除 */
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 液态玻璃效果动画 */
+@keyframes liquid-effect {
+    0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    25% {
+        transform: translate(-50%, -51%) scale(1.01) rotate(0.5deg);
+        box-shadow: 0 8px 32px rgba(91, 192, 255, 0.2);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    75% {
+        transform: translate(-50%, -49%) scale(1.01) rotate(-0.5deg);
+        box-shadow: 0 8px 32px rgba(91, 192, 255, 0.2);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* 音量控制液体玻璃效果 */
+.liquid-glass-controls {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    animation: liquid-effect 4s infinite ease-in-out;
+}
+
+.liquid-glass-controls::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+    animation: glass-flow 8s infinite linear;
+    opacity: 0.5;
+    z-index: 0;
+}
+
+/* 视频容器液体玻璃效果 */
+.video-glass-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    animation: liquid-effect 4s infinite ease-in-out;
+}
+
+.video-glass-container::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+    animation: glass-flow 8s infinite linear;
+    opacity: 0.5;
+    z-index: 0;
+}
+
+/* 内部玻璃div样式 */
+.video-glass-inner {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.liquid-glass-controls::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+    animation: glass-flow 8s infinite linear;
+    opacity: 0.5;
+    z-index: 0;
+}
+
+/* 预设应用区域样式 */
+#preset-apps {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 9999;
+    display: none;
+}
