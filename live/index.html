@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MUSILIVE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入CSS -->
+    <link rel="stylesheet" href="./serve/css/reset.css">
+    <link rel="stylesheet" href="./serve/css/index.css">
+    <link rel="stylesheet" href="./serve/css/window.css">
+    <link rel="icon" href="./serve/files/logo/logo.png" type="image/png">
+</head>
+
+<body>
+    <!-- logo动画 -->
+    <video id="logo-video" src="./serve/files/logo/logo.mp4" autoplay muted playsinline
+        style="width:100%;height:100%;z-index:9999999999;object-fit:cover;pointer-events:none;position:fixed;top:0;left:0;display:none;"></video>
+    <script>
+        const video = document.getElementById('logo-video');
+        if (!localStorage.getItem('logoPlayed')) {
+            video.style.display = '';
+            video.play();
+            video.addEventListener('ended', function () {
+                video.classList.add('fade-out');
+                setTimeout(function () {
+                    video.style.display = 'none';
+                    localStorage.setItem('logoPlayed', 'true');
+                }, 600); // 渐隐动画持续时间
+            });
+        }
+    </script>
+    <!-- 壁纸服务 -->
+    <video id="wallpaper-video" src="./users/files/videos/wallpaper.mp4" autoplay loop muted playsinline
+        style="width:100%;height:100%;object-fit:cover;pointer-events:none;position:fixed;top:0;left:0;"></video>
+    <!-- 任务栏 -->
+    <div id="dock">
+        <!-- 徽标 -->
+        <div id="logo">
+            <div class="muse-flutter-logo"
+                style="display: flex; align-items: center; justify-content: center; height: 30px; width: 110px; color: white; font-family: 'Chillax', sans-serif; font-size: 16px; font-weight: bold;">
+                MUSILIVE
+            </div>
+        </div>
+        <!-- 图标 -->
+        <div id="apps"></div>
+        <!-- 更多 -->
+        <div id="more">
+            <img src="./serve/files/icon/zk-ico.png" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+        <script>
+            // 为#more元素添加点击事件，弹出系统控制面板
+            document.getElementById('more').addEventListener('click', function () {
+                this.classList.toggle('clicked');
+
+                // 检查是否已经存在控制面板窗口
+                if (window.controlPanelWindow) {
+                    if (window.controlPanelWindow.isMinimized) {
+                        window.windowManager.setActiveWindow(window.controlPanelWindow.id);
+                    } else {
+                        window.controlPanelWindow.close();
+                        window.controlPanelWindow = null;
+                    }
+                    return;
+                }
+
+                // 创建系统控制面板窗口
+                window.controlPanelWindow = new RoundedWindow({
+                    title: "系统控制",
+                    url: "system/applications/setting/index.html",
+                    width: 400,
+                    height: 500,
+                    x: window.innerWidth - 420, // 右对齐，距离右边20px
+                    y: window.innerHeight - 500 - 80, // 定位到任务栏上方，距离底部80px
+                    isSystemPanel: true,
+                    showTitleBar: false, // 去掉标题栏
+                    draggable: false // 不可拖动
+                });
+            });
+        </script>
+        <!-- 时间 -->
+        <div id="time" class="time-component">
+            <div class="clock" id="clock-display"></div>
+            <div class="time-content">
+                <div class="flip-container">
+                    <div class="flipper">
+                        <div class="front"></div>
+                        <div class="back"></div>
+                    </div>
+                </div>
+                <div class="date" id="date-display"></div>
+            </div>
+        </div>
+        <!-- 空白 -->
+        <div id="hide"></div>
+    </div>
+
+    <!-- 居中玻璃效果div - 适配16:9视频比例 -->
+    <div id="centered-glass-div" class="video-glass-container"
+        style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90vw; max-width: 1920px; height: 50.625vw; max-height: 1080px; overflow: hidden; position: relative;">
+        <div id="inner-glass-div" class="video-glass-inner"
+            style="width: calc(100% - 20px); height: calc(100% - 20px); overflow: hidden; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); box-sizing: border-box;">
+                <video id="video-player" style="width: 100%; height: 100%; object-fit: cover;">
+                    <source src="./users/files/videos/3.mp4" type="video/mp4">
+                    <source src="./users/files/videos/1.mp4" type="video/webm">
+                    <source src="./users/files/videos/111wallpaper.mp4" type="video/ogg">
+                    <!-- 如果视频加载失败，将自动尝试其他视频 -->
+                    您的浏览器不支持HTML5视频。请升级您的浏览器或使用其他浏览器观看。
+                </video>
+        </div>
+    </div>
+
+<!-- 视频控制右键菜单已删除，功能已合并到系统右键菜单 -->
+
+    <script>
+        // 等待DOM加载完成
+        document.addEventListener('DOMContentLoaded', () => {
+            // 视频播放列表 - 设为全局变量以便右键菜单访问
+            // 使用明确的相对路径格式
+            // 视频播放列表 - 设为全局变量以便右键菜单访问
+            // 使用标准化的相对路径格式
+            window.videoPlaylist = [
+                './users/files/videos/1.mp4',
+                './users/files/videos/2.mp4',
+                './users/files/videos/3.mp4',
+                './users/files/videos/4.mp4'
+            ];
+            window.videoCurrentIndex = 0;
+            window.isPlaying = true;
+
+            // 获取DOM元素
+            const mainVideoPlayer = document.getElementById('video-player');
+            const currentVideoName = document.getElementById('current-video-name');
+            const contextMenu = document.getElementById('video-context-menu');
+            const centeredGlassDiv = document.getElementById('centered-glass-div');
+            const contextVideoName = document.getElementById('current-video-name');
+
+            // 检查视频文件是否存在的辅助函数
+            function checkVideoExists(url) {
+                return new Promise((resolve) => {
+                    console.log('检查视频文件是否存在:', url);
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('HEAD', url);
+                    xhr.onload = () => {
+                        console.log('视频文件检查结果:', url, xhr.status === 200);
+                        resolve(xhr.status === 200);
+                    };
+                    xhr.onerror = () => {
+                        console.error('视频文件检查错误:', url);
+                        resolve(false);
+                    };
+                    xhr.send();
+                });
+            }
+
+            // 播放视频函数 - 设为全局函数以便右键菜单访问
+            window.playVideo = function(index) {
+                window.videoCurrentIndex = index;
+                let videoUrl = window.videoPlaylist[window.videoCurrentIndex];
+                console.log('尝试播放视频:', videoUrl);
+                // 确保mainVideoPlayer存在
+                if (!mainVideoPlayer) {
+                    console.error('视频播放器元素不存在');
+                    return;
+                }
+
+                // 确保currentVideoName存在再设置textContent
+                if (currentVideoName) {
+                    currentVideoName.textContent = videoUrl.split('/').pop();
+                }
+
+                // 检查视频文件是否存在
+                checkVideoExists(videoUrl).then(exists => {
+                    if (!exists) {
+                        console.log(`视频文件不存在: ${videoUrl}`);
+                        // 显示错误提示
+                        showVideoError(`无法加载视频文件: ${videoUrl.split('/').pop()}`);
+                        window.videoCurrentIndex = (window.videoCurrentIndex + 1) % window.videoPlaylist.length;
+                        window.playVideo(window.videoCurrentIndex);
+                        return;
+                    }
+
+                    mainVideoPlayer.src = videoUrl;
+                    mainVideoPlayer.load();
+                            // 使用Promise处理play方法
+                    const playPromise = mainVideoPlayer.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.error('视频播放错误:', error);
+                            // 根据错误类型处理
+                            if (error.name === 'NotAllowedError') {
+                                // 用户未与页面交互，无法自动播放
+                                showVideoError('点击视频区域开始播放');
+                                // 添加点击播放事件
+                                const playOnClick = () => {
+                                    mainVideoPlayer.play().then(() => {
+                                        hideVideoError();
+                                        mainVideoPlayer.removeEventListener('click', playOnClick);
+                                    }).catch(err => {
+                                        console.error('点击播放失败:', err);
+                                    });
+                                };
+                                mainVideoPlayer.addEventListener('click', playOnClick);
+                            } else {
+                                // 其他错误，1秒后重试
+                                showVideoError('视频播放失败，正在重试...');
+                                setTimeout(() => window.playVideo(window.videoCurrentIndex), 1000);
+                            }
+                        });
+                    } else {
+                        // 不支持Promise的旧浏览器
+                        window.isPlaying = true;
+                    }
+                    window.isPlaying = true;
+                });
+            }
+
+            // 显示视频错误信息
+            function showVideoError(message) {
+                let errorElement = document.getElementById('video-error');
+                if (!errorElement) {
+                    errorElement = document.createElement('div');
+                    errorElement.id = 'video-error';
+                    errorElement.style.position = 'absolute';
+                    errorElement.style.top = '50%';
+                    errorElement.style.left = '50%';
+                    errorElement.style.transform = 'translate(-50%, -50%)';
+                    errorElement.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                    errorElement.style.color = 'white';
+                    errorElement.style.padding = '15px 25px';
+                    errorElement.style.borderRadius = '10px';
+                    errorElement.style.zIndex = '100';
+                    errorElement.style.fontFamily = 'Arial, sans-serif';
+                    errorElement.style.textAlign = 'center';
+                    errorElement.style.maxWidth = '80%';
+                    mainVideoPlayer.parentElement.appendChild(errorElement);
+                }
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+
+            // 隐藏视频错误信息
+            function hideVideoError() {
+                const errorElement = document.getElementById('video-error');
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                }
+            }
+
+            // 初始播放第一个视频
+            playVideo(0);
+
+            // 视频区域右键菜单处理 - 修改系统右键菜单内容
+            centeredGlassDiv.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                // 标记为视频右键点击
+                window.isVideoContextMenu = true;
+                // 在显示菜单前更新菜单项
+                if (typeof window.addSystemMenuItems === 'function') {
+                    window.addSystemMenuItems();
+                }
+                // 显示系统右键菜单
+                showContextMenu(e.clientX, e.clientY);
+            });
+
+            // 重置视频右键菜单标记
+            document.addEventListener('click', () => {
+                window.isVideoContextMenu = false;
+            });
+
+            // 确保在文档右键时也能正确更新菜单
+            document.addEventListener('contextmenu', (e) => {
+                // 如果不是视频区域右键 - 使用兼容性更好的方法
+                const centeredGlassDiv = document.getElementById('centered-glass-div');
+                let target = e.target;
+                let isInVideoArea = false;
+                
+                // 遍历DOM树检查是否在视频区域内
+                while (target && target !== document) {
+                    if (target === centeredGlassDiv) {
+                        isInVideoArea = true;
+                        break;
+                    }
+                    target = target.parentElement;
+                }
+                
+                if (!isInVideoArea) {
+                    window.isVideoContextMenu = false;
+                    // 更新菜单项
+                    if (typeof window.addSystemMenuItems === 'function') {
+                        window.addSystemMenuItems();
+                    }
+                }
+            });
+
+            // 初始更新视频名称
+            updateCurrentVideoName();
+
+            // 更新播放状态标志
+            mainVideoPlayer.addEventListener('play', () => {
+                window.isPlaying = true;
+            });
+
+            mainVideoPlayer.addEventListener('pause', () => {
+                window.isPlaying = false;
+            });
+
+            // 视频结束时自动播放下一个
+            mainVideoPlayer.addEventListener('ended', () => {
+                window.videoCurrentIndex = (window.videoCurrentIndex + 1) % window.videoPlaylist.length;
+                window.playVideo(window.videoCurrentIndex);
+            });
+
+            // 视频错误处理
+            mainVideoPlayer.addEventListener('error', () => {
+                const error = mainVideoPlayer.error;
+                let errorMessage = '视频播放错误';
+                switch(error.code) {
+                    case 1:
+                        errorMessage = '视频加载中止';
+                        break;
+                    case 2:
+                        errorMessage = '视频格式不支持';
+                        break;
+                    case 3:
+                        errorMessage = '视频解码错误';
+                        break;
+                    case 4:
+                        errorMessage = '视频网络错误';
+                        break;
+                }
+                console.error(errorMessage + ':', error);
+                showVideoError(errorMessage + '，正在尝试下一个视频...');
+                window.videoCurrentIndex = (window.videoCurrentIndex + 1) % window.videoPlaylist.length;
+                // 延迟1秒后尝试播放下一个视频
+                setTimeout(() => window.playVideo(window.videoCurrentIndex), 1000);
+            });
+
+            // 更新当前视频名称显示
+            function updateCurrentVideoName() {
+                if (contextVideoName) {
+                    contextVideoName.textContent = videoPlaylist[videoCurrentIndex].split('/').pop();
+                }
+            }
+
+            // 初始更新视频名称
+            updateCurrentVideoName();
+        });
+    </script>
+            <div
+                style="width: 100%; height: calc(100% - 60px); display: flex; align-items: center; justify-content: center;">
+                <video id="video-player" style="width: 100%; height: 100%; object-fit: cover;">
+                    <source src="./users/files/videos/1.mp4" type="video/mp4">
+                    您的浏览器不支持HTML5视频。
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局配置：默认使用12小时制
+        let use12HourFormat = true;
+
+        function updateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+
+            let hour = now.getHours();
+            let timeDisplay = '';
+
+            if (use12HourFormat) {
+                // 12小时制
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                hour = hour % 12;
+                hour = hour ? hour : 12; // 0点变为12点
+                const hourStr = String(hour).padStart(2, '0');
+                timeDisplay = `${hourStr}:${String(now.getMinutes()).padStart(2, '0')} ${ampm}`;
+            } else {
+                // 24小时制
+                timeDisplay = `${String(hour).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            }
+
+            document.getElementById('clock-display').textContent = timeDisplay;
+            document.getElementById('date-display').textContent = `${month}-${day}`;
+            const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            const dayOfWeek = weekDays[now.getDay()];
+            document.querySelector('.front').textContent = dayOfWeek;
+            document.querySelector('.back').textContent = year;
+        }
+        // 初始化时间组件右键菜单
+        function initTimeComponentContextMenu() {
+            // 创建时间组件专用右键菜单
+            const timeContextMenu = document.createElement('div');
+            timeContextMenu.id = 'time-context-menu';
+            timeContextMenu.className = 'custom-context-menu';
+            timeContextMenu.style.position = 'fixed';
+            timeContextMenu.style.display = 'none';
+            timeContextMenu.style.zIndex = '100001';
+            timeContextMenu.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            timeContextMenu.style.backdropFilter = 'blur(12px)';
+            timeContextMenu.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+            timeContextMenu.style.borderRadius = '16px';
+            timeContextMenu.style.padding = '5px 0';
+            timeContextMenu.style.minWidth = '180px';
+            document.body.appendChild(timeContextMenu);
+
+            // 添加复制时间菜单项
+            const copyTimeItem = document.createElement('div');
+            copyTimeItem.className = 'context-menu-item';
+            copyTimeItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>复制时间';
+            copyTimeItem.addEventListener('click', () => {
+                try {
+                    const timeText = document.getElementById('clock-display').textContent;
+                    navigator.clipboard.writeText(timeText);
+                    timeContextMenu.style.display = 'none';
+                } catch (err) {
+                    console.error('复制失败:', err);
+                }
+            });
+            timeContextMenu.appendChild(copyTimeItem);
+
+            // 添加复制日期菜单项
+            const copyDateItem = document.createElement('div');
+            copyDateItem.className = 'context-menu-item';
+            copyDateItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>复制日期';
+            copyDateItem.addEventListener('click', () => {
+                try {
+                    const dateText = document.getElementById('date-display').textContent;
+                    const dayOfWeek = document.querySelector('.front').textContent;
+                    const year = document.querySelector('.back').textContent;
+                    navigator.clipboard.writeText(`${year}年${dateText.replace('-', '月')}日 ${dayOfWeek}`);
+                    timeContextMenu.style.display = 'none';
+                } catch (err) {
+                    console.error('复制失败:', err);
+                }
+            });
+            timeContextMenu.appendChild(copyDateItem);
+
+            // 仅时间组件添加时间格式切换菜单项
+            const formatToggleItem = document.createElement('div');
+            formatToggleItem.className = 'context-menu-item';
+            formatToggleItem.innerHTML = `<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>${use12HourFormat ? '切换到24小时制' : '切换到12小时制'}`;
+            formatToggleItem.addEventListener('click', () => {
+                use12HourFormat = !use12HourFormat;
+                formatToggleItem.innerHTML = `<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>${use12HourFormat ? '切换到24小时制' : '切换到12小时制'}`;
+                updateTime();
+                // 应用关闭动画
+                timeContextMenu.classList.add('closing');
+                setTimeout(() => {
+                    timeContextMenu.style.display = 'none';
+                    timeContextMenu.classList.remove('closing');
+                }, 200);
+            });
+            timeContextMenu.appendChild(formatToggleItem);
+
+            // 初始化通知系统
+            function initNotificationSystem() {
+                // 创建通知容器
+                let notificationContainer = document.getElementById('notification-container');
+                if (!notificationContainer) {
+                    notificationContainer = document.createElement('div');
+                    notificationContainer.id = 'notification-container';
+                    notificationContainer.className = 'notification-container';
+                    document.body.appendChild(notificationContainer);
+                }
+
+                // 创建提示容器
+                let promptContainer = document.getElementById('prompt-container');
+                if (!promptContainer) {
+                    promptContainer = document.createElement('div');
+                    promptContainer.id = 'prompt-container';
+                    promptContainer.className = 'prompt-container';
+                    document.body.appendChild(promptContainer);
+                }
+
+                // 全局通知管理器
+                window.notificationManager = {
+                    // 显示通知
+                    showNotification: function (options) {
+                        const { title, icon, content, timestamp = new Date(), image, buttons = [] } = options;
+
+                        // 创建通知元素
+                        const notification = document.createElement('div');
+                        notification.className = 'notification';
+
+                        // 生成时间字符串
+                        const timeStr = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                        // 构建通知内容
+                        let notificationHTML = `
+                        <div class="notification-header">
+                            <div class="notification-title">
+                                ${icon ? `<img src="${icon}" class="notification-icon" alt="${title}">` : ''}
+                                ${title}
+                            </div>
+                            <div class="notification-time">${timeStr}</div>
+                        </div>
+                    `;
+
+                        // 添加内容
+                        if (content) {
+                            notificationHTML += `
+                            <div class="notification-content">${content}</div>
+                        `;
+                        }
+
+                        // 添加图片
+                        if (image) {
+                            notificationHTML += `
+                            <img src="${image}" class="notification-image" alt="Notification image">
+                        `;
+                        }
+
+                        // 添加按钮
+                        if (buttons.length > 0) {
+                            notificationHTML += `
+                            <div class="notification-buttons">
+                        `;
+
+                            buttons.forEach((button, index) => {
+                                const { text, primary = false, onClick } = button;
+                                const buttonClass = primary ? 'notification-button primary' : 'notification-button';
+                                const buttonId = `notification-button-${Date.now()}-${index}`;
+
+                                notificationHTML += `
+                                <button id="${buttonId}" class="${buttonClass}">${text}</button>
+                            `;
+
+                                // 延迟绑定点击事件
+                                setTimeout(() => {
+                                    const buttonElement = document.getElementById(buttonId);
+                                    if (buttonElement && typeof onClick === 'function') {
+                                        buttonElement.addEventListener('click', () => {
+                                            onClick();
+                                            this.closeNotification(notification);
+                                        });
+                                    }
+                                }, 0);
+                            });
+
+                            notificationHTML += `
+                            </div>
+                        `;
+                        }
+
+                        // 设置通知内容
+                        notification.innerHTML = notificationHTML;
+
+                        // 添加到容器
+                        notificationContainer.appendChild(notification);
+
+                        // 点击通知关闭
+                        notification.addEventListener('click', (e) => {
+                            // 防止按钮点击事件冒泡
+                            if (!e.target.closest('.notification-button')) {
+                                this.closeNotification(notification);
+                            }
+                        });
+
+                        // 自动关闭（5秒后）
+                        setTimeout(() => {
+                            this.closeNotification(notification);
+                        }, 5000);
+
+                        return notification;
+                    },
+
+                    // 关闭通知
+                    closeNotification: function (notification) {
+                        notification.classList.add('closing');
+                        setTimeout(() => {
+                            if (notification.parentNode === notificationContainer) {
+                                notificationContainer.removeChild(notification);
+                            }
+                        }, 300);
+                    },
+
+                    // 显示提示
+                    showPrompt: function (message, duration = 3000) {
+                        // 创建提示元素
+                        const prompt = document.createElement('div');
+                        prompt.className = 'prompt';
+                        prompt.textContent = message;
+
+                        // 添加到容器
+                        promptContainer.appendChild(prompt);
+
+                        // 自动关闭
+                        setTimeout(() => {
+                            this.closePrompt(prompt);
+                        }, duration);
+
+                        return prompt;
+                    },
+
+                    // 关闭提示
+                    closePrompt: function (prompt) {
+                        prompt.classList.add('closing');
+                        setTimeout(() => {
+                            if (prompt.parentNode === promptContainer) {
+                                promptContainer.removeChild(prompt);
+                            }
+                        }, 300);
+                    }
+                };
+
+                // 初始化
+                console.log('Notification system initialized');
+            }
+
+            // 页面加载完成后初始化通知系统
+            document.addEventListener('DOMContentLoaded', initNotificationSystem);
+
+            // 为时间和日期组件添加右键事件
+            const timeComponent = document.getElementById('time');
+            timeComponent.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // 获取鼠标位置
+                const x = e.clientX;
+                const y = e.clientY;
+
+                // 计算菜单位置，确保在屏幕范围内
+                const menuWidth = timeContextMenu.offsetWidth || 180;
+                const menuHeight = timeContextMenu.offsetHeight || 150;
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+
+                // 调整X坐标
+                let left = x;
+                if (x + menuWidth > screenWidth) {
+                    left = screenWidth - menuWidth - 10;
+                }
+
+                // 调整Y坐标
+                let top = y;
+                if (y + menuHeight > screenHeight) {
+                    top = screenHeight - menuHeight - 10;
+                }
+
+                // 显示右键菜单
+                timeContextMenu.style.left = `${left}px`;
+                timeContextMenu.style.top = `${top}px`;
+                timeContextMenu.style.display = 'block';
+            });
+
+            // 点击其他地方关闭右键菜单
+            document.addEventListener('click', (e) => {
+                // 确保点击不是在菜单本身上
+                if (!timeContextMenu.contains(e.target)) {
+                    timeContextMenu.classList.add('closing');
+                    setTimeout(() => {
+                        timeContextMenu.style.display = 'none';
+                        timeContextMenu.classList.remove('closing');
+                    }, 200);
+                }
+            });
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+        initTimeComponentContextMenu();
+
+        // 翻转效果逻辑
+        const flipContainer = document.querySelector('.flip-container');
+        let isFlipped = false;
+        let flipCounter = 0; // 跟踪手动翻转次数
+        let meowMenuItemAdded = false; // 标记是否已添加喵喵喵菜单项
+
+        function flip() {
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                flipContainer.classList.add('flipped');
+            } else {
+                flipContainer.classList.remove('flipped');
+            }
+        }
+
+        // 为日期组件添加点击事件以跟踪翻转次数
+        flipContainer.addEventListener('click', () => {
+            flipCounter++;
+            console.log(`翻转次数: ${flipCounter}`);
+            // 连续点击10次后添加喵喵喵菜单项
+            if (flipCounter >= 10 && !meowMenuItemAdded) {
+                addMeowMenuItem();
+                meowMenuItemAdded = true;
+                // 重置计数器
+                flipCounter = 0;
+            }
+        });
+
+        // 添加喵喵喵菜单项到时间组件右键菜单
+        function addMeowMenuItem() {
+            const timeContextMenu = document.getElementById('time-context-menu');
+            if (!timeContextMenu) return;
+
+            // 创建分割线
+            const divider = document.createElement('div');
+            divider.className = 'context-menu-divider';
+            timeContextMenu.appendChild(divider);
+
+            // 创建喵喵喵菜单项
+            const meowItem = document.createElement('div');
+            meowItem.id = 'meow-menu-item';
+            meowItem.className = 'context-menu-item';
+            meowItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="10"></circle></svg>喵喵喵';
+            meowItem.addEventListener('click', () => {
+                // 移除该菜单项
+                if (meowItem.parentNode) {
+                    meowItem.parentNode.removeChild(meowItem);
+                    divider.parentNode.removeChild(divider);
+                }
+                // 应用关闭动画
+                timeContextMenu.classList.add('closing');
+                setTimeout(() => {
+                    timeContextMenu.style.display = 'none';
+                    timeContextMenu.classList.remove('closing');
+                }, 200);
+                // 生成live2d猫猫模型
+                createLive2dCat();
+            });
+            timeContextMenu.appendChild(meowItem);
+        }
+
+        // 生成live2d猫猫模型
+        function createLive2dCat() {
+            // 检查是否已存在live2d容器
+            if (document.getElementById('live2d-container')) {
+                return;
+            }
+
+            // 创建容器
+            const container = document.createElement('div');
+            container.id = 'live2d-container';
+            container.style.position = 'fixed';
+            container.style.bottom = '20px';
+            container.style.right = '20px';
+            container.style.width = '200px';
+            container.style.height = '300px';
+            container.style.zIndex = '99998';
+            container.style.pointerEvents = 'auto';
+            document.body.appendChild(container);
+
+            // 添加live2d模型
+            // 这里使用简单的图片替代实际的live2d模型
+            // 在实际应用中，应该引入live2d库并加载模型
+            const catImage = document.createElement('img');
+            catImage.src = 'https://placekitten.com/200/300';
+            catImage.style.width = '100%';
+            catImage.style.height = '100%';
+            catImage.style.borderRadius = '10px';
+            container.appendChild(catImage);
+
+            // 让模型可拖动
+            makeDraggable(container);
+        }
+
+        // 使元素可拖动
+        function makeDraggable(element) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            element.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // 获取鼠标初始位置
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // 计算新位置
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                // 设置元素新位置
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                // 停止移动
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+        // 每5秒翻转一次
+        setInterval(flip, 5000);
+    </script>
+
+
+    <!-- 预设应用区域 -->
+    <div id="preset-apps"
+        style="position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 10px; border-radius: 10px; z-index: 9999; display: none;">
+        <h3 style="color: white; margin-bottom: 10px; text-align: center;">预设应用</h3>
+        <div id="preset-apps-container" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+            <!-- 预设应用将通过JS动态加载 -->
+        </div>
+    </div>
+
+    <!-- 引入JS -->
+    <script src="./serve/js/index.js"></script>
+    <script src="./serve/js/window.js"></script>
+    <script>
+        // 初始化应用
+        window.addEventListener('DOMContentLoaded', () => {
+
+            // 创建自定义窗口的函数
+            window.createCustomWindow = function (options) {
+                const newWindow = new RoundedWindow({
+                    title: options.title,
+                    icon: options.icon,
+                    url: options.url,
+                    content: options.content,
+                    width: 350,
+                    height: 570,
+                    x: 1,
+                    y: 1,
+                    isCustom: true
+                });
+                return newWindow;
+            }
+
+            // 使用现有的hide元素作为关闭全部窗口按钮
+            const hideBtn = document.getElementById('hide');
+            hideBtn.style.cursor = 'pointer'; // 只保留光标样式，确保用户知道这是可点击的
+            hideBtn.addEventListener('click', () => {
+                if (window.windowManager && window.windowManager.windows) {
+                    // 复制窗口列表以避免在迭代中修改
+                    const windowsCopy = [...window.windowManager.windows];
+                    windowsCopy.forEach(window => window.close());
+                }
+            });
+
+            // 加载预设应用到右键菜单
+            function loadPresetAppsToContextMenu() {
+                const contextMenu = document.getElementById('custom-context-menu');
+                if (!contextMenu) return;
+
+                // 预设应用列表
+                const presetApps = [
+                    { name: '代码编辑器', file: 'code-editor.html', icon: './serve/files/icon/code-editor.svg' },
+                    { name: '思维导图', file: 'mind-map.html', icon: './serve/files/icon/mind-map.svg' },
+                    { name: '神秘书店', file: 'mystery-bookstore-gal.html', icon: './serve/files/icon/bookstore.svg' },
+                    { name: '粒子物理', file: 'particle-physics.html', icon: './serve/files/icon/physics.svg' },
+                    { name: '像素艺术', file: 'pixel-art.html', icon: './serve/files/icon/pixel-art.svg' },
+                    { name: '像素编辑器', file: 'pixel-editor.html', icon: './serve/files/icon/pixel-editor.svg' },
+                    { name: '程序员贪吃蛇', file: 'programmer-snake.html', icon: './serve/files/icon/snake.svg' },
+                    { name: '节奏游戏', file: 'rhythm-game.html', icon: './serve/files/icon/music.svg' },
+                    { name: '旅行日志', file: 'travel-log.html', icon: './serve/files/icon/travel.svg' },
+                    { name: '像素游戏', file: 'pixel-game.html', icon: './serve/files/icon/game.svg' },
+                    { name: '空白HTML', file: 'about:blank', icon: './serve/files/icon/html.svg' }
+                ];
+
+                // 创建"新建"菜单项
+                const newMenuItem = document.createElement('div');
+                newMenuItem.className = 'context-menu-item';
+                newMenuItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>新建';
+                contextMenu.appendChild(newMenuItem);
+
+                // 创建"新建"子菜单
+                const newSubMenu = document.createElement('div');
+                newSubMenu.className = 'custom-context-menu submenu';
+                newSubMenu.style.position = 'absolute';
+                newSubMenu.style.display = 'none';
+                document.body.appendChild(newSubMenu);
+
+                // 显示子菜单
+                newMenuItem.addEventListener('mouseenter', (e) => {
+                    e.stopPropagation();
+                    const rect = newMenuItem.getBoundingClientRect();
+
+                    // 获取屏幕可视区域尺寸
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+
+                    // 计算子菜单的位置
+                    let left = rect.right;
+                    let top = rect.top;
+
+                    // 强制显示子菜单以获取其尺寸
+                    newSubMenu.style.display = 'block';
+                    newSubMenu.style.visibility = 'hidden';
+                    const subMenuRect = newSubMenu.getBoundingClientRect();
+
+                    // 检查右侧边界
+                    if (left + subMenuRect.width > viewportWidth) {
+                        left = rect.left - subMenuRect.width;
+                    }
+
+                    // 检查底部边界
+                    if (top + subMenuRect.height > viewportHeight) {
+                        // 如果子菜单高度超过视口高度，调整顶部位置使其显示在可见区域
+                        top = Math.max(0, viewportHeight - subMenuRect.height);
+                    }
+
+                    // 设置最终位置并显示
+                    newSubMenu.style.left = `${left}px`;
+                    newSubMenu.style.top = `${top}px`;
+                    newSubMenu.style.visibility = 'visible';
+                });
+
+                // 隐藏子菜单
+                newMenuItem.addEventListener('mouseleave', () => {
+                    setTimeout(() => {
+                        if (!newSubMenu.matches(':hover') && !newMenuItem.matches(':hover')) {
+                            newSubMenu.style.display = 'none';
+                        }
+                    }, 300);
+                });
+
+                newSubMenu.addEventListener('mouseleave', () => {
+                    setTimeout(() => {
+                        if (!newSubMenu.matches(':hover') && !newMenuItem.matches(':hover')) {
+                            newSubMenu.style.display = 'none';
+                        }
+                    }, 300);
+                });
+
+                // 添加预设应用菜单项到新建子菜单
+                presetApps.forEach(app => {
+                    const menuItem = document.createElement('div');
+                    menuItem.className = 'context-menu-item';
+                    menuItem.innerHTML = `<img src="${app.icon}" alt="${app.name}" class="context-menu-icon">${app.name}`;
+                    menuItem.addEventListener('click', () => {
+                        window.createCustomWindow({
+                            title: app.name,
+                            icon: app.icon,
+                            url: app.file === 'about:blank' ? 'about:blank' : `./users/applications/${app.file}`
+                        });
+                        // 应用关闭动画
+                        contextMenu.classList.add('closing');
+                        setTimeout(() => {
+                            contextMenu.style.display = 'none';
+                            contextMenu.classList.remove('closing');
+                        }, 200);
+                        newSubMenu.style.display = 'none';
+                    });
+                    newSubMenu.appendChild(menuItem);
+                });
+            }
+
+            // 初始化右键菜单
+            function initContextMenu() {
+                // 创建右键菜单元素
+                const contextMenu = document.createElement('div');
+                contextMenu.id = 'custom-context-menu';
+                contextMenu.className = 'custom-context-menu';
+                contextMenu.style.position = 'fixed';
+                contextMenu.style.display = 'none';
+                contextMenu.style.zIndex = '99999';
+                contextMenu.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                contextMenu.style.backdropFilter = 'blur(12px)';
+                contextMenu.style.position = 'fixed';
+                contextMenu.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                contextMenu.style.borderRadius = '16px';
+                contextMenu.style.padding = '5px 0';
+                contextMenu.style.minWidth = '180px';
+                contextMenu.style.zIndex = '9999';
+                document.body.appendChild(contextMenu);
+
+                // 添加系统功能菜单
+                window.addSystemMenuItems = function() {
+                    // 先清空系统菜单容器（如果存在）
+                    const existingSystemMenu = contextMenu.querySelector('.windows11-system-menu');
+                    if (existingSystemMenu && existingSystemMenu.parentNode === contextMenu) {
+                        contextMenu.removeChild(existingSystemMenu);
+                    }
+
+                    // 创建系统菜单容器
+                    const systemMenuContainer = document.createElement('div');
+                    systemMenuContainer.className = 'windows11-system-menu';
+                    contextMenu.appendChild(systemMenuContainer);
+
+                    // 检查是否为视频右键菜单，默认为false
+                    const isVideoContext = window.isVideoContextMenu === true;
+                    if (isVideoContext) {
+                        // 上一个视频
+                        const prevItem = document.createElement('div');
+                        prevItem.className = 'context-menu-item windows11-item';
+                        prevItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 11 13 11 5"></polygon><path d="M19 9v6M5 9v6"></path></svg><span class="windows11-item-text">上个</span>';
+                        prevItem.addEventListener('click', function() {
+                            try {
+                                console.log('尝试切换到上一个视频');
+                                // 调用视频上一个功能
+                                const videoCurrentIndex = window.videoCurrentIndex !== undefined ? window.videoCurrentIndex : 0;
+                                console.log('当前视频索引:', videoCurrentIndex);
+                                const videoPlaylist = window.videoPlaylist || [];
+                                console.log('视频播放列表长度:', videoPlaylist.length);
+                                const newIndex = (videoCurrentIndex - 1 + videoPlaylist.length) % videoPlaylist.length;
+                                console.log('新视频索引:', newIndex);
+                                if (typeof window.playVideo === 'function') {
+                                    console.log('调用playVideo函数');
+                                    window.playVideo(newIndex);
+                                } else {
+                                    console.error('window.playVideo不是一个函数');
+                                }
+                                // 应用关闭动画
+                                contextMenu.classList.add('closing');
+                                setTimeout(function() {
+                                    contextMenu.style.display = 'none';
+                                    contextMenu.classList.remove('closing');
+                                }, 200);
+                            } catch (err) {
+                                console.error('上一个视频失败:', err);
+                            }
+                        });
+                        systemMenuContainer.appendChild(prevItem);
+
+                        // 播放/暂停视频
+                        const playPauseItem = document.createElement('div');
+                        playPauseItem.className = 'context-menu-item windows11-item';
+                        // 检查当前播放状态
+                        const isPlaying = window.isPlaying !== undefined ? window.isPlaying : true;
+                        playPauseItem.innerHTML = `<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span class="windows11-item-text">${isPlaying ? '暂停' : '播放'}</span>`;
+                        playPauseItem.addEventListener('click', () => {
+                            try {
+                                const mainVideoPlayer = document.getElementById('video-player');
+                                if (mainVideoPlayer) {
+                                    if (window.isPlaying) {
+                                        mainVideoPlayer.pause();
+                                        playPauseItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span class="windows11-item-text">播放</span>';
+                                    } else {
+                                        mainVideoPlayer.play();
+                                        playPauseItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg><span class="windows11-item-text">暂停</span>';
+                                    }
+                                    window.isPlaying = !window.isPlaying;
+                                }
+                                // 应用关闭动画
+                                contextMenu.classList.add('closing');
+                                setTimeout(() => {
+                                    contextMenu.style.display = 'none';
+                                    contextMenu.classList.remove('closing');
+                                }, 200);
+                            } catch (err) {
+                                console.error('播放/暂停失败:', err);
+                            }
+                        });
+                        systemMenuContainer.appendChild(playPauseItem);
+
+                        // 下一个视频
+                        const nextItem = document.createElement('div');
+                        nextItem.className = 'context-menu-item windows11-item';
+                        nextItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 5 18 9 13 13 13 5"></polygon><path d="M5 9v6M19 9v6"></path></svg><span class="windows11-item-text">下个</span>';
+                        nextItem.addEventListener('click', function() {
+                            try {
+                                console.log('尝试切换到下一个视频');
+                                // 调用视频下一个功能
+                                const videoCurrentIndex = window.videoCurrentIndex !== undefined ? window.videoCurrentIndex : 0;
+                                console.log('当前视频索引:', videoCurrentIndex);
+                                const videoPlaylist = window.videoPlaylist || [];
+                                console.log('视频播放列表长度:', videoPlaylist.length);
+                                const newIndex = (videoCurrentIndex + 1) % videoPlaylist.length;
+                                console.log('新视频索引:', newIndex);
+                                if (typeof window.playVideo === 'function') {
+                                    console.log('调用playVideo函数');
+                                    window.playVideo(newIndex);
+                                } else {
+                                    console.error('window.playVideo不是一个函数');
+                                }
+                                // 应用关闭动画
+                                contextMenu.classList.add('closing');
+                                setTimeout(function() {
+                                    contextMenu.style.display = 'none';
+                                    contextMenu.classList.remove('closing');
+                                }, 200);
+                            } catch (err) {
+                                console.error('下一个视频失败:', err);
+                            }
+                        });
+                        systemMenuContainer.appendChild(nextItem);
+                    } else {
+                        // 正常系统菜单 - 复制
+                        const copyItem = document.createElement('div');
+                        copyItem.className = 'context-menu-item windows11-item';
+                        copyItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><span class="windows11-item-text">复制</span>';
+                        copyItem.addEventListener('click', () => {
+                            try {
+                                document.execCommand('copy');
+                                // 显示复制成功提示
+                                window.notificationManager.showPrompt({
+                                    message: '已复制到剪贴板',
+                                    autoClose: true,
+                                    duration: 2000
+                                });
+                                // 应用关闭动画
+                                contextMenu.classList.add('closing');
+                                setTimeout(() => {
+                                    contextMenu.style.display = 'none';
+                                    contextMenu.classList.remove('closing');
+                                }, 200);
+                            } catch (err) {
+                                console.error('复制失败:', err);
+                                // 显示复制失败提示
+                                window.notificationManager.showPrompt({
+                                    message: '复制失败',
+                                    autoClose: true,
+                                    duration: 2000
+                                });
+                            }
+                        });
+                        systemMenuContainer.appendChild(copyItem);
+
+                        // 粘贴
+                        const pasteItem = document.createElement('div');
+                        pasteItem.className = 'context-menu-item windows11-item';
+                        pasteItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="12" width="13" height="13" rx="2" ry="2"></rect><path d="M19 17V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16l7-5 7 5z"></path></svg><span class="windows11-item-text">粘贴</span>';
+                        pasteItem.addEventListener('click', () => {
+                            try {
+                                document.execCommand('paste');
+                                // 显示粘贴成功提示
+                                window.notificationManager.showPrompt({
+                                    message: '已粘贴内容',
+                                    autoClose: true,
+                                    duration: 2000
+                                });
+                                // 应用关闭动画
+                                contextMenu.classList.add('closing');
+                                setTimeout(() => {
+                                    contextMenu.style.display = 'none';
+                                    contextMenu.classList.remove('closing');
+                                }, 200);
+                            } catch (err) {
+                                console.error('粘贴失败:', err);
+                                // 显示粘贴失败提示
+                                window.notificationManager.showPrompt({
+                                    message: '粘贴失败',
+                                    autoClose: true,
+                                    duration: 2000
+                                });
+                            }
+                        });
+                        systemMenuContainer.appendChild(pasteItem);
+
+                        // 剪切
+                        const cutItem = document.createElement('div');
+                        cutItem.className = 'context-menu-item windows11-item';
+                        cutItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 17H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path><line x1="16" y1="17" x2="16" y2="13"></line><line x1="8" y1="13" x2="16" y2="13"></line><line x1="18" y1="13" x2="20" y2="13"></line><line x1="18" y1="11" x2="20" y2="11"></line></svg><span class="windows11-item-text">剪切</span>';
+                        cutItem.addEventListener('click', () => {
+                            try {
+                                document.execCommand('cut');
+                                // 显示剪切成功提示
+                                window.notificationManager.showPrompt({
+                                    message: '已剪切内容',
+                                    autoClose: true,
+                                    duration: 2000
+                                });
+                                // 应用关闭动画
+                                contextMenu.classList.add('closing');
+                                setTimeout(() => {
+                                    contextMenu.style.display = 'none';
+                                    contextMenu.classList.remove('closing');
+                                }, 200);
+                            } catch (err) {
+                                console.error('剪切失败:', err);
+                                // 显示剪切失败提示
+                                window.notificationManager.showPrompt({
+                                    message: '剪切失败',
+                                    autoClose: true,
+                                    duration: 2000
+                                });
+                            }
+                        });
+                        systemMenuContainer.appendChild(cutItem);
+                    }
+                }
+
+                // 屏蔽默认右键菜单
+                document.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    showContextMenu(e.clientX, e.clientY);
+                });
+
+                // 添加移动端长按支持
+                let pressTimer;
+                let isDragging = false;
+                let startX, startY, menuStartX, menuStartY;
+                let touchStartX, touchStartY;
+
+                // 长按开始
+                document.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 1) {
+                        const touch = e.touches[0];
+                        touchStartX = touch.clientX;
+                        touchStartY = touch.clientY;
+
+                        pressTimer = setTimeout(() => {
+                            // 检查是否有明显移动
+                            if (Math.abs(touch.clientX - touchStartX) < 10 && Math.abs(touch.clientY - touchStartY) < 10) {
+                                e.preventDefault();
+                                showContextMenu(touch.clientX, touch.clientY);
+                            }
+                        }, 800); // 稍微缩短长按时间提高用户体验
+                    }
+                }, { passive: false });
+
+                // 移动或释放时取消计时器
+                document.addEventListener('touchmove', (e) => {
+                    if (pressTimer && e.touches.length === 1) {
+                        const touch = e.touches[0];
+                        // 如果移动超过阈值，取消长按
+                        if (Math.abs(touch.clientX - touchStartX) > 10 || Math.abs(touch.clientY - touchStartY) > 10) {
+                            clearTimeout(pressTimer);
+                        }
+                    }
+                });
+
+                document.addEventListener('touchend', () => {
+                    clearTimeout(pressTimer);
+                });
+
+                // 显示右键菜单的通用函数 - 设为全局函数以便视频区域访问
+                window.showContextMenu = function(x, y) {
+                    // 先显示菜单以获取准确尺寸
+                    contextMenu.style.display = 'block';
+                    contextMenu.style.visibility = 'hidden';
+
+                    // 计算菜单位置，确保在屏幕范围内
+                    const menuWidth = contextMenu.offsetWidth;
+                    const menuHeight = contextMenu.offsetHeight;
+                    const screenWidth = window.innerWidth;
+                    const screenHeight = window.innerHeight;
+
+                    // 获取任务栏元素和尺寸
+                    const dock = document.getElementById('dock');
+                    let dockRect = null;
+                    if (dock) {
+                        dockRect = dock.getBoundingClientRect();
+                    }
+
+                    // 调整X坐标
+                    let left = x;
+                    if (x + menuWidth > screenWidth) {
+                        left = screenWidth - menuWidth - 10;
+                    }
+
+                    // 调整Y坐标
+                    let top = y;
+
+                    // 如果点击了任务栏，特别处理Y坐标
+                    if (dockRect && y >= dockRect.top && y <= dockRect.bottom) {
+                        // 任务栏在底部
+                        if (dockRect.bottom === screenHeight) {
+                            top = dockRect.top - menuHeight - 5;
+                        }
+                        // 任务栏在顶部
+                        else if (dockRect.top === 0) {
+                            top = dockRect.bottom + 5;
+                        }
+                    } else if (y + menuHeight > screenHeight) {
+                        top = screenHeight - menuHeight - 10;
+                    }
+
+                    // 确保菜单在屏幕可见区域内
+                    top = Math.max(0, Math.min(top, screenHeight - menuHeight));
+                    left = Math.max(0, Math.min(left, screenWidth - menuWidth));
+
+                    // 设置菜单位置并显示
+                    contextMenu.style.left = `${left}px`;
+                    contextMenu.style.top = `${top}px`;
+                    contextMenu.style.visibility = 'visible';
+                }
+
+                // 添加菜单拖动功能
+                contextMenu.addEventListener('mousedown', (e) => {
+                    if (e.target === contextMenu || e.target.classList.contains('custom-context-menu')) {
+                        isDragging = true;
+                        startX = e.clientX;
+                        startY = e.clientY;
+                        menuStartX = parseInt(contextMenu.style.left) || 0;
+                        menuStartY = parseInt(contextMenu.style.top) || 0;
+                        e.preventDefault();
+                    }
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging) {
+                        const dx = e.clientX - startX;
+                        const dy = e.clientY - startY;
+                        const newLeft = menuStartX + dx;
+                        const newTop = menuStartY + dy;
+
+                        // 确保菜单不超出屏幕
+                        const screenWidth = window.innerWidth;
+                        const screenHeight = window.innerHeight;
+                        const menuWidth = contextMenu.offsetWidth || 180;
+                        const menuHeight = contextMenu.offsetHeight || 300;
+
+                        const boundedLeft = Math.max(0, Math.min(newLeft, screenWidth - menuWidth));
+                        const boundedTop = Math.max(0, Math.min(newTop, screenHeight - menuHeight));
+
+                        contextMenu.style.left = `${boundedLeft}px`;
+                        contextMenu.style.top = `${boundedTop}px`;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+
+                // 移动端触摸拖动
+                contextMenu.addEventListener('touchstart', (e) => {
+                    if (e.target === contextMenu || e.target.classList.contains('custom-context-menu')) {
+                        isDragging = true;
+                        const touch = e.touches[0];
+                        startX = touch.clientX;
+                        startY = touch.clientY;
+                        menuStartX = parseInt(contextMenu.style.left) || 0;
+                        menuStartY = parseInt(contextMenu.style.top) || 0;
+                        e.preventDefault();
+                    }
+                });
+
+                document.addEventListener('touchmove', (e) => {
+                    if (isDragging) {
+                        const touch = e.touches[0];
+                        const dx = touch.clientX - startX;
+                        const dy = touch.clientY - startY;
+                        const newLeft = menuStartX + dx;
+                        const newTop = menuStartY + dy;
+
+                        // 确保菜单不超出屏幕
+                        const screenWidth = window.innerWidth;
+                        const screenHeight = window.innerHeight;
+                        const menuWidth = contextMenu.offsetWidth || 180;
+                        const menuHeight = contextMenu.offsetHeight || 300;
+
+                        const boundedLeft = Math.max(0, Math.min(newLeft, screenWidth - menuWidth));
+                        const boundedTop = Math.max(0, Math.min(newTop, screenHeight - menuHeight));
+
+                        contextMenu.style.left = `${boundedLeft}px`;
+                        contextMenu.style.top = `${boundedTop}px`;
+                    }
+                });
+
+                document.addEventListener('touchend', () => {
+                    isDragging = false;
+                });
+
+                // 点击其他地方关闭右键菜单
+                document.addEventListener('click', (e) => {
+                    // 确保点击不是在菜单本身上
+                    if (!contextMenu.contains(e.target)) {
+                        contextMenu.classList.add('closing');
+                        setTimeout(() => {
+                            contextMenu.style.display = 'none';
+                            contextMenu.classList.remove('closing');
+                        }, 200);
+                    }
+                });
+
+                // 加载应用到右键菜单
+                loadPresetAppsToContextMenu();
+
+                // 添加分割线
+                const divider = document.createElement('div');
+                divider.className = 'context-menu-divider';
+                contextMenu.appendChild(divider);
+
+                // 添加系统功能菜单
+                addSystemMenuItems();
+            }
+
+            // 初始化右键菜单
+            initContextMenu();
+
+            // 加载预设应用（仅保留容器，不再通过加号按钮触发）
+            function loadPresetApps() {
+                const presetAppsContainer = document.getElementById('preset-apps-container');
+                if (!presetAppsContainer) return;
+
+                // 预设应用列表
+                const presetApps = [
+                    { name: '代码编辑器', file: 'code-editor.html', icon: './serve/files/icon/code-editor.svg' },
+                    { name: '思维导图', file: 'mind-map.html', icon: './serve/files/icon/mind-map.svg' },
+                    { name: '神秘书店', file: 'mystery-bookstore-gal.html', icon: './serve/files/icon/bookstore.svg' },
+                    { name: '粒子物理', file: 'particle-physics.html', icon: './serve/files/icon/physics.svg' },
+                    { name: '像素艺术', file: 'pixel-art.html', icon: './serve/files/icon/pixel-art.svg' },
+                    { name: '像素编辑器', file: 'pixel-editor.html', icon: './serve/files/icon/pixel-editor.svg' },
+                    { name: '程序员贪吃蛇', file: 'programmer-snake.html', icon: './serve/files/icon/snake.svg' },
+                    { name: '节奏游戏', file: 'rhythm-game.html', icon: './serve/files/icon/music.svg' },
+                    { name: '旅行日志', file: 'travel-log.html', icon: './serve/files/icon/travel.svg' },
+                    { name: '空白HTML', file: 'about:blank', icon: './serve/files/icon/html.svg' }
+                ];
+
+                // 清空容器
+                presetAppsContainer.innerHTML = '';
+
+                // 添加预设应用
+                presetApps.forEach(app => {
+                    const appButton = document.createElement('div');
+                    appButton.className = 'preset-app-button';
+                    appButton.style.width = '80px';
+                    appButton.style.height = '80px';
+                    appButton.style.display = 'flex';
+                    appButton.style.flexDirection = 'column';
+                    appButton.style.alignItems = 'center';
+                    appButton.style.justifyContent = 'center';
+                    appButton.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                    appButton.style.borderRadius = '10px';
+                    appButton.style.cursor = 'pointer';
+                    appButton.style.transition = 'all 0.2s';
+                    appButton.style.color = 'white';
+                    appButton.style.fontSize = '12px';
+                    appButton.style.padding = '5px';
+                    appButton.style.boxSizing = 'border-box';
+
+                    // 应用图标
+                    const appIcon = document.createElement('img');
+                    appIcon.src = app.icon;
+                    appIcon.alt = app.name;
+                    appIcon.style.width = '32px';
+                    appIcon.style.height = '32px';
+                    appIcon.style.marginBottom = '5px';
+
+                    // 应用名称
+                    const appName = document.createElement('div');
+                    appName.textContent = app.name;
+                    appName.style.textAlign = 'center';
+                    appName.style.overflow = 'hidden';
+                    appName.style.textOverflow = 'ellipsis';
+                    appName.style.whiteSpace = 'nowrap';
+                    appName.style.width = '100%';
+
+                    // 组装
+                    appButton.appendChild(appIcon);
+                    appButton.appendChild(appName);
+
+                    // 点击事件
+                    appButton.addEventListener('click', () => {
+                        if (app.file === 'about:blank') {
+                            window.createCustomWindow({
+                                title: app.name,
+                                icon: app.icon,
+                                url: app.file
+                            });
+                        } else {
+                            window.createCustomWindow({
+                                title: app.name,
+                                icon: app.icon,
+                                url: `./users/applications/${app.file}`
+                            });
+                        }
+                    });
+
+                    // 悬停效果
+                    appButton.addEventListener('mouseenter', () => {
+                        appButton.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                        appButton.style.transform = 'scale(1.05)';
+                    });
+
+                    appButton.addEventListener('mouseleave', () => {
+                        appButton.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                        appButton.style.transform = 'scale(1)';
+                    });
+
+                    presetAppsContainer.appendChild(appButton);
+                });
+            }
+
+            // 初始化时加载预设应用
+            loadPresetApps();
+
+        });
+    </script>
+</body>
+
+</html>

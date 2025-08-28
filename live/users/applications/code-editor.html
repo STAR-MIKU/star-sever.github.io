@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>简易代码编辑器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/ambiance.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/lint/lint.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/php/php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/lint/lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/lint/javascript-lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/format/format.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .editor-toolbar {
+            background-color: #2d3748;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .toolbar-group {
+            display: flex;
+            gap: 10px;
+        }
+        button, select {
+            background-color: #4a5568;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        button:hover, select:hover {
+            background-color: #718096;
+        }
+        button.run-btn {
+            background-color: #38a169;
+        }
+        button.run-btn:hover {
+            background-color: #48bb78;
+        }
+        .editor-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        #editor {
+            flex: 1;
+            height: 100%;
+            border-right: 1px solid #ddd;
+        }
+        .output-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #ddd;
+        }
+        .output-header {
+            background-color: #2d3748;
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+            border-bottom: 1px solid #4a5568;
+        }
+        #output {
+            flex: 1;
+            overflow: auto;
+            background-color: white;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #fileName {
+            background: transparent;
+            border: 1px solid transparent;
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 14px;
+            width: 180px;
+        }
+        #fileName:focus {
+            border-color: #4299e1;
+            outline: none;
+        }
+        .theme-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        @media (max-width: 768px) {
+            .editor-content {
+                flex-direction: column;
+            }
+            #editor {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+            .output-panel {
+                border-left: none;
+                border-top: 1px solid #ddd;
+                height: 300px;
+            }
+            .toolbar-group {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <div class="editor-toolbar">
+            <div class="toolbar-group">
+                <div class="file-info">
+                    <input type="text" id="fileName" value="script.js" placeholder="文件名">
+                    <button id="saveFile">💾 保存</button>
+                </div>
+                <button id="openFile">📂 打开</button>
+                <input type="file" id="fileInput" accept=".js,.html,.css,.py,.php" style="display: none;">
+            </div>
+            
+            <div class="toolbar-group">
+                <select id="language">
+                    <option value="javascript">JavaScript</option>
+                    <option value="htmlmixed">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="python">Python</option>
+                    <option value="php">PHP</option>
+                </select>
+                <select id="theme">
+                    <option value="dracula">Dracula</option>
+                    <option value="monokai">Monokai</option>
+                    <option value="ambiance">Ambiance</option>
+                    <option value="default">Default</option>
+                </select>
+                <button id="formatCode">📋 格式化</button>
+                <button id="clearEditor">🗑️ 清空</button>
+                <button id="runCode" class="run-btn">▶️ 运行</button>
+            </div>
+        </div>
+        
+        <div class="editor-content">
+            <textarea id="editor">// 在此输入代码
+function greet(name) {
+    return `Hello, ${name}!`;
+}
+
+console.log(greet("World"));</textarea>
+            
+            <div class="output-panel">
+                <div class="output-header">输出结果</div>
+                <div id="output"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化编辑器
+        const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+            lineNumbers: true,
+            mode: 'javascript',
+            theme: 'dracula',
+            indentUnit: 4,
+            smartIndent: true,
+            lineWrapping: true,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            lint: true,
+            gutters: ["CodeMirror-lint-markers"]
+        });
+        
+        // DOM 元素
+        const languageSelect = document.getElementById('language');
+        const themeSelect = document.getElementById('theme');
+        const formatBtn = document.getElementById('formatCode');
+        const clearBtn = document.getElementById('clearEditor');
+        const runBtn = document.getElementById('runCode');
+        const saveBtn = document.getElementById('saveFile');
+        const openBtn = document.getElementById('openFile');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameInput = document.getElementById('fileName');
+        const outputDiv = document.getElementById('output');
+        
+        // 设置编辑器高度
+        function setEditorHeight() {
+            const toolbarHeight = document.querySelector('.editor-toolbar').offsetHeight;
+            const windowHeight = window.innerHeight;
+            const editorHeight = windowHeight - toolbarHeight;
+            
+            document.querySelector('.editor-content').style.height = `${editorHeight}px`;
+            editor.setSize(null, '100%');
+        }
+        
+        // 初始化时设置高度
+        setEditorHeight();
+        // 窗口大小改变时调整高度
+        window.addEventListener('resize', setEditorHeight);
+        
+        // 切换语言
+        languageSelect.addEventListener('change', () => {
+            const mode = languageSelect.value;
+            editor.setOption('mode', mode);
+            
+            // 根据语言设置默认文件名
+            const extensions = {
+                'javascript': '.js',
+                'htmlmixed': '.html',
+                'css': '.css',
+                'python': '.py',
+                'php': '.php'
+            };
+            
+            const currentName = fileNameInput.value;
+            const currentExt = currentName.split('.').pop();
+            const newExt = extensions[mode];
+            
+            if (!currentExt || !Object.values(extensions).includes('.' + currentExt)) {
+                fileNameInput.value = `script${newExt}`;
+            }
+        });
+        
+        // 切换主题
+        themeSelect.addEventListener('change', () => {
+            const theme = themeSelect.value;
+            editor.setOption('theme', theme);
+        });
+        
+        // 格式化代码
+        formatBtn.addEventListener('click', () => {
+            const mode = editor.getOption('mode');
+            
+            // 简单的代码格式化实现
+            try {
+                let code = editor.getValue();
+                
+                if (mode === 'javascript' || mode === 'json') {
+                    // 使用JSON格式化JS对象
+                    if (code.trim().startsWith('{') && code.trim().endsWith('}')) {
+                        code = JSON.stringify(JSON.parse(code), null, 4);
+                    } else {
+                        // 对于普通JS代码，我们使用简单的缩进处理
+                        // 这只是一个基础实现，实际项目中可能需要更复杂的格式化库
+                        alert('JavaScript格式化功能有限，建议使用专业工具');
+                    }
+                } else if (mode === 'htmlmixed') {
+                    alert('HTML格式化功能即将推出');
+                    return;
+                } else if (mode === 'css') {
+                    alert('CSS格式化功能即将推出');
+                    return;
+                }
+                
+                editor.setValue(code);
+                logOutput('代码已格式化');
+            } catch (error) {
+                logError('格式化失败: ' + error.message);
+            }
+        });
+        
+        // 清空编辑器
+        clearBtn.addEventListener('click', () => {
+            if (confirm('确定要清空编辑器内容吗？')) {
+                editor.setValue('');
+                logOutput('编辑器已清空');
+            }
+        });
+        
+        // 运行代码
+        runBtn.addEventListener('click', () => {
+            const mode = editor.getOption('mode');
+            const code = editor.getValue();
+            
+            outputDiv.innerHTML = '';
+            
+            try {
+                if (mode === 'javascript') {
+                    // 重写console.log以捕获输出
+                    const originalConsoleLog = console.log;
+                    console.log = function(...args) {
+                        logOutput(args.map(arg => 
+                            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+                        ).join(' '));
+                    };
+                    
+                    // 执行代码
+                    new Function(code)();
+                    
+                    // 恢复原始console.log
+                    console.log = originalConsoleLog;
+                } else if (mode === 'htmlmixed') {
+                    // 创建一个临时iframe来显示HTML结果
+                    const iframe = document.createElement('iframe');
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100%';
+                    iframe.style.border = 'none';
+                    outputDiv.innerHTML = '';
+                    outputDiv.appendChild(iframe);
+                    iframe.contentDocument.open();
+                    iframe.contentDocument.write(code);
+                    iframe.contentDocument.close();
+                } else if (mode === 'css') {
+                    logOutput('CSS无法直接运行，请在HTML中引用');
+                    logOutput('预览CSS效果:');
+                    const previewDiv = document.createElement('div');
+                    previewDiv.style.border = '1px solid #ddd';
+                    previewDiv.style.padding = '10px';
+                    previewDiv.style.marginTop = '10px';
+                    previewDiv.innerHTML = '<div class="css-preview">这是一个CSS预览示例</div>';
+                    
+                    const style = document.createElement('style');
+                    style.textContent = code;
+                    
+                    outputDiv.appendChild(previewDiv);
+                    outputDiv.appendChild(style);
+                } else {
+                    logOutput(`暂不支持${getLanguageName(mode)}代码的运行`);
+                }
+            } catch (error) {
+                logError(`运行错误: ${error.message}`);
+                // 确保console.log被恢复
+                console.log = originalConsoleLog;
+            }
+        });
+        
+        // 保存文件
+        saveBtn.addEventListener('click', () => {
+            const code = editor.getValue();
+            const fileName = fileNameInput.value.trim() || 'script.txt';
+            const mode = editor.getOption('mode');
+            
+            // 根据语言设置默认扩展名
+            if (!fileName.includes('.')) {
+                const extensions = {
+                    'javascript': '.js',
+                    'htmlmixed': '.html',
+                    'css': '.css',
+                    'python': '.py',
+                    'php': '.php'
+                };
+                const ext = extensions[mode] || '.txt';
+                fileNameInput.value = fileName + ext;
+            }
+            
+            // 创建Blob并下载
+            const blob = new Blob([code], { type: getMimeType(mode) });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileNameInput.value;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            logOutput(`文件已保存: ${fileNameInput.value}`);
+        });
+        
+        // 打开文件
+        openBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                editor.setValue(event.target.result);
+                fileNameInput.value = file.name;
+                
+                // 根据文件名猜测语言
+                const ext = file.name.split('.').pop().toLowerCase();
+                const modes = {
+                    'js': 'javascript',
+                    'html': 'htmlmixed',
+                    'css': 'css',
+                    'py': 'python',
+                    'php': 'php'
+                };
+                
+                if (modes[ext]) {
+                    languageSelect.value = modes[ext];
+                    editor.setOption('mode', modes[ext]);
+                }
+                
+                logOutput(`文件已打开: ${file.name}`);
+            };
+            reader.readAsText(file);
+        });
+        
+        // 日志输出
+        function logOutput(message) {
+            const div = document.createElement('div');
+            div.style.color = '#333';
+            div.textContent = `> ${message}`;
+            outputDiv.appendChild(div);
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+        
+        // 错误输出
+        function logError(message) {
+            const div = document.createElement('div');
+            div.style.color = '#e53e3e';
+            div.textContent = `> ${message}`;
+            outputDiv.appendChild(div);
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+        
+        // 获取语言名称
+        function getLanguageName(mode) {
+            const names = {
+                'javascript': 'JavaScript',
+                'htmlmixed': 'HTML',
+                'css': 'CSS',
+                'python': 'Python',
+                'php': 'PHP'
+            };
+            return names[mode] || mode;
+        }
+        
+        // 获取MIME类型
+        function getMimeType(mode) {
+            const types = {
+                'javascript': 'application/javascript',
+                'htmlmixed': 'text/html',
+                'css': 'text/css',
+                'python': 'text/x-python',
+                'php': 'application/x-httpd-php'
+            };
+            return types[mode] || 'text/plain';
+        }
+    </script>
+</body>
+</html>

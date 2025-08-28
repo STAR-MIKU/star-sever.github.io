@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神秘旧书店的夏日约定</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义主题 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6', // 主色调：蓝色（代表夏日、平静）
+                        secondary: '#EC4899', // 辅助色：粉色（代表浪漫）
+                        accent: '#F59E0B', // 强调色：琥珀色（代表温暖）
+                        dark: '#1E293B', // 深色背景
+                        light: '#F8FAFC', // 浅色文本
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans SC"', 'sans-serif'],
+                        serif: ['"Noto Serif SC"', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            }
+            .text-shadow-lg {
+                text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+            }
+            .backdrop-blur {
+                backdrop-filter: blur(8px);
+            }
+            .character-enter {
+                animation: characterEnter 0.6s ease-out forwards;
+            }
+            .character-exit {
+                animation: characterExit 0.4s ease-in forwards;
+            }
+            .bg-fade {
+                animation: bgFade 1.2s ease-in-out forwards;
+            }
+            .text-type {
+                overflow: hidden;
+                white-space: nowrap;
+                border-right: 2px solid currentColor;
+                animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+            }
+        }
+        
+        @keyframes characterEnter {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes characterExit {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(30px); }
+        }
+        
+        @keyframes bgFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: currentColor; }
+        }
+    </style>
+</head>
+<body class="bg-dark text-light overflow-hidden h-screen flex flex-col">
+    <!-- 游戏主容器 -->
+    <div id="game-container" class="relative w-full h-full">
+        <!-- 背景图片 -->
+        <div id="background" class="absolute inset-0 z-0">
+            <img src="" alt="游戏场景背景" class="w-full h-full object-cover transition-opacity duration-1000">
+        </div>
+        
+        <!-- 背景遮罩（增强文字可读性） -->
+        <div id="background-overlay" class="absolute inset-0 z-10 bg-gradient-to-t from-dark/80 via-dark/40 to-transparent pointer-events-none"></div>
+        
+        <!-- 角色立绘区域 -->
+        <div id="characters" class="absolute inset-0 z-20 flex justify-between items-end px-4 md:px-8 pb-12 md:pb-20">
+            <!-- 左侧角色位置 -->
+            <div id="character-left" class="w-1/3 h-auto opacity-0 transition-all duration-700 ease-out">
+                <img id="char-left-img" src="" alt="" class="w-full h-auto object-contain">
+            </div>
+            
+            <!-- 中间角色位置（较少使用） -->
+            <div id="character-center" class="w-1/3 h-auto opacity-0 transition-all duration-700 ease-out">
+                <img id="char-center-img" src="" alt="" class="w-full h-auto object-contain">
+            </div>
+            
+            <!-- 右侧角色位置 -->
+            <div id="character-right" class="w-1/3 h-auto opacity-0 transition-all duration-700 ease-out">
+                <img id="char-right-img" src="" alt="" class="w-full h-auto object-contain">
+            </div>
+        </div>
+        
+        <!-- 对话框区域 -->
+        <div id="dialogue-box" class="absolute bottom-0 left-0 right-0 z-30 bg-dark/70 backdrop-blur p-4 md:p-6 border-t-2 border-primary/60 transition-all duration-500 ease-in-out">
+            <!-- 角色名称和头像 -->
+            <div class="flex items-center gap-3 mb-3">
+                <div id="character-avatar" class="w-10 h-10 rounded-full overflow-hidden hidden">
+                    <img src="" alt="" class="w-full h-full object-cover">
+                </div>
+                <div id="character-name" class="text-lg md:text-xl font-bold text-secondary">
+                    <span id="name-display"></span>
+                </div>
+            </div>
+            
+            <!-- 对话内容 -->
+            <div id="dialogue-content" class="text-base md:text-lg leading-relaxed min-h-[80px] md:min-h-[120px]">
+                <span id="text-display"></span>
+            </div>
+            
+            <!-- 选择按钮区域 -->
+            <div id="choices" class="flex flex-col gap-2 md:gap-3 mt-3 md:mt-4 hidden">
+                <!-- 选择按钮会动态生成在这里 -->
+            </div>
+            
+            <!-- 继续提示 -->
+            <div id="continue-prompt" class="absolute bottom-4 right-4 md:bottom-6 md:right-6 text-primary/70 animate-bounce">
+                <i class="fa fa-angle-down text-xl md:text-2xl"></i>
+            </div>
+        </div>
+        
+        <!-- 游戏控制区 -->
+        <div class="absolute top-3 right-3 z-40 flex gap-2">
+            <!-- 游戏菜单按钮 -->
+            <button id="game-menu-btn" class="bg-dark/50 backdrop-blur p-2 rounded-full hover:bg-primary/30 transition-all duration-300 cursor-pointer">
+                <i class="fa fa-bars text-light text-lg"></i>
+            </button>
+            
+            <!-- 快速保存按钮 -->
+            <button id="quick-save-btn" class="bg-dark/50 backdrop-blur p-2 rounded-full hover:bg-accent/30 transition-all duration-300 cursor-pointer" title="快速保存">
+                <i class="fa fa-floppy-o text-light text-lg"></i>
+            </button>
+            
+            <!-- 快速加载按钮 -->
+            <button id="quick-load-btn" class="bg-dark/50 backdrop-blur p-2 rounded-full hover:bg-accent/30 transition-all duration-300 cursor-pointer" title="快速加载">
+                <i class="fa fa-download text-light text-lg"></i>
+            </button>
+        </div>
+        
+        <!-- 游戏菜单 -->
+        <div id="game-menu" class="absolute inset-0 z-50 bg-dark/90 backdrop-blur flex flex-col items-center justify-center hidden">
+            <h2 class="text-2xl md:text-3xl font-bold mb-8 text-primary">游戏菜单</h2>
+            <div class="flex flex-col gap-3 md:gap-4 w-56 md:w-64">
+                <button id="continue-btn" class="bg-primary hover:bg-primary/80 text-white py-2 md:py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2">
+                    <i class="fa fa-play"></i> 继续游戏
+                </button>
+                <button id="save-btn" class="bg-dark border border-primary/50 hover:border-primary text-white py-2 md:py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2">
+                    <i class="fa fa-save"></i> 保存进度
+                </button>
+                <button id="load-btn" class="bg-dark border border-primary/50 hover:border-primary text-white py-2 md:py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2">
+                    <i class="fa fa-refresh"></i> 读取存档
+                </button>
+                <button id="settings-btn" class="bg-dark border border-primary/50 hover:border-primary text-white py-2 md:py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2">
+                    <i class="fa fa-cog"></i> 设置
+                </button>
+                <button id="restart-btn" class="bg-dark border border-primary/50 hover:border-primary text-white py-2 md:py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2">
+                    <i class="fa fa-repeat"></i> 重新开始
+                </button>
+                <button id="quit-btn" class="bg-dark border border-red-500/50 hover:border-red-500 text-white py-2 md:py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 mt-4">
+                    <i class="fa fa-sign-out"></i> 退出游戏
+                </button>
+            </div>
+        </div>
+        
+        <!-- 标题画面 -->
+        <div id="title-screen" class="absolute inset-0 z-60 bg-dark flex flex-col items-center justify-center">
+            <div class="absolute inset-0 z-0">
+                <img src="https://picsum.photos/id/175/1920/1080" alt="夏日小镇风景" class="w-full h-full object-cover opacity-40">
+            </div>
+            <div class="relative z-10 text-center px-4">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4 text-primary text-shadow-lg">神秘旧书店的</h1>
+                <h2 class="text-3xl md:text-5xl font-bold mb-8 text-secondary text-shadow-lg">夏日约定</h2>
+                <p class="text-base md:text-lg mb-10 text-light/80 max-w-lg mx-auto">在这个夏天，你将邂逅改变命运的相遇...</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button id="start-game" class="bg-primary hover:bg-primary/80 text-white py-3 px-8 rounded-lg text-lg transition-all duration-300 hover:scale-105">
+                        开始新游戏
+                    </button>
+                    <button id="load-game" class="bg-dark/60 backdrop-blur border border-primary/50 hover:border-primary text-white py-3 px-8 rounded-lg text-lg transition-all duration-300">
+                        读取存档
+                    </button>
+                </div>
+            </div>
+            <div class="absolute bottom-6 left-0 right-0 text-center text-light/60 text-sm">
+                <p>点击屏幕或按空格键推进剧情 | © 2023 夏日游戏工作室</p>
+            </div>
+        </div>
+        
+        <!-- 存档/读档界面 -->
+        <div id="save-load-screen" class="absolute inset-0 z-50 bg-dark/90 backdrop-blur hidden">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-primary" id="save-load-title">保存进度</h2>
+                    <button id="close-save-load" class="text-light hover:text-primary transition-colors">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="save-slots">
+                    <!-- 存档槽将动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 设置界面 -->
+        <div id="settings-screen" class="absolute inset-0 z-50 bg-dark/90 backdrop-blur hidden">
+            <div class="p-6 max-w-md mx-auto h-full flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-primary">游戏设置</h2>
+                    <button id="close-settings" class="text-light hover:text-primary transition-colors">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="flex flex-col gap-6 flex-grow">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3 text-light/90">音量设置</h3>
+                        <div class="flex items-center gap-3">
+                            <i class="fa fa-volume-up text-primary"></i>
+                            <input type="range" min="0" max="100" value="80" class="w-full accent-primary" id="volume-slider">
+                            <span class="text-light/80" id="volume-value">80%</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3 text-light/90">文字速度</h3>
+                        <div class="flex items-center gap-3">
+                            <i class="fa fa-tachometer text-primary"></i>
+                            <input type="range" min="1" max="10" value="5" class="w-full accent-primary" id="text-speed-slider">
+                            <span class="text-light/80" id="text-speed-value">中等</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3 text-light/90">自动播放</h3>
+                        <div class="flex items-center gap-3">
+                            <label class="text-light/90">关闭</label>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="auto-play-toggle" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                            <label class="text-light/90">开启</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <button id="apply-settings" class="w-full bg-primary hover:bg-primary/80 text-white py-3 px-4 rounded-lg transition-all duration-300">
+                        应用设置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏配置
+        const gameConfig = {
+            textSpeed: 5, // 1-10，数值越大速度越快
+            volume: 80,   // 0-100
+            autoPlay: false,
+            autoPlayDelay: 3000 // 自动播放延迟毫秒数
+        };
+        
+        // 角色数据
+        const characters = {
+            player: {
+                name: "我",
+                avatar: "https://picsum.photos/id/1012/100/100",
+                description: "暑假回到家乡小镇的大学生"
+            },
+            shiori: {
+                name: "诗织",
+                avatar: "https://picsum.photos/id/1005/100/100",
+                image: "https://picsum.photos/id/1005/600/900",
+                description: "神秘旧书店的主人，沉默寡言但知识渊博",
+                color: "#3B82F6" // 蓝色
+            },
+            hana: {
+                name: "花",
+                avatar: "https://picsum.photos/id/1000/100/100",
+                image: "https://picsum.photos/id/1000/600/900",
+                description: "镇上的活泼少女，对所有事物都充满好奇",
+                color: "#EC4899" // 粉色
+            },
+            mayu: {
+                name: "真由",
+                avatar: "https://picsum.photos/id/1011/100/100",
+                image: "https://picsum.photos/id/1011/600/900",
+                description: "主角的童年玩伴，现在是当地图书馆的管理员",
+                color: "#10B981" // 绿色
+            },
+            oldMan: {
+                name: "老人",
+                avatar: "https://picsum.photos/id/1074/100/100",
+                image: "https://picsum.photos/id/1074/600/900",
+                description: "镇上的老居民，知道许多关于小镇的秘密",
+                color: "#6B7280" // 灰色
+            }
+        };
+        
+        // 剧情节点 - 主故事线
+        const storyNodes = {
+            start: {
+                background: "https://picsum.photos/id/177/1920/1080", // 小镇街道
+                characters: [],
+                name: "",
+                text: "暑假到了，你回到了阔别已久的家乡小镇。阳光透过树叶洒下斑驳的光影，空气中弥漫着熟悉的夏日气息。沿着记忆中的小路漫步，你发现街角多了一家从未见过的旧书店。",
+                next: "enter_bookstore"
+            },
+            
+            enter_bookstore: {
+                background: "https://picsum.photos/id/24/1920/1080", // 旧书店内部
+                characters: [],
+                name: "",
+                text: "书店的招牌已经有些褪色，上面写着「时光书房」四个字。好奇心驱使你推开了那扇吱呀作响的木门。店内弥漫着旧书特有的油墨和纸张混合的香气，阳光透过彩色玻璃窗在地板上投下斑斓的光影。",
+                next: "meet_shiori"
+            },
+            
+            meet_shiori: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "诗织",
+                text: "一位穿着素雅连衣裙的少女正坐在柜台后安静地看书，听到动静后抬起头。她有着清澈的眼眸和齐肩的黑发，神情平静得像一潭深水。",
+                next: "shiori_greeting"
+            },
+            
+            shiori_greeting: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "诗织",
+                text: "「欢迎光临。」她的声音很轻柔，带着一丝疏离感，「这里的每一本书都在等待着与合适的读者相遇。」",
+                next: "first_choice"
+            },
+            
+            first_choice: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "",
+                text: "你决定如何回应？",
+                choices: [
+                    {text: "询问她关于这家书店的事情", next: "ask_about_bookstore"},
+                    {text: "浏览书架上的书籍", next: "browse_books"},
+                    {text: "简单打个招呼后离开", next: "leave_bookstore"}
+                ]
+            },
+            
+            ask_about_bookstore: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "诗织",
+                text: "「这家书店已经在这里很久了，」她合上书，「比我出生还要早。我只是继承了它，守护着这些承载着时光的书籍。」她的目光掠过书架，仿佛在看一群老朋友。",
+                next: "shiori_question"
+            },
+            
+            shiori_question: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "诗织",
+                text: "「你似乎不是镇上的常客？」她微微歪头，清澈的眼睛注视着你，「是回来探亲的吗？」",
+                next: "answer_shiori"
+            },
+            
+            answer_shiori: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "player",
+                position: "left",
+                name: "我",
+                text: "「是的，我是在这个小镇长大的，现在在外地上大学，暑假回来看看。」",
+                next: "shiori_response"
+            },
+            
+            shiori_response: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "诗织",
+                text: "「原来如此。」她轻轻点头，嘴角似乎有了一丝微不可察的弧度，「那么，也许你会在这里找到一些关于过去的回忆。」",
+                next: "meet_hana"
+            },
+            
+            browse_books: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "诗织",
+                text: "她微微点头，重新低下头看书，不再打扰你。书架上的书种类繁多，从经典文学到冷门的地方史都有。你在一个角落发现了一本封面精美的旧相册。",
+                next: "find_album"
+            },
+            
+            find_album: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "player",
+                position: "left",
+                name: "我",
+                text: "（这本相册看起来有些年头了，封面上写着「夏日回忆」。翻开后，里面是几十年前小镇的照片，还有一些孩子们玩耍的场景。）",
+                next: "shiori_album_comment"
+            },
+            
+            shiori_album_comment: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "诗织",
+                text: "「那是镇上一位老人多年前的收藏，」她不知何时走到了你身后，「里面记录了小镇的变迁。很多人都能在里面找到熟悉的面孔或地方。」",
+                next: "meet_hana"
+            },
+            
+            leave_bookstore: {
+                background: "https://picsum.photos/id/177/1920/1080",
+                characters: [],
+                name: "",
+                text: "你向少女点了点头，走出了书店。阳光有些刺眼，你站在街角犹豫了一下，不知道接下来该去哪里。就在这时，一个活泼的声音从身后传来。",
+                next: "hana_calls"
+            },
+            
+            hana_calls: {
+                background: "https://picsum.photos/id/177/1920/1080",
+                character: "hana",
+                position: "left",
+                name: "花",
+                text: "「喂！等一下！」一个扎着双马尾的少女朝你跑来，脸上带着灿烂的笑容，「你是新来的吗？我以前从没见过你呢！」",
+                next: "respond_to_hana"
+            },
+            
+            meet_hana: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "花",
+                text: "书店的门被猛地推开，一个充满活力的声音响起来：「诗织姐姐！我来借上次说的那本漫画！」一个扎着双马尾的少女蹦蹦跳跳地跑进来，看到你时愣了一下。",
+                next: "hana_greeting"
+            },
+            
+            hana_greeting: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "花",
+                text: "「啊，对不起，我不知道有客人在。」她吐了吐舌头，然后好奇地打量着你，「你好！我叫花，是这个小镇的居民。你是来旅游的吗？」",
+                next: "hana_choice"
+            },
+            
+            hana_choice: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "",
+                text: "你会如何回应花的问候？",
+                choices: [
+                    {text: "友好地介绍自己，说自己是回来探亲的", next: "friendly_intro"},
+                    {text: "简单回应，继续留在书店看书", next: "stay_in_bookstore"},
+                    {text: "邀请她推荐小镇的好去处", next: "ask_hana_recommend"}
+                ]
+            },
+            
+            friendly_intro: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "我",
+                text: "「你好，我叫...（你的名字）。我不是来旅游的，其实我是在这个小镇长大的，只是很久没回来了。」",
+                next: "hana_surprised"
+            },
+            
+            hana_surprised: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "花",
+                text: "「哇！真的吗？那太巧了！」花的眼睛亮了起来，「那你一定对镇上很多地方都很熟悉吧？不过这几年小镇变化也挺大的，要不要我带你四处逛逛？」",
+                next: "accept_hana_invite"
+            },
+            
+            accept_hana_invite: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "我",
+                text: "「好啊，那就麻烦你了。」",
+                next: "leave_with_hana"
+            },
+            
+            leave_with_hana: {
+                background: "https://picsum.photos/id/177/1920/1080",
+                character: "hana",
+                position: "left",
+                name: "花",
+                text: "「太棒了！」花开心地拍手，然后向诗织挥手道别，「诗织姐姐再见！我们晚点再来还书！」她拉着你的手腕跑出书店，兴奋地向你介绍着小镇的各种新鲜事。",
+                next: "hana_route"
+            },
+            
+            stay_in_bookstore: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "我",
+                text: "「你好，我只是随便看看。」你礼貌地回应，目光重新回到书架上的书籍。",
+                next: "hana_shrugs"
+            },
+            
+            hana_shrugs: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "花",
+                text: "「哦，好吧。」花耸耸肩，转向诗织，「诗织姐姐，我要借那本《夏日物语》的漫画。」拿到书后，她又朝你挥挥手，「再见啦！说不定我们还会再见面的！」",
+                next: "alone_with_shiori"
+            },
+            
+            ask_hana_recommend: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "我",
+                text: "「你好，我叫...（你的名字）。其实我是这个小镇长大的，只是很久没回来了。能麻烦你推荐一些值得去的地方吗？」",
+                next: "hana_excited"
+            },
+            
+            hana_excited: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "花",
+                text: "「当然可以！」花兴奋地说，「小镇上有很多好玩的地方呢！比如河边的樱花树，虽然现在不是樱花季，但夏天的傍晚在那里看日落超美的！还有老车站那边的冰淇淋店，他们家的抹茶口味是一绝！」",
+                next: "hana_invite_tour"
+            },
+            
+            hana_invite_tour: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "花",
+                text: "「如果你不介意的话，我现在就可以带你去看看哦！反正我今天也没什么事。」花期待地看着你。",
+                next: "hana_tour_choice"
+            },
+            
+            hana_tour_choice: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "",
+                text: "你会接受花的邀请吗？",
+                choices: [
+                    {text: "接受邀请，和她一起游览小镇", next: "accept_hana_invite"},
+                    {text: "婉言谢绝，说想先在书店多待一会儿", next: "decline_hana"}
+                ]
+            },
+            
+            decline_hana: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "我",
+                text: "「谢谢你的好意，但我想先在这家书店多看看，感觉这里很有意思。」",
+                next: "hana_understands"
+            },
+            
+            hana_understands: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                characters: [
+                    {id: "shiori", position: "right"},
+                    {id: "hana", position: "left"}
+                ],
+                name: "花",
+                text: "「这样啊，我明白的，诗织姐姐的书店确实很有魅力。」花笑着说，「那我就不打扰你了。对了，我叫花，如果你之后想找人带你逛小镇，随时可以来图书馆找我，我经常在那里帮忙！」",
+                next: "alone_with_shiori"
+            },
+            
+            alone_with_shiori: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "诗织",
+                text: "花离开后，书店又恢复了宁静。诗织走到你身边，目光落在你正在看的书上。「花是个很活泼的孩子，」她轻声说，「镇上的人都很喜欢她。」",
+                next: "shiori_book_talk"
+            },
+            
+            shiori_book_talk: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "诗织",
+                text: "「你似乎对历史类的书籍很感兴趣？」她看着你手中的书问道。",
+                next: "respond_book_interest"
+            },
+            
+            respond_book_interest: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "player",
+                position: "left",
+                name: "我",
+                text: "「嗯，我对这个小镇的历史很感兴趣。毕竟是我长大的地方，但很多事情我其实并不了解。」",
+                next: "shiori_offer_help"
+            },
+            
+            shiori_offer_help: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "诗织",
+                text: "「我这里有一些关于小镇历史的资料和日记，如果不介意的话，你可以在这里阅读。」她顿了顿，似乎在犹豫什么，「如果你有什么想知道的，我也可以告诉你。」",
+                next: "shiori_route"
+            },
+            
+            // 诗织路线（简化版）
+            shiori_route: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "",
+                text: "你决定留在书店，和诗织一起探讨小镇的历史。随着交流的深入，你发现她虽然外表冷漠，但内心却非常温柔，对书籍和小镇有着深厚的感情。",
+                next: "shiori_story"
+            },
+            
+            shiori_story: {
+                background: "https://picsum.photos/id/24/1920/1080",
+                character: "shiori",
+                position: "right",
+                name: "诗织",
+                text: "「其实，这家书店是我祖母创办的，」诗织第一次谈起自己的过去，「她相信每本书都有灵魂，能连接不同的时空和人心。我小时候不明白，直到她去世后，我才渐渐理解了她的话。」",
+                next: "shiori_ending"
+            },
+            
+            shiori_ending: {
+                background: "https://picsum.photos/id/1039/1920/1080",
+                character: "shiori",
+                position: "center",
+                name: "诗织",
+                text: "暑假即将结束，你即将离开小镇。在书店打烊后，诗织叫住了你。「这个送给你，」她递给你一本包装精美的书，「里面夹着书店的钥匙。无论什么时候，如果你想回来看看，这里的门永远为你敞开。」夕阳的余晖中，你看到她的脸颊泛起了淡淡的红晕。",
+                next: "good_ending"
+            },
+            
+            // 花路线（简化版）
+            hana_route: {
+                background: "https://picsum.photos/id/177/1920/1080",
+                character: "hana",
+                position: "left",
+                name: "花",
+                text: "花带你游览了整个小镇，她的活力感染了你，让你重新找回了童年的感觉。你们一起在河边看日落，分享冰淇淋，聊了很多关于小镇和各自生活的事情。",
+                next: "hana_lake"
+            },
+            
+            hana_lake: {
+                background: "https://picsum.photos/id/135/1920/1080",
+                character: "hana",
+                position: "left",
+                name: "花",
+                text: "「这是小镇的秘密基地——星月湖，」花带你来到一个宁静的湖边，「晚上这里的星星和月亮会倒映在水里，超级浪漫的！」她看着湖面，突然轻声说：「其实，我很高兴你能回来。」",
+                next: "hana_ending"
+            },
+            
+            hana_ending: {
+                background: "https://picsum.photos/id/133/1920/1080",
+                character: "hana",
+                position: "left",
+                name: "花",
+                text: "暑假的最后一个晚上，花约你在星月湖见面。她手里拿着一个小小的萤火虫灯笼，脸上带着羞涩的笑容。「这个给你，」她递给你一个信封，「里面是我的联系方式，还有...一些话想对你说。不管你什么时候回来，我都会在这里等你。」",
+                next: "good_ending"
+            },
+            
+            // 通用结局
+            good_ending: {
+                background: "https://picsum.photos/id/1048/1920/1080",
+                characters: [],
+                name: "",
+                text: "【夏日的约定】这个夏天，你不仅重新认识了这个小镇，更重要的是，你找到了属于自己的羁绊。虽然假期结束了，但新的故事才刚刚开始...",
+                next: "end"
+            },
+            
+            end: {
+                background: "https://picsum.photos/id/175/1920/1080",
+                characters: [],
+                name: "",
+                text: "游戏结束。感谢游玩《神秘旧书店的夏日约定》。",
+                choices: [
+                    {text: "重新开始", next: "start"},
+                    {text: "返回标题画面", next: "title"}
+                ]
+            }
+        };
+        
+        // 游戏状态
+        const gameState = {
+            currentNode: "start",
+            saveSlots: {},
+            quickSave: null,
+            flags: {} // 用于记录剧情分支选择
+        };
+        
+        // DOM元素
+        const elements = {
+            // 主要游戏界面
+            background: document.getElementById('background'),
+            backgroundImg: document.querySelector('#background img'),
+            backgroundOverlay: document.getElementById('background-overlay'),
+            characterLeft: document.getElementById('character-left'),
+            characterCenter: document.getElementById('character-center'),
+            characterRight: document.getElementById('character-right'),
+            charLeftImg: document.getElementById('char-left-img'),
+            charCenterImg: document.getElementById('char-center-img'),
+            charRightImg: document.getElementById('char-right-img'),
+            nameDisplay: document.getElementById('name-display'),
+            textDisplay: document.getElementById('text-display'),
+            choices: document.getElementById('choices'),
+            continuePrompt: document.getElementById('continue-prompt'),
+            characterAvatar: document.getElementById('character-avatar'),
+            avatarImg: document.querySelector('#character-avatar img'),
+            
+            // 菜单和界面
+            gameMenuBtn: document.getElementById('game-menu-btn'),
+            gameMenu: document.getElementById('game-menu'),
+            continueBtn: document.getElementById('continue-btn'),
+            saveBtn: document.getElementById('save-btn'),
+            loadBtn: document.getElementById('load-btn'),
+            settingsBtn: document.getElementById('settings-btn'),
+            restartBtn: document.getElementById('restart-btn'),
+            quitBtn: document.getElementById('quit-btn'),
+            quickSaveBtn: document.getElementById('quick-save-btn'),
+            quickLoadBtn: document.getElementById('quick-load-btn'),
+            
+            // 标题画面
+            titleScreen: document.getElementById('title-screen'),
+            startGame: document.getElementById('start-game'),
+            loadGame: document.getElementById('load-game'),
+            
+            // 存档/读档界面
+            saveLoadScreen: document.getElementById('save-load-screen'),
+            saveLoadTitle: document.getElementById('save-load-title'),
+            saveSlots: document.getElementById('save-slots'),
+            closeSaveLoad: document.getElementById('close-save-load'),
+            
+            // 设置界面
+            settingsScreen: document.getElementById('settings-screen'),
+            closeSettings: document.getElementById('close-settings'),
+            volumeSlider: document.getElementById('volume-slider'),
+            volumeValue: document.getElementById('volume-value'),
+            textSpeedSlider: document.getElementById('text-speed-slider'),
+            textSpeedValue: document.getElementById('text-speed-value'),
+            autoPlayToggle: document.getElementById('auto-play-toggle'),
+            applySettings: document.getElementById('apply-settings')
+        };
+        
+        // 自动播放计时器
+        let autoPlayTimer = null;
+        
+        // 初始化游戏
+        function initGame() {
+            // 从本地存储加载存档
+            loadSaveData();
+            
+            // 绑定事件监听
+            elements.background.addEventListener('click', advanceDialogue);
+            document.addEventListener('keydown', handleKeyPress);
+            
+            // 菜单按钮事件
+            elements.gameMenuBtn.addEventListener('click', () => toggleMenu(true));
+            elements.continueBtn.addEventListener('click', () => toggleMenu(false));
+            elements.restartBtn.addEventListener('click', restartGame);
+            elements.quitBtn.addEventListener('click', quitToTitle);
+            elements.saveBtn.addEventListener('click', () => openSaveLoadScreen('save'));
+            elements.loadBtn.addEventListener('click', () => openSaveLoadScreen('load'));
+            elements.settingsBtn.addEventListener('click', openSettings);
+            elements.quickSaveBtn.addEventListener('click', quickSave);
+            elements.quickLoadBtn.addEventListener('click', quickLoad);
+            
+            // 标题画面事件
+            elements.startGame.addEventListener('click', startNewGame);
+            elements.loadGame.addEventListener('click', () => {
+                elements.titleScreen.classList.add('hidden');
+                openSaveLoadScreen('load');
+            });
+            
+            // 存档/读档界面事件
+            elements.closeSaveLoad.addEventListener('click', () => {
+                elements.saveLoadScreen.classList.add('hidden');
+                if (elements.titleScreen.classList.contains('hidden') === false) {
+                    elements.titleScreen.classList.remove('hidden');
+                }
+            });
+            
+            // 设置界面事件
+            elements.closeSettings.addEventListener('click', closeSettings);
+            elements.applySettings.addEventListener('click', applySettings);
+            elements.volumeSlider.addEventListener('input', (e) => {
+                elements.volumeValue.textContent = `${e.target.value}%`;
+            });
+            elements.textSpeedSlider.addEventListener('input', (e) => {
+                const speedValues = ["极慢", "很慢", "慢", "较慢", "中等", "较快", "快", "很快", "极快", "瞬间"];
+                elements.textSpeedValue.textContent = speedValues[e.target.value - 1];
+            });
+            
+            // 初始化设置
+            elements.volumeSlider.value = gameConfig.volume;
+            elements.volumeValue.textContent = `${gameConfig.volume}%`;
+            elements.textSpeedSlider.value = gameConfig.textSpeed;
+            const speedValues = ["极慢", "很慢", "慢", "较慢", "中等", "较快", "快", "很快", "极快", "瞬间"];
+            elements.textSpeedValue.textContent = speedValues[gameConfig.textSpeed - 1];
+            elements.autoPlayToggle.checked = gameConfig.autoPlay;
+            
+            // 显示标题画面
+            elements.titleScreen.classList.remove('hidden');
+        }
+        
+        // 处理键盘按键
+        function handleKeyPress(e) {
+            // 空格键或回车键推进对话
+            if (e.code === 'Space' || e.code === 'Enter') {
+                e.preventDefault();
+                advanceDialogue();
+            }
+            // Esc键打开/关闭菜单
+            else if (e.code === 'Escape') {
+                e.preventDefault();
+                toggleMenu(!elements.gameMenu.classList.contains('hidden'));
+            }
+            // S键快速保存
+            else if (e.code === 'KeyS' && e.ctrlKey) {
+                e.preventDefault();
+                quickSave();
+            }
+            // L键快速加载
+            else if (e.code === 'KeyL' && e.ctrlKey) {
+                e.preventDefault();
+                quickLoad();
+            }
+        }
+        
+        // 开始新游戏
+        function startNewGame() {
+            elements.titleScreen.classList.add('hidden');
+            gameState.currentNode = "start";
+            gameState.flags = {}; // 重置剧情标记
+            renderNode(gameState.currentNode);
+        }
+        
+        // 渲染当前剧情节点
+        function renderNode(nodeId) {
+            // 清除自动播放计时器
+            if (autoPlayTimer) {
+                clearTimeout(autoPlayTimer);
+                autoPlayTimer = null;
+            }
+            
+            const node = storyNodes[nodeId];
+            if (!node) return;
+            
+            // 更新背景
+            if (node.background) {
+                elements.backgroundImg.style.opacity = 0;
+                setTimeout(() => {
+                    elements.backgroundImg.src = node.background;
+                    elements.backgroundImg.alt = `场景：${nodeId}`;
+                    elements.backgroundImg.style.opacity = 1;
+                }, 500);
+            }
+            
+            // 隐藏所有角色
+            elements.characterLeft.style.opacity = 0;
+            elements.characterCenter.style.opacity = 0;
+            elements.characterRight.style.opacity = 0;
+            
+            // 移除角色动画类
+            elements.characterLeft.classList.remove('character-enter');
+            elements.characterCenter.classList.remove('character-enter');
+            elements.characterRight.classList.remove('character-enter');
+            
+            // 显示单个角色
+            if (node.character) {
+                const char = characters[node.character];
+                const position = node.position || "left";
+                
+                setTimeout(() => {
+                    const charElement = position === "left" ? elements.characterLeft : 
+                                      position === "center" ? elements.characterCenter : elements.characterRight;
+                    const charImg = position === "left" ? elements.charLeftImg : 
+                                   position === "center" ? elements.charCenterImg : elements.charRightImg;
+                    
+                    charImg.src = char.image || char.avatar;
+                    charImg.alt = char.name;
+                    charElement.style.opacity = 1;
+                    // 添加入场动画
+                    setTimeout(() => {
+                        charElement.classList.add('character-enter');
+                    }, 50);
+                }, 500);
+            }
+            
+            // 显示多个角色
+            if (node.characters && node.characters.length > 0) {
+                setTimeout(() => {
+                    node.characters.forEach(charData => {
+                        const char = characters[charData.id];
+                        const charElement = charData.position === "left" ? elements.characterLeft : 
+                                          charData.position === "center" ? elements.characterCenter : elements.characterRight;
+                        const charImg = charData.position === "left" ? elements.charLeftImg : 
+                                       charData.position === "center" ? elements.charCenterImg : elements.charRightImg;
+                        
+                        charImg.src = char.image || char.avatar;
+                        charImg.alt = char.name;
+                        charElement.style.opacity = 1;
+                        // 添加入场动画
+                        setTimeout(() => {
+                            charElement.classList.add('character-enter');
+                        }, 50);
+                    });
+                }, 500);
+            }
+            
+            // 更新角色名称和头像
+            if (node.name) {
+                elements.nameDisplay.textContent = node.name;
+                // 查找对应的角色以显示头像和颜色
+                const charKey = Object.keys(characters).find(key => characters[key].name === node.name);
+                if (charKey) {
+                    const char = characters[charKey];
+                    elements.characterAvatar.classList.remove('hidden');
+                    elements.avatarImg.src = char.avatar;
+                    elements.avatarImg.alt = char.name;
+                    elements.nameDisplay.style.color = char.color || '#EC4899';
+                } else {
+                    elements.characterAvatar.classList.add('hidden');
+                    elements.nameDisplay.style.color = '#EC4899'; // 默认颜色
+                }
+            } else {
+                elements.nameDisplay.textContent = "";
+                elements.characterAvatar.classList.add('hidden');
+            }
+            
+            // 清空对话内容和选择
+            elements.textDisplay.textContent = "";
+            elements.choices.innerHTML = "";
+            elements.choices.classList.add('hidden');
+            
+            // 显示对话内容（打字效果）
+            if (node.text) {
+                typeText(node.text, elements.textDisplay);
+            }
+            
+            // 显示选择或继续提示
+            if (node.choices && node.choices.length > 0) {
+                elements.continuePrompt.classList.add('hidden');
+                elements.choices.classList.remove('hidden');
+                
+                node.choices.forEach(choice => {
+                    const button = document.createElement('button');
+                    button.className = 'bg-primary/20 hover:bg-primary/40 text-light py-2 px-4 rounded-lg text-left transition-all duration-300 hover:translate-x-1';
+                    button.textContent = choice.text;
+                    button.addEventListener('click', () => {
+                        // 记录选择标记
+                        if (choice.flag) {
+                            gameState.flags[choice.flag] = true;
+                        }
+                        gameState.currentNode = choice.next;
+                        renderNode(choice.next);
+                    });
+                    elements.choices.appendChild(button);
+                });
+            } else if (node.next) {
+                elements.continuePrompt.classList.remove('hidden');
+                
+                // 如果开启自动播放，设置计时器
+                if (gameConfig.autoPlay && node.next !== "end") {
+                    autoPlayTimer = setTimeout(advanceDialogue, gameConfig.autoPlayDelay);
+                }
+            }
+        }
+        
+        // 打字效果
+        function typeText(text, element) {
+            // 根据文字速度设置延迟
+            const speedFactors = [150, 120, 90, 60, 40, 30, 20, 15, 10, 0]; // 对应1-10级速度
+            const delay = speedFactors[gameConfig.textSpeed - 1];
+            
+            let i = 0;
+            element.textContent = "";
+            
+            // 瞬间显示
+            if (delay === 0) {
+                element.textContent = text;
+                return;
+            }
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, delay);
+                }
+            }
+            
+            type();
+        }
+        
+        // 推进对话
+        function advanceDialogue() {
+            // 如果有选择项，点击背景不做任何事
+            if (!elements.choices.classList.contains('hidden')) {
+                return;
+            }
+            
+            const currentNode = storyNodes[gameState.currentNode];
+            if (currentNode && currentNode.next) {
+                if (currentNode.next === "title") {
+                    // 返回标题画面
+                    elements.titleScreen.classList.remove('hidden');
+                } else {
+                    gameState.currentNode = currentNode.next;
+                    renderNode(currentNode.next);
+                }
+            }
+        }
+        
+        // 切换菜单显示
+        function toggleMenu(show) {
+            if (show) {
+                elements.gameMenu.classList.remove('hidden');
+                // 清除自动播放计时器
+                if (autoPlayTimer) {
+                    clearTimeout(autoPlayTimer);
+                    autoPlayTimer = null;
+                }
+            } else {
+                elements.gameMenu.classList.add('hidden');
+                // 如果开启自动播放，重新设置计时器
+                const currentNode = storyNodes[gameState.currentNode];
+                if (gameConfig.autoPlay && currentNode && currentNode.next && currentNode.next !== "end") {
+                    autoPlayTimer = setTimeout(advanceDialogue, gameConfig.autoPlayDelay);
+                }
+            }
+        }
+        
+        // 重新开始游戏
+        function restartGame() {
+            toggleMenu(false);
+            startNewGame();
+        }
+        
+        // 返回标题画面
+        function quitToTitle() {
+            toggleMenu(false);
+            elements.titleScreen.classList.remove('hidden');
+        }
+        
+        // 打开存档/读档界面
+        function openSaveLoadScreen(type) {
+            elements.saveLoadTitle.textContent = type === 'save' ? '保存进度' : '读取存档';
+            elements.saveLoadScreen.classList.remove('hidden');
+            renderSaveSlots(type);
+        }
+        
+        // 渲染存档槽
+        function renderSaveSlots(type) {
+            elements.saveSlots.innerHTML = "";
+            
+            // 创建5个存档槽
+            for (let i = 1; i <= 5; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'bg-dark/60 backdrop-blur border border-primary/30 rounded-lg p-4 hover:border-primary transition-all duration-300';
+                
+                const saveData = gameState.saveSlots[i] || null;
+                const isEmpty = !saveData;
+                
+                slot.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold">存档 ${i}</h3>
+                        <span class="${isEmpty ? 'text-gray-500' : 'text-green-400'}">
+                            ${isEmpty ? '空' : '已保存'}
+                        </span>
+                    </div>
+                    <div class="text-sm text-light/70 mb-3 min-h-[60px]">
+                        ${isEmpty ? '无保存数据' : 
+                          `<p>${saveData.scene}</p>
+                           <p class="text-light/50 text-xs mt-1">${saveData.time}</p>`}
+                    </div>
+                    <button class="w-full py-2 rounded bg-primary/20 hover:bg-primary/40 transition-colors ${isEmpty && type === 'load' ? 'opacity-50 cursor-not-allowed' : ''}"
+                            data-slot="${i}" data-type="${type}">
+                        ${type === 'save' ? '保存到此处' : '加载此存档'}
+                    </button>
+                `;
+                
+                elements.saveSlots.appendChild(slot);
+            }
+            
+            // 绑定存档/读档按钮事件
+            document.querySelectorAll('#save-slots button').forEach(btn => {
+                btn.addEventListener('click', handleSaveLoad);
+            });
+        }
+        
+        // 处理存档/读档操作
+        function handleSaveLoad(e) {
+            const slot = parseInt(e.target.dataset.slot);
+            const type = e.target.dataset.type;
+            
+            if (type === 'save') {
+                // 保存存档
+                const currentNode = storyNodes[gameState.currentNode];
+                gameState.saveSlots[slot] = {
+                    node: gameState.currentNode,
+                    scene: currentNode.text.substring(0, 30) + (currentNode.text.length > 30 ? '...' : ''),
+                    time: new Date().toLocaleString(),
+                    flags: {...gameState.flags}
+                };
+                saveSaveData();
+                renderSaveSlots('save');
+                showNotification('保存成功');
+            } else if (type === 'load') {
+                // 读取存档
+                const saveData = gameState.saveSlots[slot];
+                if (saveData) {
+                    gameState.currentNode = saveData.node;
+                    gameState.flags = {...saveData.flags};
+                    elements.saveLoadScreen.classList.add('hidden');
+                    renderNode(gameState.currentNode);
+                    showNotification('加载成功');
+                }
+            }
+        }
+        
+        // 快速保存
+        function quickSave() {
+            const currentNode = storyNodes[gameState.currentNode];
+            gameState.quickSave = {
+                node: gameState.currentNode,
+                scene: currentNode.text.substring(0, 30) + (currentNode.text.length > 30 ? '...' : ''),
+                time: new Date().toLocaleString(),
+                flags: {...gameState.flags}
+            };
+            saveSaveData();
+            showNotification('快速保存成功');
+        }
+        
+        // 快速加载
+        function quickLoad() {
+            if (gameState.quickSave) {
+                gameState.currentNode = gameState.quickSave.node;
+                gameState.flags = {...gameState.quickSave.flags};
+                renderNode(gameState.currentNode);
+                showNotification('快速加载成功');
+            } else {
+                showNotification('没有快速保存的数据', 'error');
+            }
+        }
+        
+        // 保存存档数据到本地存储
+        function saveSaveData() {
+            localStorage.setItem('galgameSaves', JSON.stringify({
+                slots: gameState.saveSlots,
+                quickSave: gameState.quickSave
+            }));
+        }
+        
+        // 从本地存储加载存档数据
+        function loadSaveData() {
+            const savedData = localStorage.getItem('galgameSaves');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                gameState.saveSlots = data.slots || {};
+                gameState.quickSave = data.quickSave || null;
+            }
+        }
+        
+        // 打开设置界面
+        function openSettings() {
+            elements.settingsScreen.classList.remove('hidden');
+            toggleMenu(false);
+        }
+        
+        // 关闭设置界面
+        function closeSettings() {
+            elements.settingsScreen.classList.add('hidden');
+        }
+        
+        // 应用设置
+        function applySettings() {
+            gameConfig.volume = parseInt(elements.volumeSlider.value);
+            gameConfig.textSpeed = parseInt(elements.textSpeedSlider.value);
+            gameConfig.autoPlay = elements.autoPlayToggle.checked;
+            
+            // 重新渲染当前节点以应用文字速度变化
+            renderNode(gameState.currentNode);
+            
+            closeSettings();
+            showNotification('设置已应用');
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'success') {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-white ${
+                type === 'success' ? 'bg-green-600' : 'bg-red-600'
+            } transition-all duration-300 transform translate-x-full opacity-0`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // 显示通知
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full', 'opacity-0');
+            }, 10);
+            
+            // 3秒后隐藏通知
+            setTimeout(() => {
+                notification.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // 启动游戏
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
+    

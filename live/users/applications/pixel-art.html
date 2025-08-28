@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>像素艺术工坊</title>
+  <style>
+    body { 
+      font-family: 'Segoe UI', sans-serif; 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 20px; 
+      background: #f0f0f0;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .preview {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    canvas {
+      max-width: 100%;
+      border: 1px solid #ddd;
+    }
+    .param-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <h1>像素艺术工坊</h1>
+  <div class="container">
+    <div class="controls">
+      <div class="param-group">
+        <label>上传图片</label>
+        <input type="file" id="imageUpload" accept="image/*">
+      </div>
+      <div class="param-group">
+        <label>像素大小: <span id="pixelSizeValue">10</span></label>
+        <input type="range" id="pixelSize" min="2" max="50" value="10">
+      </div>
+      <div class="param-group">
+        <label>风格</label>
+        <select id="style">
+          <option value="pixel">经典像素</option>
+          <option value="ascii">ASCII 字符</option>
+          <option value="emoji">Emoji 拼贴</option>
+        </select>
+      </div>
+      <div class="param-group" id="asciiCharsGroup" style="display: none;">
+        <label>ASCII 字符集（密度从低到高）</label>
+        <input type="text" id="asciiChars" value=" .,:;ox%#@" placeholder="输入字符集">
+      </div>
+      <button id="generate">生成像素艺术</button>
+      <button id="download">下载结果</button>
+    </div>
+    <div class="preview">
+      <h3>预览</h3>
+      <div id="originalContainer" style="display: none;">
+        <p>原图</p>
+        <img id="originalImage" alt="原始图片">
+      </div>
+      <p>像素化结果</p>
+      <canvas id="pixelCanvas"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const imageUpload = document.getElementById('imageUpload');
+    const pixelSizeInput = document.getElementById('pixelSize');
+    const pixelSizeValue = document.getElementById('pixelSizeValue');
+    const styleSelect = document.getElementById('style');
+    const asciiCharsGroup = document.getElementById('asciiCharsGroup');
+    const asciiCharsInput = document.getElementById('asciiChars');
+    const generateBtn = document.getElementById('generate');
+    const downloadBtn = document.getElementById('download');
+    const originalImage = document.getElementById('originalImage');
+    const originalContainer = document.getElementById('originalContainer');
+    const pixelCanvas = document.getElementById('pixelCanvas');
+    const ctx = pixelCanvas.getContext('2d');
+
+    // 显示像素大小值
+    pixelSizeInput.addEventListener('input', () => {
+      pixelSizeValue.textContent = pixelSizeInput.value;
+    });
+
+    // 风格切换显示对应设置
+    styleSelect.addEventListener('change', () => {
+      asciiCharsGroup.style.display = styleSelect.value === 'ascii' ? 'block' : 'none';
+    });
+
+    // 上传图片
+    imageUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        originalImage.src = event.target.result;
+        originalImage.onload = () => {
+          originalContainer.style.display = 'block';
+          // 初始化画布大小
+          pixelCanvas.width = originalImage.width;
+          pixelCanvas.height = originalImage.height;
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // 生成像素艺术
+    generateBtn.addEventListener('click', () => {
+      if (!originalImage.src) return alert('请先上传图片');
+      
+      const pixelSize = parseInt(pixelSizeInput.value);
+      const style = styleSelect.value;
+      
+      // 绘制原图到画布
+      ctx.drawImage(originalImage, 0, 0);
+      const imageData = ctx.getImageData(0, 0, pixelCanvas.width, pixelCanvas.height);
+      const data = imageData.data;
+      
+      // 清空画布
+      ctx.clearRect(0, 0, pixelCanvas.width, pixelCanvas.height);
+      
+      // 根据风格生成像素效果
+      if (style === 'pixel') {
+        drawPixelStyle(data, pixelSize);
+      } else if (style === 'ascii') {
+        drawAsciiStyle(data, pixelSize);
+      } else if (style === 'emoji') {
+        drawEmojiStyle(data, pixelSize);
+      }
+    });
+
+    // 经典像素风格
+    function drawPixelStyle(data, pixelSize) {
+      for (let y = 0; y < pixelCanvas.height; y += pixelSize) {
+        for (let x = 0; x < pixelCanvas.width; x += pixelSize) {
+          // 获取像素块左上角的颜色
+          const i = (y * pixelCanvas.width + x) * 4;
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          
+          // 绘制像素块
+          ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+          ctx.fillRect(x, y, pixelSize, pixelSize);
+        }
+      }
+    }
+
+    // ASCII 字符风格
+    function drawAsciiStyle(data, pixelSize) {
+      const asciiChars = asciiCharsInput.value || ' .,:;ox%#@';
+      ctx.font = `${pixelSize}px monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      for (let y = 0; y < pixelCanvas.height; y += pixelSize) {
+        for (let x = 0; x < pixelCanvas.width; x += pixelSize) {
+          // 计算像素块平均亮度
+          let totalBrightness = 0;
+          let count = 0;
+          
+          for (let dy = 0; dy < pixelSize && y + dy < pixelCanvas.height; dy++) {
+            for (let dx = 0; dx < pixelSize && x + dx < pixelCanvas.width; dx++) {
+              const i = ((y + dy) * pixelCanvas.width + (x + dx)) * 4;
+              const r = data[i];
+              const g = data[i + 1];
+              const b = data[i + 2];
+              // 亮度公式：(0.299*r + 0.587*g + 0.114*b)
+              totalBrightness += 0.299 * r + 0.587 * g + 0.114 * b;
+              count++;
+            }
+          }
+          
+          const avgBrightness = totalBrightness / count;
+          // 根据亮度选择字符（暗->密字符，亮->疏字符）
+          const charIndex = Math.floor((avgBrightness / 255) * (asciiChars.length - 1));
+          const char = asciiChars[charIndex];
+          
+          // 绘制字符
+          ctx.fillStyle = 'black';
+          ctx.fillText(char, x + pixelSize / 2, y + pixelSize / 2);
+        }
+      }
+    }
+
+    // Emoji 拼贴风格
+    function drawEmojiStyle(data, pixelSize) {
+      // 表情库（按色调分组）
+      const emojis = [
+        ['🌞', '☀️', '🟡', '🍋', '🔶'], // 黄色系
+        ['🍎', '🔴', '❤️', '🍓', '🟥'], // 红色系
+        ['🌿', '🟢', '🍀', '🥦', '💚'], // 绿色系
+        ['💙', '🔵', '🌊', '💧', '🟦'], // 蓝色系
+        ['🟤', '🌰', '🍫', '🥜', '🟫'], // 棕色系
+        ['⚪', '⬜', '❕', '▪️', '⬛']  // 黑白灰
+      ];
+      
+      ctx.font = `${pixelSize}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      for (let y = 0; y < pixelCanvas.height; y += pixelSize) {
+        for (let x = 0; x < pixelCanvas.width; x += pixelSize) {
+          // 获取像素块颜色
+          const i = (y * pixelCanvas.width + x) * 4;
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          
+          // 简单色调分类
+          let emojiGroup;
+          if (r > 200 && g > 200 && b > 200) emojiGroup = 5; // 白色
+          else if (r < 50 && g < 50 && b < 50) emojiGroup = 5; // 黑色
+          else if (r > g && r > b) emojiGroup = 1; // 红色系
+          else if (g > r && g > b) emojiGroup = 2; // 绿色系
+          else if (b > r && b > g) emojiGroup = 3; // 蓝色系
+          else if (r > 150 && g > 150 && b < 100) emojiGroup = 0; // 黄色系
+          else emojiGroup = 4; // 棕色/灰色
+          
+          // 随机选择同色系表情
+          const emoji = emojis[emojiGroup][Math.floor(Math.random() * emojis[emojiGroup].length)];
+          ctx.fillText(emoji, x + pixelSize / 2, y + pixelSize / 2);
+        }
+      }
+    }
+
+    // 下载结果
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'pixel-art.png';
+      link.href = pixelCanvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
+</body>
+</html>
+    

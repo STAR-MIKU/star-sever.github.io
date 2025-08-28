@@ -1,0 +1,218 @@
+/* 窗口基础样式 */
+.rounded-window {
+    position: absolute;
+    overflow: hidden;
+    background: rgba(22, 22, 26, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+/* 任务栏容器样式 */
+#apps {
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    padding: 5px 0;
+    flex-grow: 1;
+    /*margin-right: 120px; /* 确保与时间组件保持20px距离 */
+    max-width:740px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* 隐藏滚动条但保留滚动功能 - WebKit */
+#apps::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+/* 任务栏图标样式 */
+.taskbar-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    margin: 0 5px;
+    padding: 5px 10px;
+}
+
+/* 固定加号按钮位置 */
+#add-window-btn {
+    order: -1; /* 放在最前面 */
+    margin-right: 10px;
+    flex-shrink: 0; /* 防止收缩 */
+}
+
+/* 确保窗口按钮在加号按钮右侧 */
+.taskbar-icon:not(#add-window-btn) {
+    order: 0;
+}
+
+.taskbar-icon:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.taskbar-icon.active {
+    background: rgba(91, 192, 255, 0.5);
+}
+
+.window-header {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 10px 15px;
+    cursor: move;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.window-title {
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.window-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.window-control {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.window-control:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.window-content {
+    width: 100%;
+    height: calc(100% - 42px);
+    overflow: hidden;
+}
+
+/* 系统面板窗口样式 */
+.system-panel .window-content {
+    height: 100% !important;
+}
+
+.window-content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* 最大化状态 */
+.rounded-window.maximized {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 12px;
+    z-index: 1000;
+}
+
+/* 修复最大化窗口的圆角显示 */
+.maximized .window-header {
+    border-top-left-radius: 12px !important;
+    border-top-right-radius: 12px !important;
+}
+
+/* 左分屏 */
+.rounded-window.left-split {
+    top: 0 !important;
+    left: 0 !important;
+    width: 50% !important;
+    height: 100% !important;
+    border-radius: 12px;
+}
+
+/* 右分屏 */
+.rounded-window.right-split {
+    top: 0 !important;
+    right: 0 !important;
+    width: 50% !important;
+    height: 100% !important;
+    border-radius: 12px;
+}
+
+/* 左上四分屏 */
+.rounded-window.top-left-quarter {
+    top: 0 !important;
+    left: 0 !important;
+    width: 50% !important;
+    height: 50% !important;
+    border-radius: 12px;
+}
+
+/* 右上四分屏 */
+.rounded-window.top-right-quarter {
+    top: 0 !important;
+    right: 0 !important;
+    width: 50% !important;
+    height: 50% !important;
+    border-radius: 12px;
+}
+
+/* 左下四分屏 */
+
+
+/* 右下四分屏 */
+
+
+/* 调整大小手柄 */
+.resize-handle {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    bottom: 0;
+    right: 0;
+    cursor: se-resize;
+    background: transparent;
+}
+
+/* 分屏提示框样式 */
+.split-hint {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+    display: none;
+    z-index: 999;
+    transition: all 0.2s ease;
+}
+
+.split-hint div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 18px;
+}
+
+/* 全局禁止文字选择 */
+body {
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+}
+
+/* 允许输入框和文本区域选择文字 */
+input, textarea, [contenteditable="true"] {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+}
