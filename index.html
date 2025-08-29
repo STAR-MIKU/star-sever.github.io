@@ -729,13 +729,37 @@
             const copyTimeItem = document.createElement('div');
             copyTimeItem.className = 'context-menu-item';
             copyTimeItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>复制时间';
-            copyTimeItem.addEventListener('click', () => {
+            copyTimeItem.addEventListener('click', async () => {
                 try {
                     const timeText = document.getElementById('clock-display').textContent;
-                    navigator.clipboard.writeText(timeText);
-                    timeContextMenu.style.display = 'none';
+                    if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(timeText);
+                    } else {
+                        // 回退方案：创建一个临时的textarea元素
+                        const textArea = document.createElement('textarea');
+                        textArea.value = timeText;
+                        // 将元素添加到DOM中但使其不可见
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-999999px';
+                        textArea.style.top = '-999999px';
+                        document.body.appendChild(textArea);
+                        // 选择并复制文本
+                        textArea.select();
+                        document.execCommand('copy');
+                        // 移除临时元素
+                        document.body.removeChild(textArea);
+                    }
+                    // 显示成功通知
+                    window.notificationManager.showPrompt('已复制到剪贴板', 2000);
+                    // 应用关闭动画
+                    timeContextMenu.classList.add('closing');
+                    setTimeout(() => {
+                        timeContextMenu.style.display = 'none';
+                        timeContextMenu.classList.remove('closing');
+                    }, 200);
                 } catch (err) {
                     console.error('复制失败:', err);
+                    window.notificationManager.showPrompt('复制失败', 2000);
                 }
             });
             timeContextMenu.appendChild(copyTimeItem);
@@ -744,15 +768,41 @@
             const copyDateItem = document.createElement('div');
             copyDateItem.className = 'context-menu-item';
             copyDateItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>复制日期';
-            copyDateItem.addEventListener('click', () => {
+            copyDateItem.addEventListener('click', async () => {
                 try {
                     const dateText = document.getElementById('date-display').textContent;
                     const dayOfWeek = document.querySelector('.front').textContent;
                     const year = document.querySelector('.back').textContent;
-                    navigator.clipboard.writeText(`${year}年${dateText.replace('-', '月')}日 ${dayOfWeek}`);
-                    timeContextMenu.style.display = 'none';
+                    const fullDateText = `${year}年${dateText.replace('-', '月')}日 ${dayOfWeek}`;
+                    
+                    if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(fullDateText);
+                    } else {
+                        // 回退方案：创建一个临时的textarea元素
+                        const textArea = document.createElement('textarea');
+                        textArea.value = fullDateText;
+                        // 将元素添加到DOM中但使其不可见
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-999999px';
+                        textArea.style.top = '-999999px';
+                        document.body.appendChild(textArea);
+                        // 选择并复制文本
+                        textArea.select();
+                        document.execCommand('copy');
+                        // 移除临时元素
+                        document.body.removeChild(textArea);
+                    }
+                    // 显示成功通知
+                    window.notificationManager.showPrompt('已复制到剪贴板', 2000);
+                    // 应用关闭动画
+                    timeContextMenu.classList.add('closing');
+                    setTimeout(() => {
+                        timeContextMenu.style.display = 'none';
+                        timeContextMenu.classList.remove('closing');
+                    }, 200);
                 } catch (err) {
                     console.error('复制失败:', err);
+                    window.notificationManager.showPrompt('复制失败', 2000);
                 }
             });
             timeContextMenu.appendChild(copyDateItem);
@@ -1340,15 +1390,22 @@
                     const copyItem = document.createElement('div');
                     copyItem.className = 'context-menu-item windows11-item';
                     copyItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><span class="windows11-item-text">复制</span>';
-                    copyItem.addEventListener('click', () => {
+                    copyItem.addEventListener('click', async () => {
                         try {
                             let showTip = false;
                             if (lastInputTarget && typeof lastInputTarget.selectionStart === 'number') {
                                 if (lastInputTarget.selectionStart !== lastInputTarget.selectionEnd) {
-                                    document.execCommand('copy');
+                                    // 尝试使用现代的Clipboard API
+                                    if (navigator.clipboard && window.isSecureContext) {
+                                        await navigator.clipboard.writeText(lastInputTarget.value.substring(lastInputTarget.selectionStart, lastInputTarget.selectionEnd));
+                                    } else {
+                                        // 回退方案
+                                        document.execCommand('copy');
+                                    }
                                     showTip = true;
                                 }
                             } else {
+                                // 对于非输入元素，使用传统方法
                                 document.execCommand('copy');
                                 showTip = true;
                             }
@@ -1370,18 +1427,37 @@
                     const pasteItem = document.createElement('div');
                     pasteItem.className = 'context-menu-item windows11-item';
                     pasteItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="12" width="13" height="13" rx="2" ry="2"></rect><path d="M19 17V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16l7-5 7 5z"></path></svg><span class="windows11-item-text">粘贴</span>';
-                    pasteItem.addEventListener('click', () => {
+                    pasteItem.addEventListener('click', async () => {
                         try {
-                            navigator.clipboard.readText().then(text => {
-                                if (text) {
-                                    document.execCommand('paste');
+                            if (navigator.clipboard && window.isSecureContext) {
+                                const text = await navigator.clipboard.readText();
+                                if (text && lastInputTarget) {
+                                    // 确保输入框获得焦点
+                                    lastInputTarget.focus();
+                                    // 现代方式插入文本
+                                    if (typeof lastInputTarget.setRangeText === 'function') {
+                                        const start = lastInputTarget.selectionStart;
+                                        const end = lastInputTarget.selectionEnd;
+                                        lastInputTarget.setRangeText(text, start, end, 'end');
+                                        // 更新光标位置
+                                        lastInputTarget.selectionStart = lastInputTarget.selectionEnd = start + text.length;
+                                        // 触发输入事件以确保表单数据更新
+                                        lastInputTarget.dispatchEvent(new Event('input', { bubbles: true }));
+                                    } else {
+                                        // 回退方案
+                                        lastInputTarget.value += text;
+                                    }
                                     window.notificationManager.showPrompt('已粘贴内容', 2000);
                                 }
-                                contextMenu.classList.add('closing');
-                                setTimeout(() => {
-                                    contextMenu.classList.remove('closing');
-                                }, 200);
-                            });
+                            } else if (lastInputTarget) {
+                                // 完全回退到传统方法
+                                document.execCommand('paste');
+                                window.notificationManager.showPrompt('已粘贴内容', 2000);
+                            }
+                            contextMenu.classList.add('closing');
+                            setTimeout(() => {
+                                contextMenu.classList.remove('closing');
+                            }, 200);
                         } catch (err) {
                             console.error('粘贴失败:', err);
                             window.notificationManager.showPrompt('粘贴失败', 2000);
@@ -1393,15 +1469,31 @@
                     const cutItem = document.createElement('div');
                     cutItem.className = 'context-menu-item windows11-item';
                     cutItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 17H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path><line x1="16" y1="17" x2="16" y2="13"></line><line x1="8" y1="13" x2="16" y2="13"></line><line x1="18" y1="13" x2="20" y2="13"></line><line x1="18" y1="11" x2="20" y2="11"></line></svg><span class="windows11-item-text">剪切</span>';
-                    cutItem.addEventListener('click', () => {
+                    cutItem.addEventListener('click', async () => {
                         try {
                             let showTip = false;
                             if (lastInputTarget && typeof lastInputTarget.selectionStart === 'number') {
                                 if (lastInputTarget.selectionStart !== lastInputTarget.selectionEnd) {
-                                    document.execCommand('cut');
+                                    // 剪切操作需要同时复制和删除内容
+                                    const selectedText = lastInputTarget.value.substring(lastInputTarget.selectionStart, lastInputTarget.selectionEnd);
+                                    if (navigator.clipboard && window.isSecureContext) {
+                                        // 使用Clipboard API复制
+                                        await navigator.clipboard.writeText(selectedText);
+                                        // 手动删除选中的文本
+                                        const newValue = lastInputTarget.value.substring(0, lastInputTarget.selectionStart) + lastInputTarget.value.substring(lastInputTarget.selectionEnd);
+                                        lastInputTarget.value = newValue;
+                                        // 更新光标位置
+                                        lastInputTarget.selectionStart = lastInputTarget.selectionEnd = lastInputTarget.selectionStart;
+                                        // 触发输入事件
+                                        lastInputTarget.dispatchEvent(new Event('input', { bubbles: true }));
+                                    } else {
+                                        // 回退方案
+                                        document.execCommand('cut');
+                                    }
                                     showTip = true;
                                 }
                             } else {
+                                // 对于非输入元素，使用传统方法
                                 document.execCommand('cut');
                                 showTip = true;
                             }
@@ -1534,40 +1626,89 @@
                     });
                     if (lastInputTarget) {
                         if (copyBtn) {
-                            copyBtn.onclick = function () {
+                            copyBtn.onclick = async function () {
                                 // 只复制选中内容
-                                if (lastInputTarget.selectionStart !== lastInputTarget.selectionEnd) {
-                                    document.execCommand('copy');
+                                if (navigator.clipboard && window.isSecureContext) {
+                                    if (lastInputTarget.selectionStart !== lastInputTarget.selectionEnd) {
+                                        await navigator.clipboard.writeText(lastInputTarget.value.substring(lastInputTarget.selectionStart, lastInputTarget.selectionEnd));
+                                    } else {
+                                        lastInputTarget.select();
+                                        await navigator.clipboard.writeText(lastInputTarget.value);
+                                    }
                                 } else {
-                                    lastInputTarget.select();
-                                    document.execCommand('copy');
+                                    // 回退方案
+                                    if (lastInputTarget.selectionStart !== lastInputTarget.selectionEnd) {
+                                        document.execCommand('copy');
+                                    } else {
+                                        lastInputTarget.select();
+                                        document.execCommand('copy');
+                                    }
                                 }
                                 contextMenu.style.display = 'none';
                             };
                             copyBtn.classList.remove('disabled');
                         }
                         if (pasteBtn) {
-                            pasteBtn.onclick = function () {
+                            pasteBtn.onclick = async function () {
                                 lastInputTarget.focus();
-                                navigator.clipboard.readText().then(text => {
-                                    if (typeof lastInputTarget.setRangeText === 'function') {
-                                        lastInputTarget.setRangeText(text, lastInputTarget.selectionStart, lastInputTarget.selectionEnd, 'end');
-                                    } else {
-                                        lastInputTarget.value += text;
+                                if (navigator.clipboard && window.isSecureContext) {
+                                    try {
+                                        const text = await navigator.clipboard.readText();
+                                        if (typeof lastInputTarget.setRangeText === 'function') {
+                                            const start = lastInputTarget.selectionStart;
+                                            const end = lastInputTarget.selectionEnd;
+                                            lastInputTarget.setRangeText(text, start, end, 'end');
+                                            // 更新光标位置
+                                            lastInputTarget.selectionStart = lastInputTarget.selectionEnd = start + text.length;
+                                            // 触发输入事件以确保表单数据更新
+                                            lastInputTarget.dispatchEvent(new Event('input', { bubbles: true }));
+                                        } else {
+                                            lastInputTarget.value += text;
+                                        }
+                                    } catch (err) {
+                                        console.error('粘贴失败:', err);
+                                        // 回退到传统方法
+                                        document.execCommand('paste');
                                     }
-                                });
+                                } else {
+                                    // 完全回退到传统方法
+                                    document.execCommand('paste');
+                                }
                                 contextMenu.style.display = 'none';
                             };
                             pasteBtn.classList.remove('disabled');
                         }
                         if (cutBtn) {
-                            cutBtn.onclick = function () {
+                            cutBtn.onclick = async function () {
                                 // 只剪切选中内容
-                                if (lastInputTarget.selectionStart !== lastInputTarget.selectionEnd) {
-                                    document.execCommand('cut');
+                                if (navigator.clipboard && window.isSecureContext) {
+                                    const selectedText = lastInputTarget.value.substring(lastInputTarget.selectionStart, lastInputTarget.selectionEnd);
+                                    if (lastInputTarget.selectionStart !== lastInputTarget.selectionEnd || lastInputTarget.select) {
+                                        // 使用Clipboard API复制
+                                        await navigator.clipboard.writeText(selectedText);
+                                        // 手动删除选中的文本
+                                        if (lastInputTarget.selectionStart !== lastInputTarget.selectionEnd) {
+                                            const newValue = lastInputTarget.value.substring(0, lastInputTarget.selectionStart) + lastInputTarget.value.substring(lastInputTarget.selectionEnd);
+                                            lastInputTarget.value = newValue;
+                                            // 更新光标位置
+                                            lastInputTarget.selectionStart = lastInputTarget.selectionEnd = lastInputTarget.selectionStart;
+                                        } else if (lastInputTarget.select) {
+                                            lastInputTarget.select();
+                                            const newValue = lastInputTarget.value.substring(0, 0) + lastInputTarget.value.substring(lastInputTarget.value.length);
+                                            lastInputTarget.value = newValue;
+                                            lastInputTarget.selectionStart = lastInputTarget.selectionEnd = 0;
+                                        }
+                                        // 触发输入事件
+                                        lastInputTarget.dispatchEvent(new Event('input', { bubbles: true }));
+                                    }
                                 } else {
-                                    lastInputTarget.select();
-                                    document.execCommand('cut');
+                                    // 回退方案
+                                    if (lastInputTarget.selectionStart !== lastInputTarget.selectionEnd) {
+                                        document.execCommand('cut');
+                                    } else {
+                                        lastInputTarget.select();
+                                        document.execCommand('cut');
+                                    }
                                 }
                                 contextMenu.style.display = 'none';
                             };
