@@ -374,7 +374,7 @@ body {
     opacity: 0;
     bottom: 10px;
     width: 80%;
-    max-width: 1000px;
+    max-width: 900px;
     height: 46px;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
