@@ -191,6 +191,31 @@ body {
     font-weight: 900;
 }
 
+/* 搜索输入框占位符样式 */
+#search-input::placeholder {
+    color: white;
+    opacity: 1;
+}
+
+/* 兼容不同浏览器 */
+#search-input::-webkit-input-placeholder {
+    color: white;
+}
+
+#search-input:-moz-placeholder {
+    color: white;
+    opacity: 1;
+}
+
+#search-input::-moz-placeholder {
+    color: white;
+    opacity: 1;
+}
+
+#search-input:-ms-input-placeholder {
+    color: white;
+}
+
 /* 动态长虹玻璃滚动效果 */
 .wavy-glass {
     position: relative;
@@ -345,7 +370,8 @@ body {
 #dock {
     position: fixed;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(calc(100% + 10px));
+    opacity: 0;
     bottom: 10px;
     width: 80%;
     max-width: 1000px;
@@ -358,10 +384,15 @@ body {
     justify-content: center;
     align-items: center;
     border-radius: 12px;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, height 0.3s ease, width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease, height 0.3s ease, width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+}
+
+#dock.visible {
+    transform: translateX(-50%);
+    opacity: 1;
 }
 
 #dock:hover {
