@@ -198,6 +198,73 @@
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
+}
+
+/* 移动端长按菜单样式 */
+.mobile-context-menu {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    padding: 10px 0;
+    min-width: 220px;
+    z-index: 999999;
+    display: none;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.mobile-context-menu.show {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.mobile-context-menu-item {
+    padding: 12px 20px;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.mobile-context-menu-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.mobile-context-menu-icon {
+    margin-right: 12px;
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+
+.mobile-context-menu-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 5px 0;
+}
+
+/* 移动端菜单项图标样式 */
+.mobile-menu-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
     font-size: 18px;
 }
 
@@ -215,4 +282,63 @@ input, textarea, [contenteditable="true"] {
     -webkit-user-select: text;
     -moz-user-select: text;
     -ms-user-select: text;
+}
+
+/* 桌宠相关样式 */
+.desktop-pet {
+    position: fixed;
+    pointer-events: auto;
+    z-index: 50; /* 确保在窗口下方但在背景上方 */
+    transition: all 0.2s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.desktop-pet:hover {
+    transform: scale(1.1);
+}
+
+.pet-feedback {
+    position: fixed;
+    z-index: 10000;
+    pointer-events: none;
+    animation: float-up 2s ease-out forwards;
+}
+
+@keyframes float-up {
+    0% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(-10px);
+    }
+    80% {
+        opacity: 1;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+}
+
+/* 右键菜单子菜单样式 */
+.context-menu-divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin: 4px 0;
+}
+
+.submenu {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 8px;
+    padding: 5px 0;
+    min-width: 160px;
+    box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.12);
+    display: none;
 }

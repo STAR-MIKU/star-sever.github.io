@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="./serve/css/window.css">
     <link rel="icon" href="./serve/files/logo/logo.png" type="image/png">
     <script src="search-engine.js"></script>
+    <!-- 引入桌宠功能 -->
+    <script src="./serve/js/pet.js"></script>
     <!-- 引入Three.js库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
    
@@ -1316,6 +1318,122 @@
                 let startX, startY, menuStartX, menuStartY;
                 let touchStartX, touchStartY;
 
+                // 创建移动端长按菜单
+                const mobileContextMenu = document.createElement('div');
+                mobileContextMenu.id = 'mobile-context-menu';
+                mobileContextMenu.className = 'mobile-context-menu';
+                document.body.appendChild(mobileContextMenu);
+
+                // 初始化移动端菜单
+                function initMobileContextMenu() {
+                    // 清空菜单
+                    mobileContextMenu.innerHTML = '';
+
+                    // 添加新建窗口菜单项
+                    const newWindowItem = document.createElement('div');
+                    newWindowItem.className = 'mobile-context-menu-item';
+                    newWindowItem.innerHTML = '<div class="mobile-menu-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg></div>新建窗口';
+                    newWindowItem.addEventListener('click', () => {
+                        window.createCustomWindow({
+                            title: '空白窗口',
+                            url: 'about:blank'
+                        });
+                        mobileContextMenu.classList.remove('show');
+                    });
+                    mobileContextMenu.appendChild(newWindowItem);
+
+                    // 添加应用列表菜单项
+                    const appsItem = document.createElement('div');
+                    appsItem.className = 'mobile-context-menu-item';
+                    appsItem.innerHTML = '<div class="mobile-menu-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>应用列表';
+                    appsItem.addEventListener('click', () => {
+                        const presetAppsContainer = document.getElementById('preset-apps-container');
+                        if (presetAppsContainer) {
+                            if (presetAppsContainer.style.display === 'none' || !presetAppsContainer.style.display) {
+                                presetAppsContainer.style.display = 'flex';
+                            } else {
+                                presetAppsContainer.style.display = 'none';
+                            }
+                        }
+                        mobileContextMenu.classList.remove('show');
+                    });
+                    mobileContextMenu.appendChild(appsItem);
+
+                    // 添加桌宠设置菜单项
+                    const petItem = document.createElement('div');
+                    petItem.className = 'mobile-context-menu-item';
+                    petItem.innerHTML = '<div class="mobile-menu-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></svg></div>桌宠设置';
+                    petItem.addEventListener('click', () => {
+                        if (window.desktopPet) {
+                            // 切换桌宠可见状态
+                            const petElement = window.desktopPet.element;
+                            if (petElement.style.display === 'none' || !petElement.style.display) {
+                                petElement.style.display = 'block';
+                            } else {
+                                petElement.style.display = 'none';
+                            }
+                        }
+                        mobileContextMenu.classList.remove('show');
+                    });
+                    mobileContextMenu.appendChild(petItem);
+
+                    // 添加分隔线
+                    const divider = document.createElement('div');
+                    divider.className = 'mobile-context-menu-divider';
+                    mobileContextMenu.appendChild(divider);
+
+                    // 添加刷新菜单项
+                    const refreshItem = document.createElement('div');
+                    refreshItem.className = 'mobile-context-menu-item';
+                    refreshItem.innerHTML = '<div class="mobile-menu-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M3 21v-5h5"></path></svg></div>刷新页面';
+                    refreshItem.addEventListener('click', () => {
+                        location.reload();
+                    });
+                    mobileContextMenu.appendChild(refreshItem);
+                }
+
+                // 初始化移动端菜单
+                initMobileContextMenu();
+
+                // 显示移动端菜单
+                function showMobileContextMenu(x, y) {
+                    // 先显示菜单以获取准确尺寸
+                    mobileContextMenu.style.display = 'block';
+                    mobileContextMenu.style.visibility = 'hidden';
+
+                    // 计算菜单位置，确保在屏幕范围内
+                    const menuWidth = mobileContextMenu.offsetWidth;
+                    const menuHeight = mobileContextMenu.offsetHeight;
+                    const screenWidth = window.innerWidth;
+                    const screenHeight = window.innerHeight;
+
+                    // 调整X坐标
+                    let left = x;
+                    if (x + menuWidth > screenWidth) {
+                        left = screenWidth - menuWidth - 10;
+                    }
+
+                    // 调整Y坐标
+                    let top = y;
+                    if (y + menuHeight > screenHeight) {
+                        top = screenHeight - menuHeight - 10;
+                    }
+
+                    // 确保菜单在屏幕可见区域内
+                    top = Math.max(0, Math.min(top, screenHeight - menuHeight));
+                    left = Math.max(0, Math.min(left, screenWidth - menuWidth));
+
+                    // 设置菜单位置并显示
+                    mobileContextMenu.style.left = `${left}px`;
+                    mobileContextMenu.style.top = `${top}px`;
+                    mobileContextMenu.style.visibility = 'visible';
+
+                    // 添加显示动画
+                    setTimeout(() => {
+                        mobileContextMenu.classList.add('show');
+                    }, 10);
+                }
+
                 // 长按开始
                 document.addEventListener('touchstart', (e) => {
                     if (e.touches.length === 1) {
@@ -1327,9 +1445,12 @@
                             // 检查是否有明显移动
                             if (Math.abs(touch.clientX - touchStartX) < 10 && Math.abs(touch.clientY - touchStartY) < 10) {
                                 e.preventDefault();
-                                showContextMenu(touch.clientX, touch.clientY);
+                                // 隐藏桌面菜单
+                                contextMenu.style.display = 'none';
+                                // 显示移动端菜单
+                                showMobileContextMenu(touch.clientX, touch.clientY);
                             }
-                        }, 800); // 稍微缩短长按时间提高用户体验
+                        }, 500); // 移动端长按时间更短
                     }
                 }, { passive: false });
 
@@ -1346,6 +1467,57 @@
 
                 document.addEventListener('touchend', () => {
                     clearTimeout(pressTimer);
+                });
+
+                // 点击其他地方关闭移动端菜单
+                document.addEventListener('click', (e) => {
+                    if (!mobileContextMenu.contains(e.target)) {
+                        mobileContextMenu.classList.remove('show');
+                        setTimeout(() => {
+                            if (!mobileContextMenu.classList.contains('show')) {
+                                mobileContextMenu.style.display = 'none';
+                            }
+                        }, 200);
+                    }
+                });
+
+                // 移动端菜单拖动功能
+                mobileContextMenu.addEventListener('touchstart', (e) => {
+                    if (e.target === mobileContextMenu || e.target.classList.contains('mobile-context-menu')) {
+                        isDragging = true;
+                        const touch = e.touches[0];
+                        startX = touch.clientX;
+                        startY = touch.clientY;
+                        menuStartX = parseInt(mobileContextMenu.style.left) || 0;
+                        menuStartY = parseInt(mobileContextMenu.style.top) || 0;
+                        e.preventDefault();
+                    }
+                });
+
+                document.addEventListener('touchmove', (e) => {
+                    if (isDragging) {
+                        const touch = e.touches[0];
+                        const dx = touch.clientX - startX;
+                        const dy = touch.clientY - startY;
+                        const newLeft = menuStartX + dx;
+                        const newTop = menuStartY + dy;
+
+                        // 确保菜单不超出屏幕
+                        const screenWidth = window.innerWidth;
+                        const screenHeight = window.innerHeight;
+                        const menuWidth = mobileContextMenu.offsetWidth || 220;
+                        const menuHeight = mobileContextMenu.offsetHeight || 300;
+
+                        const boundedLeft = Math.max(0, Math.min(newLeft, screenWidth - menuWidth));
+                        const boundedTop = Math.max(0, Math.min(newTop, screenHeight - menuHeight));
+
+                        mobileContextMenu.style.left = `${boundedLeft}px`;
+                        mobileContextMenu.style.top = `${boundedTop}px`;
+                    }
+                });
+
+                document.addEventListener('touchend', () => {
+                    isDragging = false;
                 });
 
                 // 显示右键菜单的通用函数
@@ -1677,6 +1849,8 @@
             }, 300); // 延迟300ms，在搜索框动画之后触发任务栏动画
 
         });
+        
+
     </script>
 </body>
 
