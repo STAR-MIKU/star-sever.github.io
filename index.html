@@ -634,6 +634,39 @@
         <div id="hide"></div>
     </div>
 
+    <style>
+        /* 壁纸动画和聚光灯效果 */
+        #wallpaper-video {
+            transition: transform 0.8s ease-out;
+            transform: scale(1.8);
+        }
+        
+        #wallpaper-video.animate-in {
+            transform: scale(1);
+        }
+        
+        /* 聚光灯效果 */
+        .spotlight-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 3%, rgba(0, 0, 0, 1) 100%);
+            z-index: 999;
+            opacity: 1;
+            transition: opacity 0.8s ease-out;
+            pointer-events: none;
+        }
+        
+        .spotlight-overlay.fade-out {
+            opacity: 0;
+        }
+    </style>
+    
+    <!-- 聚光灯覆盖层 -->
+    <div class="spotlight-overlay"></div>
+    
     <script>
         // 全局配置：默认使用12小时制
         let use12HourFormat = true;
