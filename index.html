@@ -15,7 +15,12 @@
     <script src="./serve/js/pet.js"></script>
     <!-- 引入Three.js库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-   
+
+    <!-- 引入GSAP库 -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+    <!-- 引入自定义文本拆分动画库 -->
+    <script src="./simple-split-text.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/animation/CCDIKSolver.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/ammo.wasm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -25,18 +30,20 @@
     <!-- 搜索框区域 -->
     <style>
         /* 统一液态玻璃效果（搜索框与任务栏） */
-        
+
         /* 自定义选中文本样式 */
         ::selection {
             background-color: rgba(102, 175, 233, 0.6);
             color: #fff;
         }
-        
+
+        ;
+
         ::-moz-selection {
             background-color: rgba(102, 175, 233, 0.6);
             color: #fff;
         }
-        
+
         .glass-effect {
             background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(12px) saturate(180%);
@@ -67,7 +74,7 @@
             background: rgba(255, 255, 255, 0.12);
             border: 1px solid rgba(255, 255, 255, 0.20);
             font-family: 'Chillax', sans-serif;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         #search-container.show {
@@ -127,6 +134,7 @@
 
         .search-icon-container:hover .search-icon {
             opacity: 1;
+            transform: scale(1.2);
         }
 
         /* 搜索引擎下拉菜单样式 */
@@ -385,22 +393,86 @@
             pointer-events: none;
         }
     </style>
+    <!-- 欢迎信息 -->
+    <div id="welcome-message" style="position: fixed; top: 30%; left: 50%; transform: translateX(-50%); text-align: center; padding: 10px 20px; color: white; font-size: 40px; font-weight: 500; opacity: 0; z-index: 9999;">
+        欢迎使用搜索功能！
+    </div>
     <div id="search-container" class="glass-effect">
         <div class="search-row">
             <!-- 搜索图标区域 -->
             <div class="search-icon-container" id="searchEngineSelector">
-                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <svg class="search-icon" id="main-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+                    <style>
+                        .search-icon:hover {
+                            transform: scale(1.1) rotate(5deg);
+                        }
+
+                        .search-icon:active {
+                            transform: scale(0.95);
+                        }
+
+                        @keyframes pulse {
+                            0% {
+                                transform: scale(1);
+                            }
+
+                            50% {
+                                transform: scale(1.05);
+                            }
+
+                            100% {
+                                transform: scale(1);
+                            }
+                        }
+
+                        .search-icon.pulse {
+                            animation: pulse 1s infinite;
+                        }
+                    </style>
                     <path
                         d="M18.031 16.617l4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 0 1-1.969 5.617zm-2.006-.742A6.977 6.977 0 0 0 18 11c0-3.868-3.133-7-7-7-3.868 0-7 3.132-7 7 0 3.867 3.132 7 7 7a6.977 6.977 0 0 0 4.875-1.975l.15-.15z">
                     </path>
                 </svg>
-
             </div>
             <input id="search-input" type="text" autocomplete="off" placeholder="聚焦搜索" />
         </div>
         <div id="search-suggestions" class="glass-effect"></div>
     </div>
     <script>
+        // 初始化欢迎信息动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const welcomeMessage = document.getElementById('welcome-message');
+            if (welcomeMessage && window.SimpleSplitText) {
+                // 先显示元素
+                gsap.to(welcomeMessage, {
+                    opacity: 1,
+                    duration: 0.5
+                });
+                
+                // 创建文本拆分动画
+                new SimpleSplitText(welcomeMessage, {
+                    splitType: 'chars',
+                    delay: 50,
+                    duration: 0.8,
+                    ease: 'back.out(1.7)',
+                    from: { opacity: 0, y: 20 },
+                    to: { opacity: 1, y: 0 },
+                    onComplete: function() {
+                        // 动画完成后可以添加其他效果
+                        console.log('欢迎信息动画完成');
+                    }
+                });
+            }
+        });
+
+        // 搜索图标动画交互已移除，避免触发搜索相关行为
+        // 仅保留图标切换功能
+        const searchInputElement = document.getElementById('search-input');
+        searchInputElement.addEventListener('focus', () => {
+            // 移除脉动动画，避免与搜索功能关联
+        });
+
         // 搜索记录
         let searchHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]');
         // 当前搜索引擎，优先从localStorage读取，默认为百度
@@ -430,13 +502,10 @@
         const searchInput = document.getElementById('search-input');
         const suggestionsBox = document.getElementById('search-suggestions');
 
-        // 执行搜索功能
+        // 搜索功能已禁用
         function performSearch() {
-            const keyword = searchInput.value.trim();
-            if (!keyword) return;
-
-            // 调用search-engine.js中的函数处理搜索
-            window.saveSearchHistory(keyword);
+            // 空函数，防止意外调用
+            return;
         }
 
         // 展示建议和历史
@@ -642,11 +711,11 @@
             transition: transform 0.8s ease-out;
             transform: scale(1.8);
         }
-        
+
         #wallpaper-video.animate-in {
             transform: scale(1);
         }
-        
+
         /* 聚光灯效果 */
         .spotlight-overlay {
             position: fixed;
@@ -660,27 +729,166 @@
             transition: opacity 0.8s ease-out;
             pointer-events: none;
         }
-        
+
         .spotlight-overlay.fade-out {
             opacity: 0;
         }
     </style>
-    
     <!-- 聚光灯覆盖层 -->
     <div class="spotlight-overlay"></div>
-    
+
+    <!-- 手机界面容器 -->
+    <div id="phone-container" class="phone-container">
+        <div class="phone-frame">
+            <!-- 这里将嵌入网页内容 -->
+            <div class="phone-content">
+                <div class="phone-header">
+                    <div class="phone-time">12:00</div>
+                    <div class="phone-icons">
+                        <span class="phone-icon">🔋</span>
+                        <span class="phone-icon">📶</span>
+                        <span class="phone-icon">📱</span>
+                    </div>
+                </div>
+                <div class="phone-webview">
+                    <!-- 网页内容将在这里加载 -->
+                    <div class="phone-placeholder">
+                        <div class="placeholder-icon">🌐</div>
+                        <div class="placeholder-text">手机界面预览</div>
+                        <div class="placeholder-subtext">点击徽标可切换显示/隐藏</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* 手机界面样式 */
+        .phone-container {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            /* 初始位置在屏幕外 */
+            height: 100vh;
+            width: 400px;
+            z-index: 9999;
+            transition: right 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-right: 20px;
+        }
+
+        .phone-container.show {
+            right: 0;
+        }
+
+        .phone-frame {
+            width: 425px;
+            height: 96%;
+            /* max-height: 700px; */
+            background: rgb(255 255 255 / 18%);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .phone-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .phone-header {
+            height: 50px;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .phone-icons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .phone-icon {
+            font-size: 12px;
+        }
+
+        .phone-webview {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            background: #ffffff80;
+        }
+
+        .phone-placeholder {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .placeholder-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .placeholder-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .placeholder-subtext {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .phone-container {
+                width: 100%;
+                padding-right: 0;
+            }
+
+            .phone-frame {
+                width: 90vw;
+                max-width: 360px;
+            }
+        }
+    </style>
+
     <script>
         // 全局配置：默认使用12小时制
         let use12HourFormat = true;
         let searchContainerVisible = true; // 搜索框初始可见状态
+        let phoneContainerVisible = false; // 手机界面初始隐藏状态
 
         // 切换搜索框显示/隐藏
         function toggleSearchContainer() {
             const searchIcon = document.querySelector('#more img');
             const searchContainer = document.getElementById('search-container');
+            const searchInput = document.getElementById('search-input');
 
             // 确保搜索框有过渡效果
-            searchContainer.style.transition = 'all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28)';
+            searchContainer.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
 
             if (searchContainerVisible) {
                 // 隐藏搜索框
@@ -689,6 +897,11 @@
                 searchContainer.style.transform = 'translate(-50%, -50%) scale(0.9) translateY(-20px)';
                 // 旋转图标180度（关闭状态）
                 searchIcon.style.transform = 'rotate(180deg)';
+                // 禁用搜索输入框并移除焦点
+                if (searchInput) {
+                    searchInput.disabled = true;
+                    searchInput.blur();
+                }
             } else {
                 // 显示搜索框
                 searchContainer.style.display = 'flex';
@@ -700,18 +913,39 @@
                 }, 10);
                 // 旋转图标0度（打开状态）
                 searchIcon.style.transform = 'rotate(0deg)';
+                // 启用搜索输入框
+                if (searchInput) {
+                    searchInput.disabled = false;
+                }
             }
             searchContainerVisible = !searchContainerVisible;
-
-
-            // 已统一到上方逻辑中
         }
 
         // 初始隐藏搜索框（可选）
-        // document.addEventListener('DOMContentLoaded', function() {
-        //     searchContainerVisible = false;
-        //     document.getElementById('search-container').style.display = 'none';
-        // });
+        // 按钮点击功能
+        document.addEventListener('DOMContentLoaded', function() {
+    let wallpaperElement = document.getElementById('wallpaper-video');
+
+    if (wallpaperElement) {
+        // 添加错误事件监听器
+        wallpaperElement.addEventListener('error', function(e) {
+            console.error('Wallpaper error:', e);
+            showNotification('壁纸加载失败', 'error');
+        });
+
+        // 直接设置备用视频文件
+        const videoPath = 'users/files/videos/wallpaper.mp4';
+        console.log('Loading video from:', videoPath);
+        wallpaperElement.src = videoPath;
+        wallpaperElement.load();
+        try {
+            wallpaperElement.play();
+        } catch (e) {
+            console.error('Failed to play video:', e);
+            showNotification('视频播放失败: ' + e.message, 'error');
+        }
+    }
+        });
 
         function updateTime() {
             const now = new Date();
@@ -1055,6 +1289,8 @@
     <script>
         // 初始化应用
         window.addEventListener('DOMContentLoaded', () => {
+            // 初始化搜索图标点击切换功能
+            initSearchIconToggle();
 
             // 创建自定义窗口的函数
             window.createCustomWindow = function (options) {
@@ -1296,6 +1532,293 @@
                         }
                     });
                     systemMenuContainer.appendChild(cutItem);
+
+                    // 添加分割线
+                    const divider = document.createElement('div');
+                    divider.className = 'context-menu-divider';
+                    systemMenuContainer.appendChild(divider);
+
+                    // 自定义菜单项 - 移动到桌宠设置上方
+                    const customItem = document.createElement('div');
+                    customItem.className = 'context-menu-item has-submenu';
+                    customItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>自定义';
+
+                    // 尝试找到"新建"菜单项
+                    setTimeout(() => {
+                        const contextMenu = document.getElementById('custom-context-menu');
+                        if (contextMenu) {
+                            let newItem = null;
+                            const menuItems = contextMenu.querySelectorAll('.context-menu-item');
+                            menuItems.forEach(item => {
+                                if (item.textContent.includes('新建')) {
+                                    newItem = item;
+                                }
+                            });
+
+                            // 如果找到了"新建"菜单项，则插入到其后面
+                            if (newItem && newItem.nextSibling) {
+                                contextMenu.insertBefore(customItem, newItem.nextSibling);
+                            } else if (newItem) {
+                                contextMenu.appendChild(customItem);
+                            } else {
+                                // 尝试找到"桌宠设置"菜单项
+                                let petMenuItem = null;
+                                menuItems.forEach(item => {
+                                    if (item.textContent.includes('桌宠设置')) {
+                                        petMenuItem = item;
+                                    }
+                                });
+
+                                // 如果找到了"桌宠设置"菜单项，则插入到其前面
+                                if (petMenuItem) {
+                                    contextMenu.insertBefore(customItem, petMenuItem);
+                                } else {
+                                    // 否则添加到菜单末尾
+                                    contextMenu.appendChild(customItem);
+                                }
+                            }
+                        }
+                    }, 50);
+
+                    // 创建自定义子菜单
+                    const customSubMenu = document.createElement('div');
+                    customSubMenu.className = 'custom-context-menu submenu';
+                    customSubMenu.style.position = 'absolute';
+                    customSubMenu.style.display = 'none';
+                    document.body.appendChild(customSubMenu);
+
+                    // 子菜单设置函数 - 优化二级菜单的触发方式和动画效果
+                    function setupSubMenu(item, subMenu) {
+                        // 添加显示类
+                        function showSubMenu() {
+                            // 计算位置
+                            const rect = item.getBoundingClientRect();
+                            const viewportWidth = window.innerWidth;
+                            const viewportHeight = window.innerHeight;
+                            
+                            let left = rect.right;
+                            let top = rect.top;
+                            
+                            // 强制显示获取尺寸
+                            subMenu.style.display = 'block';
+                            subMenu.style.visibility = 'hidden';
+                            const subMenuRect = subMenu.getBoundingClientRect();
+                            
+                            // 检查边界
+                            if (left + subMenuRect.width > viewportWidth) {
+                                left = rect.left - subMenuRect.width;
+                            }
+                            if (top + subMenuRect.height > viewportHeight) {
+                                top = Math.max(0, viewportHeight - subMenuRect.height);
+                            }
+                            
+                            // 设置位置
+                            subMenu.style.left = `${left}px`;
+                            subMenu.style.top = `${top}px`;
+                            
+                            // 显示子菜单并添加动画类
+                            setTimeout(() => {
+                                subMenu.style.visibility = 'visible';
+                                subMenu.classList.add('submenu-animation-in');
+                                
+                                // 添加菜单项交错动画
+                                const subMenuItems = subMenu.querySelectorAll('.context-menu-item');
+                                subMenuItems.forEach((menuItem, index) => {
+                                    setTimeout(() => {
+                                        menuItem.style.opacity = '1';
+                                        menuItem.style.transform = 'translateX(0)';
+                                    }, index * 50);
+                                });
+                            }, 10);
+                        }
+                        
+                        // 隐藏子菜单
+                        function hideSubMenu() {
+                            subMenu.classList.remove('submenu-animation-in');
+                            subMenu.classList.add('submenu-animation-out');
+                            
+                            setTimeout(() => {
+                                subMenu.style.display = 'none';
+                                subMenu.classList.remove('submenu-animation-out');
+                                
+                                // 重置菜单项样式，为下次显示做准备
+                                const subMenuItems = subMenu.querySelectorAll('.context-menu-item');
+                                subMenuItems.forEach(menuItem => {
+                                    menuItem.style.opacity = '0';
+                                    menuItem.style.transform = 'translateX(-10px)';
+                                });
+                            }, 200);
+                        }
+                        
+                        // 添加事件监听 - 优化触发方式
+                        item.addEventListener('mouseenter', (e) => {
+                            e.stopPropagation();
+                            showSubMenu();
+                        });
+                        
+                        item.addEventListener('mouseleave', () => {
+                            setTimeout(() => {
+                                if (!subMenu.matches(':hover') && !item.matches(':hover')) {
+                                    hideSubMenu();
+                                }
+                            }, 200);
+                        });
+                        
+                        subMenu.addEventListener('mouseleave', () => {
+                            setTimeout(() => {
+                                if (!subMenu.matches(':hover') && !item.matches(':hover')) {
+                                    hideSubMenu();
+                                }
+                            }, 200);
+                        });
+                    }
+
+                    // 设置自定义子菜单
+                    setupSubMenu(customItem, customSubMenu);
+
+                    // 换壁纸子菜单项（二级菜单）
+                    const changeWallpaperItem = document.createElement('div');
+                    changeWallpaperItem.className = 'context-menu-item has-submenu';
+                    changeWallpaperItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>换壁纸';
+                    customSubMenu.appendChild(changeWallpaperItem);
+
+                    // 创建换壁纸三级子菜单
+                    const wallpaperSubMenu = document.createElement('div');
+                    wallpaperSubMenu.className = 'custom-context-menu submenu';
+                    wallpaperSubMenu.style.position = 'absolute';
+                    wallpaperSubMenu.style.display = 'none';
+                    document.body.appendChild(wallpaperSubMenu);
+
+                    // 设置换壁纸子菜单
+                    setupSubMenu(changeWallpaperItem, wallpaperSubMenu);
+
+                    // 添加切换预设壁纸菜单项
+                    const switchPresetItem = document.createElement('div');
+                    switchPresetItem.className = 'context-menu-item';
+                    switchPresetItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>切换预设壁纸';
+                    switchPresetItem.addEventListener('click', () => {
+                        const wallpaperVideo = document.getElementById('wallpaper-video');
+                        if (wallpaperVideo) {
+                            // 获取当前壁纸视频源
+                            const currentSrc = wallpaperVideo.src;
+                            // 定义可用的壁纸视频
+                            const wallpapers = [
+                                './users/files/videos/111wallpaper.mp4'
+                            ];
+                            // 只保留备用视频，避免切换到不存在的文件
+                            // 确定下一个壁纸视频
+                            let nextWallpaper;
+                            if (currentSrc.includes('wallpaper.mp4')) {
+                                nextWallpaper = wallpapers[1];
+                            } else {
+                                nextWallpaper = wallpapers[0];
+                            }
+                            // 更新壁纸视频
+                            wallpaperVideo.src = nextWallpaper;
+                            wallpaperVideo.load();
+                            wallpaperVideo.play();
+                            // 保存设置到本地存储
+                            localStorage.setItem('wallpaperSource', nextWallpaper);
+                            // 显示提示
+                            window.notificationManager.showPrompt('壁纸已切换', 2000);
+                        }
+                        contextMenu.classList.add('closing');
+                        setTimeout(() => {
+                            contextMenu.classList.remove('closing');
+                        }, 200);
+                        wallpaperSubMenu.style.display = 'none';
+                    });
+                    wallpaperSubMenu.appendChild(switchPresetItem);
+
+                    // 添加上传新壁纸菜单项
+                    const uploadWallpaperItem = document.createElement('div');
+                    uploadWallpaperItem.className = 'context-menu-item';
+                    uploadWallpaperItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>上传新壁纸';
+                    uploadWallpaperItem.addEventListener('click', () => {
+                        // 创建文件输入元素
+                        const fileInput = document.createElement('input');
+                        fileInput.type = 'file';
+                        fileInput.accept = 'image/*,video/*';
+                        fileInput.style.display = 'none';
+                        document.body.appendChild(fileInput);
+
+                        // 触发文件选择对话框
+                        fileInput.click();
+
+                        // 处理文件选择
+                        fileInput.addEventListener('change', (e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                                // 检查文件类型
+                                if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+                                    // 显示上传提示
+                                    window.notificationManager.showPrompt('正在上传壁纸...', 0);
+
+                                    // 这里应该实现文件上传逻辑
+                                    // 为简化示例，我们创建一个临时URL
+                                    const tempUrl = URL.createObjectURL(file);
+
+                                    // 更新壁纸
+                                    const wallpaperVideo = document.getElementById('wallpaper-video');
+                                    if (wallpaperVideo) {
+                                        // 如果是图片，我们需要修改元素类型
+                                        if (file.type.startsWith('image/')) {
+                                            // 保存当前视频元素的属性
+                                            const videoProps = {
+                                                width: wallpaperVideo.style.width,
+                                                height: wallpaperVideo.style.height,
+                                                objectFit: wallpaperVideo.style.objectFit,
+                                                pointerEvents: wallpaperVideo.style.pointerEvents,
+                                                position: wallpaperVideo.style.position,
+                                                top: wallpaperVideo.style.top,
+                                                left: wallpaperVideo.style.left
+                                            };
+
+                                            // 替换视频元素为图片元素
+                                            const imgElement = document.createElement('img');
+                                            imgElement.id = 'wallpaper-video'; // 保持相同ID
+                                            imgElement.src = tempUrl;
+                                            imgElement.alt = 'Wallpaper';
+
+                                            // 应用相同的样式
+                                            for (const [key, value] of Object.entries(videoProps)) {
+                                                imgElement.style[key] = value;
+                                            }
+
+                                            // 替换元素
+                                            wallpaperVideo.parentNode.replaceChild(imgElement, wallpaperVideo);
+                                            localStorage.setItem('wallpaperType', 'image');
+                                        } else {
+                                            // 视频文件
+                                            wallpaperVideo.src = tempUrl;
+                                            wallpaperVideo.load();
+                                            wallpaperVideo.play();
+                                            localStorage.setItem('wallpaperType', 'video');
+                                        }
+
+                                        // 保存设置到本地存储
+                                        localStorage.setItem('wallpaperSource', tempUrl);
+                                        localStorage.setItem('wallpaperFileName', file.name);
+
+                                        // 更新提示
+                                        window.notificationManager.showPrompt('壁纸上传成功', 2000);
+                                    }
+                                } else {
+                                    window.notificationManager.showPrompt('不支持的文件类型，请上传图片或视频', 2000);
+                                }
+                            }
+
+                            // 清理
+                            document.body.removeChild(fileInput);
+                        });
+
+                        contextMenu.classList.add('closing');
+                        setTimeout(() => {
+                            contextMenu.classList.remove('closing');
+                        }, 200);
+                        wallpaperSubMenu.style.display = 'none';
+                    });
+                    wallpaperSubMenu.appendChild(uploadWallpaperItem);
                 }
 
                 // 全局拦截右键菜单，始终显示自定义菜单（包括输入框）
@@ -1678,8 +2201,104 @@
                 }
             }, 300); // 延迟300ms，在搜索框动画之后触发任务栏动画
 
+            // 初始化手机界面功能
+            initPhoneInterface();
         });
-        
+
+        // 初始化手机界面
+        function initPhoneInterface() {
+            // 获取徽标元素
+            const logo = document.getElementById('logo');
+            if (!logo) return;
+
+            // 添加点击事件监听器
+            logo.addEventListener('click', togglePhoneContainer);
+
+            // 更新手机界面时间
+            updatePhoneTime();
+            setInterval(updatePhoneTime, 60000); // 每分钟更新一次
+        }
+
+        // 初始化搜索图标点击切换功能
+        function initSearchIconToggle() {
+            const searchIconContainer = document.getElementById('searchEngineSelector');
+            const searchIcon = document.getElementById('main-search-icon');
+            let isDefaultIcon = true;
+
+            if (!searchIconContainer || !searchIcon) return;
+
+            // 添加点击事件监听器 - 仅用于切换图标
+            searchIconContainer.addEventListener('click', function (e) {
+                e.stopPropagation(); // 阻止事件冒泡到搜索容器
+                if (isDefaultIcon) {
+                    // 切换到目标SVG
+                    searchIcon.innerHTML = '<path d="M365.92 128H204.08C160.4 128 125 163.4 125 207.08v161.85c0 43.67 35.4 79.08 79.08 79.08h161.85c43.67 0 79.08-35.4 79.08-79.08V207.08C445 163.4 409.6 128 365.92 128zM851.36 234.09L736.91 119.64c-30.88-30.88-80.95-30.88-111.83 0L510.64 234.09c-30.88 30.88-30.88 80.95 0 111.83l114.44 114.44c30.88 30.88 80.95 30.88 111.83 0l114.44-114.44c30.89-30.89 30.89-80.95 0.01-111.83zM365.92 519H204.08C160.4 519 125 554.4 125 598.08v161.85c0 43.67 35.4 79.08 79.08 79.08h161.85c43.67 0 79.08-35.4 79.08-79.08V598.08C445 554.4 409.6 519 365.92 519zM753.92 519H592.08C548.4 519 513 554.4 513 598.08v161.85c0 43.67 35.4 79.08 79.08 79.08h161.85c43.67 0 79.08-35.4 79.08-79.08V598.08C833 554.4 797.6 519 753.92 519z" fill="#ffffff" p-id="4563"></path>';
+                    searchIcon.setAttribute('viewBox', '0 0 1024 1024');
+                    searchIcon.setAttribute('width', '200');
+                    searchIcon.setAttribute('height', '200');
+                    searchIcon.setAttribute('version', '1.1');
+                    searchIcon.setAttribute('t', '1757014971857');
+                    searchIcon.setAttribute('p-id', '4562');
+                } else {
+                    // 切换回默认SVG
+                    searchIcon.innerHTML = '<path d="M18.031 16.617l4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 0 1-1.969 5.617zm-2.006-.742A6.977 6.977 0 0 0 18 11c0-3.868-3.133-7-7-7-3.868 0-7 3.132-7 7 0 3.867 3.132 7 7 7a6.977 6.977 0 0 0 4.875-1.975l.15-.15z"></path>';
+                    searchIcon.setAttribute('viewBox', '0 0 24 24');
+                    searchIcon.removeAttribute('width');
+                    searchIcon.removeAttribute('height');
+                    searchIcon.removeAttribute('version');
+                    searchIcon.removeAttribute('t');
+                    searchIcon.removeAttribute('p-id');
+                }
+                isDefaultIcon = !isDefaultIcon;
+            });
+        }
+
+        // 切换手机界面显示/隐藏
+        function togglePhoneContainer() {
+            const phoneContainer = document.getElementById('phone-container');
+            const searchContainer = document.getElementById('search-container');
+
+            if (!phoneContainer || !searchContainer) return;
+
+            // 切换手机界面可见状态
+            phoneContainerVisible = !phoneContainerVisible;
+
+            if (phoneContainerVisible) {
+                // 显示手机界面
+                phoneContainer.classList.add('show');
+
+                // 调整搜索框位置
+                setTimeout(() => {
+                    searchContainer.style.left = '40%'; // 调整到剩余空间居中
+                    searchContainer.style.transform = 'translate(-50%, -50%) scale(1)';
+                }, 10);
+            } else {
+                // 隐藏手机界面
+                phoneContainer.classList.remove('show');
+
+                // 恢复搜索框位置
+                setTimeout(() => {
+                    searchContainer.style.left = '50%'; // 恢复到屏幕中央
+                    searchContainer.style.transform = 'translate(-50%, -50%) scale(1)';
+                }, 10);
+            }
+        }
+
+        // 更新手机界面时间
+        function updatePhoneTime() {
+            const phoneTimeElement = document.querySelector('.phone-time');
+            if (!phoneTimeElement) return;
+
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+
+            // 格式化时间
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+
+            phoneTimeElement.textContent = `${hours}:${minutes}`;
+        }
 
     </script>
 </body>

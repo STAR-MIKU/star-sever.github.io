@@ -13,12 +13,18 @@ class WindowManager {
         // 系统面板不需要任务栏图标
         if (!window.isSystemPanel) {
             this.createTaskbarIcon(window);
+            // 隐藏搜索框
+            this.hideSearchBox();
         }
         this.setActiveWindow(window.id);
     }
 
     removeWindow(windowId) {
         this.windows = this.windows.filter(w => w.id !== windowId);
+        // 如果没有窗口了，显示搜索框
+        if (this.windows.length === 0 || this.windows.every(w => w.isSystemPanel)) {
+            this.showSearchBox();
+        }
         const icon = document.querySelector(`.taskbar-icon[data-window-id="${windowId}"]`);
         if (icon) {
             icon.remove();
@@ -62,26 +68,70 @@ class WindowManager {
         }
     }
 
+    // 隐藏搜索框
+    hideSearchBox() {
+        const searchContainer = document.getElementById('search-container');
+        const searchIcon = document.querySelector('#more img');
+        if (searchContainer && searchContainer.classList.contains('show')) {
+            searchContainer.classList.remove('show');
+            // 更新搜索框图标状态
+            if (searchIcon) {
+                searchIcon.style.transform = 'rotate(180deg)';
+            }
+            // 更新全局可见性变量
+            if (window.searchContainerVisible !== undefined) {
+                window.searchContainerVisible = false;
+            }
+        }
+    }
+
+    // 显示搜索框
+    showSearchBox() {
+        const searchContainer = document.getElementById('search-container');
+        const searchIcon = document.querySelector('#more img');
+        if (searchContainer && !searchContainer.classList.contains('show')) {
+            searchContainer.classList.add('show');
+            // 更新搜索框图标状态
+            if (searchIcon) {
+                searchIcon.style.transform = 'rotate(0deg)';
+            }
+            // 更新全局可见性变量
+            if (window.searchContainerVisible !== undefined) {
+                window.searchContainerVisible = true;
+            }
+        }
+    }
+
     createTaskbarIcon(window) {
         const icon = document.createElement('div');
         icon.className = 'taskbar-icon';
         icon.dataset.windowId = window.id;
         
-        // 添加标题
+        // 添加图标
+        const iconImg = document.createElement('img');
+        iconImg.src = window.icon || './serve/files/icon/default.svg';
+        iconImg.alt = window.title;
+        iconImg.style.width = '20px';
+        iconImg.style.height = '20px';
+        icon.appendChild(iconImg);
+        
+        // 保留标题但隐藏，用于工具提示
         const titleSpan = document.createElement('span');
         titleSpan.textContent = window.title;
+        titleSpan.style.display = 'none';
+        titleSpan.title = window.title;
         icon.appendChild(titleSpan);
         
-        icon.style.padding = '5px 10px';
-        icon.style.margin = '0 5px';
+        icon.style.padding = '5px';
+        icon.style.margin = '0 2px';
         icon.style.borderRadius = '4px';
         icon.style.cursor = 'pointer';
-        icon.style.whiteSpace = 'nowrap';
-        icon.style.overflow = 'hidden';
-        icon.style.textOverflow = 'ellipsis';
-        icon.style.maxWidth = '120px';
-        icon.style.color = 'white';
-        icon.style.fontSize = '14px';
+        icon.style.display = 'flex';
+        icon.style.alignItems = 'center';
+        icon.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+        icon.style.justifyContent = 'center';
+        icon.style.width = '30px';
+        icon.style.height = '30px';
         icon.style.transition = 'all 0.2s';
 
         icon.addEventListener('click', () => {
@@ -107,12 +157,22 @@ class RoundedWindow {
         console.log('开始创建窗口:', options);
         this.options = options || {};
         this.title = this.options.title || '窗口';
+        this.icon = this.options.icon || './serve/files/icon/default.svg';
         this.url = this.options.url || 'about:blank';
         this.content = this.options.content || null;
         this.width = this.options.width || 350;
         this.height = this.options.height || 570;
         this.x = this.options.x || 1000;
         this.y = this.options.y || 100;
+        
+        // 确保窗口初始位置不超出屏幕范围
+        this.screenWidth = window.innerWidth;
+        this.dockHeight = document.getElementById('dock')?.offsetHeight || 0;
+        this.screenHeight = window.innerHeight - this.dockHeight;
+        
+        this.x = Math.max(0, Math.min(this.x, this.screenWidth - this.width));
+        this.y = Math.max(0, Math.min(this.y, this.screenHeight - this.height));
+        
         this.id = 'window-' + Date.now();
         this.isCustom = this.options.isCustom || false; // 是否为用户自定义窗口
         this.isSystemPanel = this.options.isSystemPanel || false; // 是否为系统面板
@@ -348,6 +408,9 @@ class RoundedWindow {
         // 记录鼠标在屏幕上的绝对位置
         this.dragStartX = e.clientX;
         this.dragStartY = e.clientY;
+        // 记录窗口初始位置
+        this.initialDragX = this.x;
+        this.initialDragY = this.y;
         // 初始化分屏相关变量
         this.snapZoneSize = 50; // 吸附区域大小
         this.snapPreview = null; // 分屏预览元素
@@ -370,9 +433,9 @@ class RoundedWindow {
         const deltaX = e.clientX - this.dragStartX;
         const deltaY = e.clientY - this.dragStartY;
 
-        // 计算新位置
-        let newX = this.x + deltaX;
-        let newY = this.y + deltaY;
+        // 计算新位置 (使用初始位置加上偏移量)
+        let newX = this.initialDragX + deltaX;
+        let newY = this.initialDragY + deltaY;
 
         // 检测分屏区域
         const screenWidth = this.screenWidth;
@@ -453,8 +516,8 @@ class RoundedWindow {
             }
 
             // 普通边界检查
-            newX = Math.max(0, Math.min(newX, screenWidth - windowWidth));
-            newY = Math.max(0, Math.min(newY, screenHeight - windowHeight));
+        newX = Math.max(0, Math.min(newX, screenWidth - windowWidth));
+        newY = Math.max(0, Math.min(newY, screenHeight - windowHeight));
 
             // 使用transform提高性能
             this.windowElement.style.transform = `translate(${newX}px, ${newY}px)`;
@@ -601,15 +664,19 @@ class RoundedWindow {
         // 移除过渡效果
         this.windowElement.style.transition = '';
         // 更新坐标属性
-        const transform = this.windowElement.style.transform;
-        if (transform) {
-            const match = transform.match(/translate\((\d+)px, (\d+)px\)/);
-            if (match) {
-                this.x = parseInt(match[1]) || 0;
-                this.y = parseInt(match[2]) || 0;
-            }
-        }
+        const rect = this.windowElement.getBoundingClientRect();
+        // 使用getBoundingClientRect获取准确位置
+        this.x = rect.left;
+        this.y = rect.top;
         this.windowElement.style.transform = ''; // 清除transform
+        
+        // 确保最终位置不超出屏幕范围
+        const windowWidth = this.windowElement.offsetWidth;
+        const windowHeight = this.windowElement.offsetHeight;
+        this.x = Math.max(0, Math.min(this.x, this.screenWidth - windowWidth));
+        this.y = Math.max(0, Math.min(this.y, this.screenHeight - windowHeight));
+        
+        // 应用更新后的位置
         this.windowElement.style.left = this.x + 'px';
         this.windowElement.style.top = this.y + 'px';
         this.windowElement.style.zIndex = '100'; // 拖动结束后恢复层级
@@ -652,6 +719,18 @@ class RoundedWindow {
         // 限制最大尺寸不超过屏幕大小
         newWidth = Math.min(newWidth, this.screenWidth);
         newHeight = Math.min(newHeight, this.screenHeight);
+
+        // 如果窗口宽度增加导致超出屏幕右侧，则调整窗口位置
+        if (this.x + newWidth > this.screenWidth) {
+            this.x = this.screenWidth - newWidth;
+            this.windowElement.style.left = this.x + 'px';
+        }
+
+        // 如果窗口高度增加导致超出屏幕底部，则调整窗口位置
+        if (this.y + newHeight > this.screenHeight) {
+            this.y = this.screenHeight - newHeight;
+            this.windowElement.style.top = this.y + 'px';
+        }
 
         this.windowElement.style.width = newWidth + 'px';
         this.windowElement.style.height = newHeight + 'px';
@@ -820,23 +899,39 @@ class RoundedWindow {
             this.windowElement.classList.remove('maximized');
         }
 
-        // 重置窗口大小为初始大小
-        this.windowElement.style.width = this.normalState.width + 'px';
-        this.windowElement.style.height = this.normalState.height + 'px';
+        // 保存当前窗口位置，用于恢复时使用
+        this.minimizedPosition = {
+            x: parseInt(this.windowElement.style.left) || 0,
+            y: parseInt(this.windowElement.style.top) || 0
+        };
 
         // 最小化窗口（优化的回收动画）
         this.isMinimized = true;
         this.isAnimating = true;
+        // 获取对应任务栏图标的位置
+        const taskbarIcon = document.querySelector(`.taskbar-icon[data-window-id="${this.id}"]`);
+        let targetLeft = 0;
+        let targetTop = this.screenHeight;
+        
+        if (taskbarIcon) {
+            const iconRect = taskbarIcon.getBoundingClientRect();
+            const dock = document.getElementById('dock');
+            const dockRect = dock.getBoundingClientRect();
+            // 计算图标在屏幕中的绝对位置
+            targetLeft = iconRect.left;
+            targetTop = dockRect.top;
+        }
+        
         // 设置更全面的过渡效果
-        this.windowElement.style.transition = 'top 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.1s, height 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.1s';
+        this.windowElement.style.transition = 'left 0.5s cubic-bezier(0.4, 0, 0.2, 1), top 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.1s, height 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.1s';
         // 先设置宽度和高度为0
         this.windowElement.style.width = '0';
         this.windowElement.style.height = '0';
-        this.windowElement.style.left = this.normalState.x + 'px';
         this.windowElement.style.opacity = '0';
-        // 稍延迟后移动到底部，形成收缩后下落的效果
+        // 移动窗口到任务栏图标位置
         setTimeout(() => {
-            this.windowElement.style.top = this.screenHeight + 'px';
+            this.windowElement.style.left = targetLeft + 'px';
+            this.windowElement.style.top = targetTop + 'px';
             // 动画结束后重置标志
             setTimeout(() => {
                 this.isAnimating = false;
@@ -848,17 +943,32 @@ class RoundedWindow {
         // 如果正在动画中，不执行新的操作
         if (this.isAnimating) return;
 
-        // 恢复窗口（从底部飞入的动画）
+        // 恢复窗口（从任务栏图标位置飞入的动画）
         this.isMinimized = false;
         this.isAnimating = true;
         this.windowElement.style.width = this.normalState.width + 'px';
         this.windowElement.style.height = this.normalState.height + 'px';
-        this.windowElement.style.left = this.normalState.x + 'px';
-        this.windowElement.style.top = this.screenHeight + 'px';
+        
+        // 使用最小化前保存的位置，如果不存在则使用normalState位置
+        const targetX = this.minimizedPosition?.x || this.normalState.x;
+        const targetY = this.minimizedPosition?.y || this.normalState.y;
+        
+        // 获取当前窗口位置（任务栏图标位置）
+        const currentLeft = parseInt(this.windowElement.style.left) || 0;
+        const currentTop = parseInt(this.windowElement.style.top) || 0;
+        
+        // 设置初始状态
+        this.windowElement.style.left = currentLeft + 'px';
+        this.windowElement.style.top = currentTop + 'px';
         this.windowElement.style.opacity = '0';
+        
+        // 设置过渡效果
+        this.windowElement.style.transition = 'left 0.5s cubic-bezier(0.4, 0, 0.2, 1), top 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        
         // 触发动画
         setTimeout(() => {
-            this.windowElement.style.top = this.normalState.y + 'px';
+            this.windowElement.style.left = targetX + 'px';
+            this.windowElement.style.top = targetY + 'px';
             this.windowElement.style.opacity = '1';
             
             // 检查是否需要隐藏任务栏

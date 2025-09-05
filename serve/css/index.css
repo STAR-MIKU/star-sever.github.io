@@ -455,6 +455,39 @@ body {
     width: 0;
 }
 
+/* 子菜单箭头样式 */
+.submenu-arrow {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    margin-top: -5px;
+    width: 10px;
+    height: 10px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transform: translateX(-5px);
+    animation: submenu-slide-in 0.2s ease forwards;
+}
+
+/* 有子菜单的菜单项样式 */
+.has-submenu {
+    position: relative;
+    padding-right: 20px;
+}
+
+/* 子菜单样式 */
+.submenu {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 5px 0;
+    min-width: 180px;
+    z-index: 999999;
+}
+
 #dock::before {
     content: '';
     position: absolute;
@@ -695,9 +728,30 @@ body {
 .submenu {
     margin-left: 10px;
     margin-top: -10px;
-    animation: submenu-slide-in 0.2s ease forwards;
     opacity: 0;
-    transform: translateX(-5px);
+    transform: translateX(-20px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* 子菜单进入动画 */
+.submenu-animation-in {
+    opacity: 1;
+    transform: translateX(0);
+    animation: submenuSlideIn 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* 子菜单退出动画 */
+.submenu-animation-out {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: submenuSlideOut 0.2s ease-out;
+}
+
+/* 子菜单项过渡效果 */
+.submenu .context-menu-item {
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 @keyframes submenu-slide-in {
@@ -708,6 +762,34 @@ body {
     to {
         opacity: 1;
         transform: translateX(0);
+    }
+}
+
+/* 子菜单进入动画 */
+@keyframes submenuSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px) scale(0.95);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateX(5px) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+/* 子菜单退出动画 */
+@keyframes submenuSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-20px);
     }
 }
 

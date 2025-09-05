@@ -763,14 +763,44 @@ function initDesktopPet() {
                 petSubMenu.style.top = `${top}px`;
             });
             
-            // 隐藏子菜单
+            // 隐藏子菜单 - 优化版
+            let petSubMenuTimeout;
             petMenuItem.addEventListener('mouseleave', () => {
-                setTimeout(() => {
-                    if (!petSubMenu.matches(':hover')) {
+                petSubMenuTimeout = setTimeout(() => {
+                    if (!petSubMenu.matches(':hover') && !isHoveringSubMenu(petSubMenu)) {
                         petSubMenu.style.display = 'none';
                     }
                 }, 300);
             });
+
+            // 鼠标进入子菜单时清除隐藏计时器
+            petSubMenu.addEventListener('mouseenter', () => {
+                clearTimeout(petSubMenuTimeout);
+            });
+
+            // 鼠标离开子菜单时隐藏
+            petSubMenu.addEventListener('mouseleave', () => {
+                setTimeout(() => {
+                    if (!isHoveringSubMenu(petSubMenu)) {
+                        petSubMenu.style.display = 'none';
+                    }
+                }, 200);
+            });
+
+            // 辅助函数：检查是否有子菜单被悬停
+            function isHoveringSubMenu(parentMenu) {
+                const subMenus = parentMenu.querySelectorAll('.submenu');
+                for (let i = 0; i < subMenus.length; i++) {
+                    if (subMenus[i].matches(':hover')) {
+                        return true;
+                    }
+                    // 递归检查子菜单的子菜单
+                    if (isHoveringSubMenu(subMenus[i])) {
+                        return true;
+                    }
+                }
+                return false;
+            }
             
             // 添加跟随模式菜单项
             const followItem = document.createElement('div');
