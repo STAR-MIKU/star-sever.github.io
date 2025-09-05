@@ -693,7 +693,7 @@ function initDesktopPet() {
         if (contextMenu) {
             // 添加桌宠控制菜单项
             const petMenuItem = document.createElement('div');
-            petMenuItem.className = 'context-menu-item';
+            petMenuItem.className = 'context-menu-item cursor-target';
             petMenuItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>桌宠设置';
 
             // 尝试找到"新建"菜单项
@@ -804,7 +804,7 @@ function initDesktopPet() {
             
             // 添加跟随模式菜单项
             const followItem = document.createElement('div');
-            followItem.className = 'context-menu-item';
+            followItem.className = 'context-menu-item cursor-target';
             followItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 12-4 4-7-7-3 3"></path><path d="M16 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-9"></path><path d="M12 17h8"></path></svg>跟随模式';
             followItem.addEventListener('click', () => {
                 if (window.desktopPet) {
@@ -817,7 +817,7 @@ function initDesktopPet() {
             
             // 添加移动菜单项
             const moveItem = document.createElement('div');
-            moveItem.className = 'context-menu-item';
+            moveItem.className = 'context-menu-item cursor-target';
             moveItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="15 19 12 22 9 19"></polyline><polyline points="19 9 22 12 19 15"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>随机移动';
             moveItem.addEventListener('click', () => {
                 if (window.desktopPet) {
@@ -838,7 +838,7 @@ function initDesktopPet() {
 
             // 外观设置菜单项
             const appearanceItem = document.createElement('div');
-            appearanceItem.className = 'context-menu-item';
+            appearanceItem.className = 'context-menu-item cursor-target';
             appearanceItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="2" width="9" height="7" rx="2" ry="2"></rect><circle cx="16.5" cy="13" r="1.5"></circle><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>外观设置';
             petSubMenu.appendChild(appearanceItem);
 
@@ -914,7 +914,7 @@ function initDesktopPet() {
 
             // 表情设置菜单项
             const expressionItem = document.createElement('div');
-            expressionItem.className = 'context-menu-item';
+            expressionItem.className = 'context-menu-item cursor-target';
             expressionItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>表情设置';
             petSubMenu.appendChild(expressionItem);
 
@@ -982,7 +982,7 @@ function initDesktopPet() {
 
             // 添加表情选项
             const expressionNormalItem = document.createElement('div');
-            expressionNormalItem.className = 'context-menu-item';
+            expressionNormalItem.className = 'context-menu-item cursor-target';
             expressionNormalItem.innerHTML = '正常';
             expressionNormalItem.addEventListener('click', () => {
                 if (window.desktopPet) {
@@ -995,7 +995,7 @@ function initDesktopPet() {
             expressionSubMenu.appendChild(expressionNormalItem);
 
             const expressionHappyItem = document.createElement('div');
-            expressionHappyItem.className = 'context-menu-item';
+            expressionHappyItem.className = 'context-menu-item cursor-target';
             expressionHappyItem.innerHTML = '开心';
             expressionHappyItem.addEventListener('click', () => {
                 if (window.desktopPet) {
@@ -1008,7 +1008,7 @@ function initDesktopPet() {
             expressionSubMenu.appendChild(expressionHappyItem);
 
             const expressionSadItem = document.createElement('div');
-            expressionSadItem.className = 'context-menu-item';
+            expressionSadItem.className = 'context-menu-item cursor-target';
             expressionSadItem.innerHTML = '难过';
             expressionSadItem.addEventListener('click', () => {
                 if (window.desktopPet) {
@@ -1021,7 +1021,7 @@ function initDesktopPet() {
             expressionSubMenu.appendChild(expressionSadItem);
 
             const expressionAngryItem = document.createElement('div');
-            expressionAngryItem.className = 'context-menu-item';
+            expressionAngryItem.className = 'context-menu-item cursor-target';
             expressionAngryItem.innerHTML = '生气';
             expressionAngryItem.addEventListener('click', () => {
                 if (window.desktopPet) {
@@ -1034,7 +1034,7 @@ function initDesktopPet() {
             expressionSubMenu.appendChild(expressionAngryItem);
 
             const expressionSurprisedItem = document.createElement('div');
-            expressionSurprisedItem.className = 'context-menu-item';
+            expressionSurprisedItem.className = 'context-menu-item cursor-target';
             expressionSurprisedItem.innerHTML = '惊讶';
             expressionSurprisedItem.addEventListener('click', () => {
                 if (window.desktopPet) {
@@ -1055,7 +1055,7 @@ function initDesktopPet() {
 
             // 透明度设置菜单项
             const opacityItem = document.createElement('div');
-            opacityItem.className = 'context-menu-item';
+            opacityItem.className = 'context-menu-item cursor-target';
             opacityItem.innerHTML = '<svg class="context-menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><line x1="16" y1="8" x2="8" y2="8"></line><line x1="16" y1="16" x2="8" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>透明度设置';
             petSubMenu.appendChild(opacityItem);
 
