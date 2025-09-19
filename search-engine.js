@@ -153,3 +153,20 @@ function showSearchTips() {
         }, 500);
     }, 3000);
 }
+    // 确保DOM中的所有元素都已加载
+    setTimeout(() => {
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            // 添加搜索按钮点击事件
+            const searchIconContainer = document.getElementById('searchEngineSelector');
+            if (searchIconContainer) {
+                searchIconContainer.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const keyword = searchInput.value.trim();
+                    if (keyword) {
+                        window.saveSearchHistory(keyword);
+                    }
+                });
+            }
+        }
+    }, 100);

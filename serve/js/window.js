@@ -408,9 +408,6 @@ class RoundedWindow {
         // 记录鼠标在屏幕上的绝对位置
         this.dragStartX = e.clientX;
         this.dragStartY = e.clientY;
-        // 记录窗口初始位置
-        this.initialDragX = this.x;
-        this.initialDragY = this.y;
         // 初始化分屏相关变量
         this.snapZoneSize = 50; // 吸附区域大小
         this.snapPreview = null; // 分屏预览元素
@@ -433,9 +430,9 @@ class RoundedWindow {
         const deltaX = e.clientX - this.dragStartX;
         const deltaY = e.clientY - this.dragStartY;
 
-        // 计算新位置 (使用初始位置加上偏移量)
-        let newX = this.initialDragX + deltaX;
-        let newY = this.initialDragY + deltaY;
+        // 计算新位置
+        let newX = this.x + deltaX;
+        let newY = this.y + deltaY;
 
         // 检测分屏区域
         const screenWidth = this.screenWidth;
@@ -516,8 +513,8 @@ class RoundedWindow {
             }
 
             // 普通边界检查
-        newX = Math.max(0, Math.min(newX, screenWidth - windowWidth));
-        newY = Math.max(0, Math.min(newY, screenHeight - windowHeight));
+            newX = Math.max(0, Math.min(newX, screenWidth - windowWidth));
+            newY = Math.max(0, Math.min(newY, screenHeight - windowHeight));
 
             // 使用transform提高性能
             this.windowElement.style.transform = `translate(${newX}px, ${newY}px)`;
@@ -664,19 +661,20 @@ class RoundedWindow {
         // 移除过渡效果
         this.windowElement.style.transition = '';
         // 更新坐标属性
-        const rect = this.windowElement.getBoundingClientRect();
-        // 使用getBoundingClientRect获取准确位置
-        this.x = rect.left;
-        this.y = rect.top;
+        const transform = this.windowElement.style.transform;
+        if (transform) {
+            const match = transform.match(/translate\((\d+)px, (\d+)px\)/);
+            if (match) {
+                this.x = parseInt(match[1]) || 0;
+                this.y = parseInt(match[2]) || 0;
+            }
+        }
         this.windowElement.style.transform = ''; // 清除transform
         
         // 确保最终位置不超出屏幕范围
-        const windowWidth = this.windowElement.offsetWidth;
-        const windowHeight = this.windowElement.offsetHeight;
-        this.x = Math.max(0, Math.min(this.x, this.screenWidth - windowWidth));
-        this.y = Math.max(0, Math.min(this.y, this.screenHeight - windowHeight));
+        this.x = Math.max(0, Math.min(this.x, this.screenWidth - this.windowElement.offsetWidth));
+        this.y = Math.max(0, Math.min(this.y, this.screenHeight - this.windowElement.offsetHeight));
         
-        // 应用更新后的位置
         this.windowElement.style.left = this.x + 'px';
         this.windowElement.style.top = this.y + 'px';
         this.windowElement.style.zIndex = '100'; // 拖动结束后恢复层级

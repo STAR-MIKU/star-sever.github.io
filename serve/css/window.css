@@ -274,5 +274,4 @@ input, textarea, [contenteditable="true"] {
     min-width: 160px;
     box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.12);
     display: none;
-    z-index: 100000;
 }
