@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "SHOOTING STAR",
+  "version": "1.0.0",
+  "description": "一个美观的新标签页搜索应用",
+  "action": {
+    "default_icon": "image/wallpaper.png"
+  },
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage"
+  ],
+  "icons": {
+    "16": "image/wallpaper.png",
+    "48": "image/wallpaper.png",
+    "128": "image/wallpaper.png"
+  }
+}

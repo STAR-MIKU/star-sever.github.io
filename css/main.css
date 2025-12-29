@@ -1,0 +1,1303 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    pointer-events: none;
+    /* 让背景不响应任何鼠标操作 */
+    position: relative;
+    /* 禁用滚动条 */
+    overflow: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* 禁用WebKit浏览器的滚动条 */
+body::-webkit-scrollbar {
+    display: none;
+}
+
+/* 背景容器样式 */
+.background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.background-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: opacity 1s ease-in-out;
+}
+
+.background-layer.current {
+    opacity: 1;
+}
+
+.background-layer.next {
+    opacity: 0;
+}
+
+.dock {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 7.89833px 9.2833px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    pointer-events: auto;
+    transform-origin: center bottom;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: border-radius 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+        padding 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+        gap 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dock.animate {
+    animation: dockUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 1.25) forwards;
+}
+
+@keyframes dockUp {
+    0% {
+        transform: translateX(-50%) translateY(100%);
+    }
+
+    80% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* Sidebar样式 */
+.sidebar {
+    position: fixed;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%) translateX(-100%);
+    width: var(--sidebar-width, 48px);
+    background: rgba(255, 255, 255, 0.1);
+    /* background-image: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 20%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 25%); */
+    backdrop-filter: blur(20px);
+    border-radius: 999px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+    padding: var(--sidebar-padding, 8px 0);
+    pointer-events: auto;
+    z-index: 1000;
+    /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5); */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: background 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        gap 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        padding 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.sidebar.animate {
+    animation: sidebarIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 1.25) forwards;
+}
+
+@keyframes sidebarIn {
+    0% {
+        transform: translateY(-50%) translateX(-100%);
+    }
+
+    80% {
+        transform: translateY(-50%) translateX(10px);
+    }
+
+    100% {
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+
+
+/* Sidebar内部图标占位块样式 */
+.sidebar-item {
+    width: var(--sidebar-item-width, 38px);
+    height: var(--sidebar-item-height, 38px);
+    background: transparent;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: center;
+    margin: 0 1px;
+}
+
+.sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+.sidebar-item.active {
+    background: transparent;
+}
+
+/* 确保激活状态下的悬停效果依然生效 */
+.sidebar-item.active:hover {
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+/* Sidebar item内容容器 */
+.item-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* 使用CSS变量控制item-icon尺寸，实现动态调整 */
+.item-icon {
+    width: var(--item-icon-size, 34px);
+    height: var(--item-icon-size, 34px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Sidebar item名称 - 完全隐藏 */
+.item-name {
+    display: none;
+}
+
+
+
+
+/* SVG图标自动适应容器尺寸 */
+.sidebar-item svg {
+    width: 80%;
+    height: 80%;
+    max-width: 120%;
+    max-height: 120%;
+    object-fit: contain;
+}
+
+.dock-item svg {
+    width: 100%;
+    height: 60%;
+    object-fit: contain;
+}
+
+/* 个性设置 - 壁纸预览样式 */
+.wallpaper-preview-container {
+    width: 100%;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.wallpaper-preview-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.wallpaper-preview-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 个性设置 - 本地上传样式 */
+.wallpaper-upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.wallpaper-upload-input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+.wallpaper-save-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 10px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.wallpaper-save-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 个性设置 - 壁纸选择区域样式 */
+.bing-wallpapers-container,
+.default-wallpapers-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.wallpaper-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    height: 80px;
+}
+
+.wallpaper-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.wallpaper-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 3px 5px;
+    text-align: center;
+    font-size: 12px;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    margin: 0;
+}
+
+
+
+.dock-item {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    position: relative;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    /* border: 1px solid rgba(255, 255, 255, 0.1); */
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-radius 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dock-item:active {
+    transform: scale(0.95);
+}
+
+.right-panel {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%) translateX(100%);
+    width: 40vw;
+    height: calc(40vw * 2400 / 1080);
+    max-height: 89vh;
+    max-width: calc(90vh * 1080 / 2400);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(60px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.5s cubic-bezier(0.93, -0.26, 0, 2.32), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    pointer-events: auto;
+}
+
+.right-panel .inner-panel {
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border-radius: 18px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+
+
+.right-panel.show {
+    right: 40px;
+    transform: translateY(-50%) translateX(0);
+    animation: overshoot 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes overshoot {
+    0% {
+        transform: translateY(-50%) translateX(100%);
+    }
+
+    70% {
+        transform: translateY(-50%) translateX(-10px);
+    }
+
+    100% {
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+.dock-item:first-child .inner-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.dock-item:first-child .outer-shape {
+    width: 16px;
+    height: 29px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 4px;
+    position: relative;
+    transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-radius 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.dock-item:first-child .inner-shape {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 13px;
+    height: 27px;
+    background: transparent;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+    transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-radius 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Loading动画样式 */
+.inner-shape.loading {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.inner-shape.loading::after {
+    content: '';
+    position: absolute;
+    width: calc(8px * var(--dock-scale));
+    height: calc(8px * var(--dock-scale));
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-top: calc(3px * var(--dock-scale)) solid #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+.wallpaper-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: blur(3px) brightness(0.8) saturate(1.2);
+    z-index: 1;
+    transition: opacity 1s ease-in-out;
+}
+
+.wallpaper-preview.current {
+    opacity: 1;
+}
+
+.wallpaper-preview.next {
+    opacity: 0;
+}
+
+.dock-separator {
+    width: 3px;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-radius 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.dock-item::after {
+    content: '';
+    position: absolute;
+    bottom: calc(-5px * var(--dock-scale, 1));
+    left: 50%;
+    width: calc(8px * var(--dock-scale, 1));
+    height: calc(3px * var(--dock-scale, 1));
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: calc(12px * var(--dock-scale, 1));
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: translateX(-50%) scale(0) translateY(calc(-3px * var(--dock-scale, 1)));
+    opacity: 0;
+}
+
+.dock-item.active::after {
+    transform: translateX(-50%) scale(1) translateY(0);
+    opacity: 1;
+}
+
+.dock-item:hover {
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+.dock-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.8);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.dock-item.drag-over {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 中心搜索框样式 */
+.search-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--search-width, 288px);
+    max-width: 50%;
+    height: var(--search-height, 52.8px);
+    min-width: var(--search-min-width, 160px);
+    min-height: var(--search-min-height, 28.8px);
+    background: rgba(255, 255, 255, 0.2);
+    background-image: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 20%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 25%);
+    backdrop-filter: blur(20px);
+    border-radius: var(--search-border-radius, 20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 var(--search-padding, 20px);
+    gap: var(--search-gap, 15px);
+    z-index: 900;
+    pointer-events: auto;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    filter: blur(20px);
+    position: relative;
+}
+
+/* 搜索框向上移动后的样式 */
+.search-container.top {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    max-width: 400px;
+}
+
+/* 搜索框入场动画 */
+.search-container.animate {
+    opacity: 1;
+    filter: blur(0px);
+    animation: searchFadeIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes searchFadeIn {
+    0% {
+        opacity: 0;
+        filter: blur(20px);
+    }
+
+    100% {
+        opacity: 1;
+        filter: blur(0px);
+    }
+}
+
+/* 设置面板3D倾斜进入动画 */
+@keyframes panelTiltIn {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8) rotateX(-20deg) rotateY(20deg);
+    }
+
+    70% {
+        transform: translate(-50%, -50%) scale(1.05) rotateX(5deg) rotateY(-5deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1) rotateX(0deg) rotateY(0deg);
+    }
+}
+
+/* 搜索框移动到顶部的动画 */
+@keyframes moveToTop {
+    0% {
+        transform: translate(-50%, -50%);
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* 搜索框从顶部移动回中心的动画 */
+@keyframes moveToCenter {
+    0% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    100% {
+        transform: translate(-50%, -50%);
+    }
+}
+
+.search-container:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 搜索框在顶部位置时的悬停效果 */
+.search-container.top:hover {
+    transform: translateX(-50%) translateY(0) scale(1.05);
+    transform-origin: top center;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.search-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.1) 100%);
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.search-container:hover::after {
+    opacity: 1;
+}
+
+.search-icon {
+    width: var(--search-icon-size, 28px);
+    height: var(--search-icon-size, 28px);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.8));
+    margin-left: -4px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.search-icon:hover {
+    transform: scale(1.1) rotate(10deg);
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 1));
+}
+
+.search-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: var(--search-text-size, 16px);
+    font-family: inherit;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* 通知系统样式 */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 2000;
+    pointer-events: auto;
+    max-width: calc(100vw - 40px);
+}
+
+.notification-item {
+    width: 300px;
+    max-width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: top right;
+    animation: notificationSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .notification-container {
+        top: 15px;
+        right: 15px;
+        gap: 8px;
+    }
+    
+    .notification-item {
+        width: 280px;
+        padding: 10px 14px;
+        gap: 10px;
+    }
+    
+    .notification-icon {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .notification-title {
+        font-size: 15px;
+    }
+    
+    .notification-message {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .notification-container {
+        top: 10px;
+        right: 10px;
+        gap: 6px;
+    }
+    
+    .notification-item {
+        width: 250px;
+        padding: 8px 12px;
+        gap: 8px;
+    }
+    
+    .notification-icon {
+        width: 38px;
+        height: 38px;
+    }
+    
+    .notification-title {
+        font-size: 14px;
+    }
+    
+    .notification-message {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    .notification-item {
+        width: 220px;
+    }
+}
+
+.notification-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.notification-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.notification-icon svg {
+    width: 60%;
+    height: 60%;
+}
+
+.notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notification-message {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@keyframes notificationSlideIn {
+    0% {
+        transform: translateX(100%) scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* 设置面板样式 - 长圆角矩形 */
+.settings-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    width: 60vw;
+    max-width: 800px;
+    max-height: 500px;
+    /* 使用calc()实现16:10比例 */
+    height: calc(60vw * 10 / 16);
+    /* 确保高度不超过最大高度时，宽度也按比例调整 */
+    max-width: calc(min(90vh, 500px) * 16 / 10);
+    min-width: 320px;
+    min-height: calc(320px * 10 / 16);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border-radius: var(--settings-border-radius, 24px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 900;
+    pointer-events: auto;
+    opacity: 0;
+    visibility: hidden;
+    filter: blur(20px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-panel.show {
+    opacity: 1;
+    visibility: visible;
+    filter: blur(0px);
+    transform: translate(-50%, -50%) scale(1);
+    animation: searchFadeIn 0.6s cubic-bezier(0.71, -0.4, 0.04, 2.29) forwards, panelTiltIn 0.8s cubic-bezier(1, 0.34, 0, 0.21) forwards;
+}
+
+/* 设置面板左侧30%区域的圆角div样式 */
+.settings-panel-left-div {
+    position: absolute;
+    left: var(--settings-panel-margin, 10px);
+    top: var(--settings-panel-margin, 10px);
+    width: 28%;
+    height: calc(100% - calc(var(--settings-panel-margin, 10px) * 2));
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--settings-border-radius-inner, 18px);
+    box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    padding: var(--settings-panel-left-padding, 15px);
+    box-sizing: border-box;
+    overflow: hidden;
+    /* 防止内容溢出 */
+}
+
+/* 个人信息栏样式 */
+.profile-info {
+    display: flex;
+    align-items: center;
+    padding: var(--profile-info-padding, 8px);
+    border-radius: 99px;
+    /* background: rgba(255, 255, 255, 0.08); */
+    /* margin-bottom: var(--profile-info-margin-bottom, 15px); */
+    width: 100%;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.profile-avatar {
+    width: var(--profile-avatar-size, 60px);
+    height: var(--profile-avatar-size, 60px);
+    border-radius: var(--profile-avatar-radius, 15px);
+    background-image: url('/image/tx.gif');
+    background-size: cover;
+    background-position: center;
+    margin-right: var(--profile-avatar-margin-right, 16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+/* 头像上传相关样式 */
+.avatar-upload-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.avatar-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background-image: url('/image/tx.gif');
+    background-size: cover;
+    background-position: center;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.avatar-upload-label {
+    padding: 8px 16px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.avatar-upload-label:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.settings-save-button {
+    padding: 10px 24px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    width: auto;
+}
+
+.settings-save-button:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+    /* 允许内容收缩 */
+}
+
+.profile-name {
+    font-size: var(--profile-name-size, 22px);
+    font-weight: bold;
+    color: white;
+    /* margin: 0 0 var(--profile-name-margin-bottom, 3px) 0; */
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-signature {
+    font-size: var(--profile-signature-size, 12px);
+    color: rgb(255 255 255 / 40%);
+    margin: 0;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+/* 设置一级菜单列表样式 */
+.settings-menu {
+    display: flex;
+    flex-direction: column;
+    gap: var(--settings-menu-gap, 6px);
+    overflow-y: auto;
+    flex: 1;
+    padding: var(--settings-menu-padding, 6px);
+}
+
+/* 自定义滚动条样式 */
+.settings-menu::-webkit-scrollbar {
+    width: 4px;
+}
+
+.settings-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.settings-menu::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
+.settings-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.settings-menu-item {
+    padding: var(--settings-menu-item-padding, 12px 12px);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: var(--settings-menu-item-font-size, 14px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.settings-menu-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* 菜单项图标和文本样式 */
+.settings-menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--settings-menu-item-gap, 10px);
+}
+
+.menu-item-icon {
+    width: var(--settings-menu-item-icon-size, 24px);
+    height: var(--settings-menu-item-icon-size, 24px);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-item-text {
+    flex: 1;
+    white-space: nowrap;
+}
+
+.menu-item-arrow {
+    width: var(--settings-menu-item-icon-size, 24px);
+    height: var(--settings-menu-item-icon-size, 24px);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.settings-menu-item:hover .menu-item-arrow {
+    transform: scale(1.1) rotate(15deg);
+    opacity: 1;
+}
+
+/* 设置面板右侧内容区域样式 */
+.settings-panel-right-div {
+    position: absolute;
+    right: var(--settings-panel-margin, 10px);
+    top: var(--settings-panel-margin, 10px);
+    width: 70%;
+    height: calc(100% - calc(var(--settings-panel-margin, 10px) * 2));
+    /* background: rgba(255, 255, 255, 0.05); */
+    border-radius: var(--settings-border-radius-inner, 18px);
+    /* backdrop-filter: blur(10px); */
+    padding: var(--settings-panel-right-padding, 20px);
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+/* 设置面板右侧内容区域自定义滚动条 */
+/* 隐藏默认滚动条 */
+.settings-panel-right-div::-webkit-scrollbar {
+    display: none;
+}
+
+/* 自定义滚动条容器 */
+.custom-scrollbar-container {
+    position: absolute;
+    right: calc(var(--settings-panel-margin, 10px) + var(--settings-scrollbar-right-offset, 10px));
+    width: var(--settings-scrollbar-width, 8px);
+    height: calc(75% - calc(var(--settings-panel-margin, 10px) * 2));
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+    z-index: 100;
+    transition: height 0.3s ease, width 0.3s ease, right 0.3s ease, opacity 0.3s ease;
+    opacity: 1;
+}
+
+/* 自定义滚动轨道 */
+.custom-scrollbar-track {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: var(--settings-scrollbar-border-radius, 6px);
+    pointer-events: none;
+    transition: height 0.3s ease, border-radius 0.3s ease;
+}
+
+/* 自定义滚动滑块 */
+.custom-scrollbar-thumb {
+    position: absolute;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: var(--settings-scrollbar-border-radius, 6px);
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background 0.3s ease, height 0.3s ease, top 0.3s ease, border-radius 0.3s ease, min-height 0.3s ease;
+    min-height: var(--settings-scrollbar-thumb-min-height, 30px);
+}
+
+.custom-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* 设置内容区域标题样式 */
+.settings-header {
+    text-align: center;
+    /* padding: 20px 0; */
+    /* margin-bottom: 20px; */
+    /* border-bottom: 1px solid rgba(255, 255, 255, 0.1); */
+    position: sticky;
+    top: 0;
+    /* background: rgba(0, 0, 0, 0.7); */
+    /* backdrop-filter: blur(10px); */
+    z-index: 10;
+}
+
+.settings-content-title {
+    font-size: var(--settings-content-title-size, 24px);
+    font-weight: bold;
+    color: white;
+    margin-bottom: var(--settings-content-title-margin-bottom, 10px);
+    margin-top: 0;
+    text-align: center;
+}
+
+/* 设置内容区域段落样式 */
+.settings-content-text {
+    font-size: var(--settings-content-text-size, 14px);
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: var(--settings-content-text-margin-bottom, 15px);
+    line-height: var(--settings-content-text-line-height, 1.6);
+}
+
+/* 设置内容区域选项容器样式 */
+.settings-options {
+    /* padding: 40px 20px 20px; */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* 设置内容区域选项样式 */
+.settings-content-option {
+    padding: var(--settings-content-option-padding, 12px);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--settings-content-option-border-radius, 12px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.settings-content-option-label {
+    font-size: var(--settings-content-option-label-size, 14px);
+    color: white;
+    margin-bottom: var(--settings-content-option-label-margin-bottom, 8px);
+}
+
+/* 设置选项标题样式 */
+.settings-content-option-title {
+    font-size: var(--settings-content-option-label-size, 14px);
+    color: white;
+    margin-bottom: var(--settings-content-option-label-margin-bottom, 8px);
+}
+
+/* 输入框组样式 */
+.settings-content-input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* 修改按钮样式 */
+.settings-modify-button {
+    padding: var(--settings-content-input-padding, 10px 20px);
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--settings-content-input-border-radius, 8px);
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.settings-modify-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 设置内容区域部分样式 */
+.settings-content-section {
+    padding: var(--settings-content-option-padding, 12px);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--settings-content-option-border-radius, 12px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* 输入框样式 */
+.settings-content-input {
+    /* width: 100%; */
+    padding: var(--settings-content-input-padding, 10px 12px);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--settings-content-input-border-radius, 8px);
+    color: white;
+    font-size: var(--settings-content-input-font-size, 14px);
+    box-sizing: border-box;
+    backdrop-filter: blur(10px);
+}
+
+.settings-content-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* 下拉选择器样式 */
+.settings-select {
+    width: 100%;
+    padding: var(--settings-content-input-padding, 10px 12px);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--settings-content-input-border-radius, 8px);
+    color: white;
+    font-size: var(--settings-content-input-font-size, 14px);
+    box-sizing: border-box;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+}
+
+.settings-select option {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+}
+
+/* 开关按钮样式 */
+.settings-toggle {
+    position: relative;
+    width: var(--settings-toggle-width, 48px);
+    height: var(--settings-toggle-height, 24px);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--settings-toggle-border-radius, 12px);
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.settings-toggle::after {
+    content: '';
+    position: absolute;
+    top: var(--settings-toggle-handle-top, 2px);
+    left: var(--settings-toggle-handle-left, 2px);
+    width: var(--settings-toggle-handle-size, 20px);
+    height: var(--settings-toggle-handle-size, 20px);
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.settings-toggle.active {
+    background: rgba(100, 200, 255, 0.5);
+}
+
+.settings-toggle.active::after {
+    transform: translateX(var(--settings-toggle-handle-translate, 24px));
+}
+
+/* 设置菜单项激活状态 */
+.settings-menu-item.active {
+    background: rgba(255, 255, 255, 0.15);
+}

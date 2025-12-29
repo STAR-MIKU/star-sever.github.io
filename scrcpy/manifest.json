@@ -1,0 +1,35 @@
+{
+  "name": "Web Scrcpy - Android Screen Mirroring",
+  "version": "0.1.0",
+  "description": "Web-based Android screen mirroring and control using scrcpy",
+  "manifest_version": 3,
+  "icons": {
+    "192": "public/icon/android-chrome-192x192.png",
+    "512": "public/icon/android-chrome-512x512.png"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "192": "public/icon/android-chrome-192x192.png",
+      "512": "public/icon/android-chrome-512x512.png"
+    }
+  },
+  "permissions": [
+    "storage",
+    "usb"
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["scrcpy-server-v2.6.1"],
+      "matches": ["*://*/*"]
+    }
+  ],
+  "optional_permissions": [
+    "clipboardRead",
+    "clipboardWrite"
+  ],
+  "minimum_chrome_version": "96"
+}

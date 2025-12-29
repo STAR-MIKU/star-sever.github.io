@@ -1,0 +1,119 @@
+.search-suggestions {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.12);
+    border-radius: 16px;
+    font-family: 'Chillax', sans-serif;
+    position: absolute;
+    /* 移除固定宽度，由JavaScript动态设置 */
+    z-index: 1000;
+    display: none;
+    max-height: 320px;
+    overflow-y: auto;
+    margin-top: 8px;
+    transform: scale(0.92) translateY(12px);
+    opacity: 0;
+    pointer-events: auto;
+    /* 允许搜索建议框响应鼠标事件 */
+    transition: opacity 0.3s ease, transform 0.3s ease, left 0.3s ease, top 0.3s ease, width 0.3s ease;
+
+    /* 自定义滚动条 */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.search-suggestions.show {
+    display: block;
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+/* WebKit浏览器自定义滚动条 */
+.search-suggestions::-webkit-scrollbar {
+    width: 4px;
+}
+
+.search-suggestions::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.search-suggestions::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 2px;
+}
+
+.search-suggestions::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.suggestion-title,
+.history-title {
+    padding: 8px 16px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.suggestion-item,
+.history-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    border-radius: 12px;
+    margin: 4px 8px;
+    position: relative;
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.suggestion-item.show,
+.history-item.show {
+    opacity: 1;
+    transform: scale(1);
+    margin-bottom: 8px;
+    margin-top: 0px;
+}
+
+.suggestion-item:hover,
+.history-item:hover {
+    background: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.1);
+}
+
+.engine-icons {
+    float: right;
+    margin-left: 10px;
+}
+
+.engine-icon {
+    width: 16px;
+    height: 16px;
+    margin-left: 4px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.engine-icon:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.engine-icon.active {
+    opacity: 1;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 2px;
+}
+
+.search-container {
+    position: relative;
+}
